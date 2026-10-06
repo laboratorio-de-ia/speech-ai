@@ -1,0 +1,238 @@
+Listagem de caminhos de pasta para o volume Novo volume
+O número de série do volume é 00000082 AAAC:1435
+D:.
+¦   app.py
+¦   estrutura.txt
+¦   main.py
+¦   README.md
+¦   requirements.txt
+¦   
++---app
+¦   ¦   speech_ai_app.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           speech_ai_app.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---config
+¦   ¦   config_manager.py
+¦   ¦   settings.json
+¦   ¦   voices.json
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           config_manager.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---docs
+¦   +---SpeechAI_Docs
+¦       ¦   DELIVERY_SUMMARY.md
+¦       ¦   DOCUMENTATION_STATISTICS.md
+¦       ¦   INDEX.md
+¦       ¦   
+¦       +---Developer
+¦       ¦       CODING_STANDARDS.md
+¦       ¦       CONTRIBUTING.md
+¦       ¦       DEVELOPER_GUIDE.md
+¦       ¦       TESTING_GUIDE.md
+¦       ¦       
+¦       +---Diagrams
+¦       ¦       domain_models.png
+¦       ¦       domain_models.puml
+¦       ¦       pipeline_flow.mmd
+¦       ¦       pipeline_flow.png
+¦       ¦       system_architecture.png
+¦       ¦       system_architecture.puml
+¦       ¦       
+¦       +---Foundation
+¦       ¦       ARCHITECTURE.md
+¦       ¦       DIAGRAMS.md
+¦       ¦       ENGINEERING_DOCUMENTATION.md
+¦       ¦       README.md
+¦       ¦       
+¦       +---Operations
+¦       ¦       OPERATIONS_GUIDE.md
+¦       ¦       PROJECT_METRICS.md
+¦       ¦       RELEASE_PROCESS.md
+¦       ¦       SECURITY.md
+¦       ¦       
+¦       +---Sprint
+¦               ADR.md
+¦               CHANGELOG.md
+¦               ROADMAP.md
+¦               SPRINT_ROADMAP.md
+¦               
++---docs_html
+¦   ¦   GETTING_STARTED.html
+¦   ¦   index.html
+¦   ¦   README.md
+¦   ¦   
+¦   +---assets
+¦   ¦   +---css
+¦   ¦   ¦       style.css
+¦   ¦   ¦       
+¦   ¦   +---images
+¦   ¦   ¦       api_interactions.png
+¦   ¦   ¦       data_flow_detailed.png
+¦   ¦   ¦       deployment_architecture.png
+¦   ¦   ¦       domain_models.png
+¦   ¦   ¦       domain_models_enhanced.png
+¦   ¦   ¦       pipeline_flow.png
+¦   ¦   ¦       pipeline_flow_optimized.png
+¦   ¦   ¦       system_architecture.png
+¦   ¦   ¦       system_architecture_enhanced.png
+¦   ¦   ¦       
+¦   ¦   +---js
+¦   ¦           main.js
+¦   ¦           
+¦   +---diagrams
+¦   ¦       index.html
+¦   ¦       
+¦   +---pages
+¦       +---developer
+¦       ¦       coding-standards.html
+¦       ¦       contributing.html
+¦       ¦       developer-guide.html
+¦       ¦       index.html
+¦       ¦       testing-guide.html
+¦       ¦       
+¦       +---foundation
+¦       ¦       architecture.html
+¦       ¦       diagrams.html
+¦       ¦       engineering-docs.html
+¦       ¦       index.html
+¦       ¦       readme.html
+¦       ¦       
+¦       +---operations
+¦       ¦       index.html
+¦       ¦       operations-guide.html
+¦       ¦       project-metrics.html
+¦       ¦       release-process.html
+¦       ¦       security.html
+¦       ¦       
+¦       +---sprint
+¦               adr.html
+¦               changelog.html
+¦               index.html
+¦               roadmap.html
+¦               sprint-roadmap.html
+¦               
++---Imagens
+¦       Arquitetura Sprint 6.6.png
+¦       Arquitetura Sprint 7.6.3.png
+¦       
++---input
+¦       script.txt
+¦       script_agentic.txt
+¦       script_en.txt
+¦       script_governance.txt
+¦       script_pt.txt
+¦       
++---logs
+¦       app.log
+¦       speech.log
+¦       
++---models
+¦   ¦   language.py
+¦   ¦   list_block.py
+¦   ¦   paragraph.py
+¦   ¦   paragraph.txt
+¦   ¦   presentation.py
+¦   ¦   slide.py
+¦   ¦   speech_analysis.py
+¦   ¦   speech_profile.py
+¦   ¦   statistics.py
+¦   ¦   voice_profile.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           language.cpython-312.pyc
+¦           list_block.cpython-312.pyc
+¦           paragraph.cpython-312.pyc
+¦           presentation.cpython-312.pyc
+¦           slide.cpython-312.pyc
+¦           speech_analysis.cpython-312.pyc
+¦           speech_profile.cpython-312.pyc
+¦           statistics.cpython-312.pyc
+¦           voice_profile.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---output
+¦       audio.mp3
+¦       Audio_Governance_SouthAmerica.mp3
+¦       narration.txt
+¦       script_optimized.txt
+¦       speech.txt
+¦       speech.xml
+¦       speech_report.json
+¦       
++---pipeline
+¦   ¦   narration_builder.py
+¦   ¦   speech_builder.py
+¦   ¦   text_analyzer.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           narration_builder.cpython-312.pyc
+¦           speech_builder.cpython-312.pyc
+¦           text_analyzer.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---providers
+¦   ¦   base_provider.py
+¦   ¦   edge_provider.py
+¦   ¦   provider_factory.py
+¦   ¦   provider_info.py
+¦   ¦   provider_loader.py
+¦   ¦   provider_registry.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           base_provider.cpython-312.pyc
+¦           edge_provider.cpython-312.pyc
+¦           provider_factory.cpython-312.pyc
+¦           provider_info.cpython-312.pyc
+¦           provider_loader.cpython-312.pyc
+¦           provider_registry.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---readme
+¦       readme.md
+¦       
++---services
+¦   ¦   language_detector.py
+¦   ¦   speech_analyzer.py
+¦   ¦   speech_intelligence.py
+¦   ¦   speech_optimizer.py
+¦   ¦   speech_service.py
+¦   ¦   timing_calculator.py
+¦   ¦   tts_engine.py
+¦   ¦   voice_manager.py
+¦   ¦   voice_selector.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           language_detector.cpython-312.pyc
+¦           speech_analyzer.cpython-312.pyc
+¦           speech_intelligence.cpython-312.pyc
+¦           speech_optimizer.cpython-312.pyc
+¦           speech_service.cpython-312.pyc
+¦           timing_calculator.cpython-312.pyc
+¦           tts_engine.cpython-312.pyc
+¦           voice_manager.cpython-312.pyc
+¦           voice_selector.cpython-312.pyc
+¦           __init__.cpython-312.pyc
+¦           
++---tests
+¦       run_test_tts.py
+¦       speech_optimizer.py
+¦       test.mp3
+¦       test.ssml
+¦       test_app.py
+¦       test_config.py
+¦       __init__.py
+¦       
++---utils
+        __init__.py
+        

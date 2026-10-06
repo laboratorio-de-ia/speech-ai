@@ -1,0 +1,166 @@
+{#- ======================================================================
+    Speech AI · slides do resumo de jornal (preenchidos com o JSON da IA)
+    ====================================================================== -#}
+
+{%- macro num(k) -%}
+<div class="num">{{ k.value }}{% if k.unit %}<span class="unit{{ ' word' if k.unit|length > 3 }}">{{ k.unit }}</span>{% endif %}</div>
+{%- endmacro -%}
+
+{%- macro kpi(k, extra='') -%}
+<div class="kcard{{ {'accent': ' acc', 'positive': ' pos'}.get(k.tone, '') }}{{ extra }}">{{ num(k) }}<p class="klab">{{ k.label }}</p>{% if k.sub %}<p class="ksub">{{ k.sub }}</p>{% endif %}</div>
+{%- endmacro -%}
+
+{%- macro card(c, extra='') -%}
+<div class="card{{ extra }}">
+  {%- if c.tag or c.page %}<p class="ctag">{{ c.tag }}{% if c.page %} <em>{{ c.page }}</em>{% endif %}</p>{% endif %}
+  {%- if c.text %}<p>{{ c.text }}</p>{% endif %}
+  {%- if c.bullets %}<ul>{% for b in c.bullets %}<li>{{ b }}</li>{% endfor %}</ul>{% endif %}
+  {%- if c.quote %}<p class="quote"{% if c.text or c.bullets %} style="margin-top:7px"{% endif %}>{{ c.quote }}</p>{% if c.quote_by %}<p class="qby">{{ c.quote_by }}</p>{% endif %}{% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro kgrid(kpis, tight=False, style='') -%}
+{%- set n = kpis|length -%}
+{%- if n -%}
+<div class="kgrid{{ {1: ' k2', 2: ' k2', 3: ' k3'}.get(n, '') }}{{ ' tight' if tight }} fan"{% if style %} style="{{ style }}"{% endif %}>
+  {%- for k in kpis %}
+  {{ kpi(k) }}
+  {%- endfor %}
+</div>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro cards(list, cols, style='margin-top:16px') -%}
+{%- if list -%}
+<div class="cards{{ ' c' ~ cols if cols > 1 }} big fill fan" style="{{ style }}">
+  {%- for c in list %}
+  {{ card(c) }}
+  {%- endfor %}
+</div>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro footer(sources) -%}
+<div class="sfoot"><span>{{ 'Seções' if sources|length > 1 else 'Seção' }}: {% for s in sources %}<b>{{ s.page }}</b> · {{ s.section }}{{ ' · ' if not loop.last }}{% endfor %}</span><span class="pg"></span></div>
+{%- endmacro -%}
+
+{%- macro chart(c) -%}
+<div class="chart">
+  <h4>{{ c.title }}</h4>
+  {% if c.subtitle %}<p class="csub">{{ c.subtitle }}</p>{% endif %}
+  <div class="hbars" style="--lw:{{ c.label_width }}px">
+    {%- for b in c.bars %}
+    <div class="hb" data-tip="&lt;b&gt;{{ b.label }}&lt;/b&gt;&lt;br&gt;{{ b.display }}"><span class="hl">{{ b.label }}</span><span class="ht"><i{% if not b.highlight %} class="cm"{% endif %} style="--w:{{ b.pct }}%;--d:{{ '%.1f' % (0.2 + loop.index0 * 0.1) }}s"></i></span><b>{{ b.display }}</b></div>
+    {%- endfor %}
+  </div>
+  {% if c.note %}<p class="src">{{ c.note }}</p>{% endif %}
+</div>
+{%- endmacro -%}
+
+{#- ------------------------------------------------------------------ capa -#}
+<section class="slide t-cover active" data-theme="dark" data-title="Capa">
+  <div class="cover-score rv" aria-label="Ordem de leitura">
+    <p class="ord-h">Ordem de leitura</p>
+    {%- for t in tiers %}
+    <div class="cs-row t{{ t.tier.number }}"><p class="who">0{{ t.tier.number }} · {{ t.tier.number }}º destaque · {{ t.tier.name }}</p><p class="ttl">{{ t.block.cover.headline }}</p><p class="note">{{ t.block.cover.source }}</p></div>
+    {%- endfor %}
+  </div>
+  <p class="kicker rv">Resumo da edição · {{ newspaper }}</p>
+  <h1 class="rv">{{ cover.title }}<span class="l2">{{ cover.title_line2 }}</span></h1>
+  <p class="csub rv">{{ cover.subtitle }}</p>
+  <div class="cmeta rv"><span>{{ cover.edition_date }}</span>{% for m in cover.edition_meta[:2] %}<span>{{ m }}</span>{% endfor %}<span>Processado em {{ processed }}</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Seção: <b>Capa</b> · {{ newspaper }}</span><span class="pg"></span></div>
+</section>
+
+{#- ------------------------------------------------------------ em uma página -#}
+<section class="slide" data-theme="light" data-title="A edição em uma página">
+  <p class="eyebrow rv">Em uma página</p>
+  <h2 class="sh rv">Doze números para entender a edição</h2>
+  <div class="tiers fan">
+    {%- for t in tiers %}
+    <div class="trow t{{ t.tier.number }}"><p class="tlab"><b>{{ t.tier.number }}º destaque</b>{{ t.tier.name }}</p>
+      {%- for k in t.block.overview_kpis[:4] %}
+      {{ kpi(k, ' t1' if t.tier.number == 1 else '') }}
+      {%- endfor %}
+    </div>
+    {%- endfor %}
+  </div>
+  <div class="sfoot"><span>Seções: {% for t in tiers %}<b>{{ t.short_pages }}</b> · {{ t.tier.name }}{{ ' · ' if not loop.last }}{% endfor %}</span><span class="pg"></span></div>
+</section>
+
+{%- for t in tiers %}
+
+{#- ---------------------------------------------------------------- divisória -#}
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="{{ t.tier.number }}" data-title="0{{ t.tier.number }} · {{ t.tier.name }} ({{ t.tier.number }}º destaque)">
+  <p class="dnum rv">0{{ t.tier.number }}</p>
+  <p class="eyebrow rv">{{ t.tier.number }}º destaque · {{ t.block.divider.pages }}</p>
+  <h1 class="rv">{{ t.tier.title }}</h1>
+  <p class="dsub rv">{{ t.block.divider.subtitle }}</p>
+  <div class="dchips rv">{% for c in t.block.divider.chips %}<span class="chip{{ ' on' if loop.first }}">{{ c }}</span>{% endfor %}</div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>{{ t.tier.number }}º destaque · {{ t.tier.name }}</span><span class="pg"></span></div>
+</section>
+
+{%- for s in t.block.slides %}
+
+{#- ------------------------------------------------------------ conteúdo -#}
+<section class="slide" data-theme="light" data-tier="{{ t.tier.number }}" data-title="{{ s.nav_title }}">
+  <p class="eyebrow rv">{{ s.eyebrow }}</p>
+  <h2 class="sh rv">{{ s.headline }}</h2>
+  {%- if s.lede %}
+  <p class="lede rv">{{ s.lede }}</p>
+  {%- endif %}
+
+  {%- if s.layout == 'timeline' %}
+  <div class="lr n58 rv">
+    <div>
+      {% if s.steps_title %}<p class="colh a">{{ s.steps_title }}</p>{% endif %}
+      <div class="steps fill big">
+        {%- for st in s.steps[:4] %}
+        <div class="step{{ ' o' if st.alert }}"><span class="sn">{{ st.badge }}</span><div><h4>{{ st.title }}</h4><p>{{ st.text }}</p></div></div>
+        {%- endfor %}
+      </div>
+    </div>
+    <div>
+      {{ kgrid(s.kpis[:2], tight=True, style='margin-top:0') }}
+      {{ cards(s.cards[:2], 1, 'margin-top:12px;gap:12px') }}
+    </div>
+  </div>
+
+  {%- elif s.layout == 'chart' and s.chart.bars %}
+  <div class="lr rv">
+    <div>{{ chart(s.chart) }}</div>
+    <div>
+      {{ kgrid(s.kpis[:2], tight=True, style='margin-top:0') }}
+      {{ cards(s.cards[:2], 1, 'margin-top:12px;gap:12px') }}
+    </div>
+  </div>
+
+  {%- elif s.layout == 'mosaic' %}
+  {{ cards(s.cards[:6], 3, 'margin-top:10px') }}
+
+  {%- else %}
+  {{ kgrid(s.kpis[:4]) }}
+  {{ cards(s.cards[:3], 3 if s.cards|length >= 3 else 2) }}
+  {%- endif %}
+
+  {%- if s.takeaway %}
+  <p class="takeaway rv"><b>Leitura do editor:</b> {{ s.takeaway }}</p>
+  {%- endif %}
+  {{ footer(s.sources) }}
+</section>
+{%- endfor %}
+{%- endfor %}
+
+{#- ----------------------------------------------------------- encerramento -#}
+<section class="slide t-div" data-theme="dark" data-divider="1" data-title="O que acompanhar">
+  <p class="eyebrow rv">Agenda · na ordem de prioridade</p>
+  <h1 class="rv" style="font-size:58px;max-width:1400px">O que acompanhar nas próximas semanas</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    {%- for t in tiers %}{% for a in t.block.agenda[:2] %}
+    <div class="card dk t{{ t.tier.number }}c"><p class="ctag">{{ t.tier.number }}º · {{ t.tier.agenda_label }}{% if a.when %} · {{ a.when }}{% endif %}</p><p><b>{{ a.lead }}:</b> {{ a.text }}</p></div>
+    {%- endfor %}{% endfor %}
+  </div>
+  <div class="sfoot"><span>Fonte: {{ newspaper }}, edição de {{ cover.edition_date }}</span><span class="pg"></span></div>
+</section>

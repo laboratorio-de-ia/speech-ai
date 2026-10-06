@@ -1,0 +1,69 @@
+# Agentic Artificial Intelligence: The Next Evolution of AI
+
+Good morning everyone.
+
+Today, I would like to talk about one of the most exciting topics in technology: **Agentic Artificial Intelligence**, also known as Agentic AI.
+
+Over the last few years, Artificial Intelligence has transformed the way we work, communicate, and make decisions. We have seen AI generate text, create images, analyze data, write software, and answer complex questions. These capabilities have already changed many industries.
+
+However, we are now entering a new phase.
+
+Traditional AI is reactive. It waits for a user to ask a question before producing an answer. Agentic AI is different. Instead of simply responding to prompts, it can plan, reason, make decisions, use tools, collaborate with other systems, and execute complete workflows with minimal human intervention.
+
+Think of the difference between a calculator and a personal assistant.
+
+A calculator performs exactly one task when requested. A personal assistant understands your objectives, organizes activities, coordinates resources, and helps you achieve a desired outcome.
+
+That is the promise of Agentic AI.
+
+An AI agent begins by understanding a goal rather than a single instruction. It breaks that goal into smaller tasks, determines the best strategy, selects the appropriate tools, evaluates the results, and adapts its actions whenever necessary.
+
+This approach allows organizations to automate not only repetitive tasks but also complex business processes that previously required human coordination.
+
+Imagine an employee asking an AI agent to prepare a quarterly business report.
+
+Instead of only generating text, the agent can collect information from multiple systems, analyze financial data, create visual dashboards, summarize key insights, prepare a presentation, schedule a meeting with stakeholders, and even suggest strategic recommendations.
+
+The employee remains in control, but the AI dramatically increases productivity.
+
+Another important characteristic of Agentic AI is collaboration.
+
+Rather than relying on a single model, organizations are increasingly building ecosystems composed of multiple specialized agents. One agent may focus on customer service, another on financial analysis, another on cybersecurity, and another on software development.
+
+Together, these agents communicate, exchange information, and coordinate their work to solve problems more efficiently than any individual system.
+
+Of course, this new level of autonomy also introduces important responsibilities.
+
+As AI becomes capable of making decisions and taking actions, organizations must establish strong governance, security, transparency, and ethical guidelines.
+
+Human oversight remains essential.
+
+Agentic AI should not replace human judgment. Instead, it should amplify human intelligence by allowing people to focus on creativity, innovation, strategic thinking, and meaningful interactions.
+
+Technology alone is never enough.
+
+Successful organizations will combine advanced AI capabilities with well-designed business processes, high-quality data, skilled professionals, and responsible governance.
+
+This is why AI literacy is becoming as important as digital literacy was twenty years ago.
+
+Every employee—not only software engineers or data scientists—will need to understand how to work effectively alongside intelligent agents.
+
+The future workplace will not be defined by humans competing against AI.
+
+Instead, it will be defined by humans collaborating with AI.
+
+Those who learn how to delegate repetitive work to intelligent agents will gain more time for innovation, customer relationships, and solving the challenges that truly require human creativity.
+
+We are not simply witnessing another technological improvement.
+
+We are experiencing a fundamental shift in the relationship between people and technology.
+
+Agentic AI represents the next generation of digital transformation.
+
+Organizations that invest today in responsible AI, governance, education, and experimentation will be better prepared to lead tomorrow.
+
+The question is no longer whether Agentic AI will transform our businesses.
+
+The real question is: **How quickly are we prepared to embrace this transformation?**
+
+Thank you very much for your time.

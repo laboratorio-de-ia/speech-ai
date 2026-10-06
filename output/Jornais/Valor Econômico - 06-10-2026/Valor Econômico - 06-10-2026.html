@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumo Valor Econômico — 6 de outubro de 2026</title>
+<meta name="description" content="Resumo do Valor de 6/10/2026: startup apoiada pela Nvidia lança IA aberta contra rivais chineses; Ibovespa sobe 7,7% e dólar cai a R$ 5 após o 1º turno; Flávio e Lula definem estratégias para o 2º turno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESUMO DE JORNAL · deck HTML de arquivo único
+   Linguagem visual herdada do modelo "Walk Challenge 2026":
+   palco 1600x900 escalável, capa e divisórias escuras com campo
+   animado, slides claros com KPIs, cards, barras e linha do tempo.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --dk1:#282B34; --dk2:#002855; --lt2:#C3D7EE;
+  --accent1:#243782; --accent3:#C3D7EE; --accent5:#D35D00; --accent6:#43AAA0; --hlink:#0082FB;
+  --font-heading:'Encode Sans Expanded','Encode Sans',Arial,sans-serif;
+  --font-body:'Encode Sans',Arial,sans-serif;
+  --field:#00163C; --paper:#FFFFFF; --mist:#F3F6FB; --mist-2:#E8EEF8; --rule:#D8E1EF;
+  --ink:#010834; --ink-soft:#4E5A75; --ink-faint:#7D879B;
+  /* paleta categórica validada do modelo (fundo claro) */
+  --c1:#2A54B5; --c2:#00968C; --c3:#D35D00; --c4:#8E5BC7; --c-mute:#AFBBD1;
+  --grid:#E4EAF4; --axis:#9AA6BC; --num1:#243782; --pos:#0A7F76;
+}
+/* modo escuro: degraus próprios, não uma inversão */
+html[data-theme-mode="dark"]{
+  --paper:#061B3E; --mist:#0C2650; --mist-2:#123061; --rule:#1E3D70;
+  --ink:#EAF1FB; --ink-soft:#A9BEDD; --ink-faint:#7F96BA;
+  --c1:#5C82DC; --c2:#12A899; --c3:#D0762A; --c4:#9C6FD8; --c-mute:#3C5580;
+  --grid:#173359; --axis:#5A7399; --num1:#8FB0EE; --pos:#3ED0BF;
+}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04102A}
+html[data-theme-mode="dark"] body{background:#030D22}
+body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ---------- 1 · PALCO ---------- */
+#shell{position:fixed;inset:0;overflow:hidden}
+.deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  background:var(--field);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:var(--field-a,1);transition:opacity .8s ease}
+.slide{position:absolute;inset:0;padding:70px 92px 70px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px);
+  transition:opacity .5s cubic-bezier(.22,.7,.2,1),transform .58s cubic-bezier(.22,.7,.2,1),filter .45s ease,visibility .58s;
+  will-change:transform,opacity;pointer-events:none}
+body.back .slide{transform:translate3d(-46px,0,0) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;z-index:10}
+.slide[data-theme="dark"]{color:#fff;background:transparent}
+.slide[data-theme="dark"]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,#00122F 0%,rgba(0,20,52,.94) 30%,rgba(0,26,64,.66) 54%,rgba(0,34,78,.28) 76%,rgba(0,40,88,.08) 100%)}
+.slide[data-theme="dark"]>*{position:relative;z-index:2}
+.slide[data-theme="light"]{background:var(--paper);color:var(--ink)}
+.slide[data-theme="light"]::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(58% 80% at 100% 0%,rgba(195,215,238,.34) 0%,rgba(195,215,238,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(195,215,238,.24) 0%,rgba(195,215,238,0) 60%)}
+html[data-theme-mode="dark"] .slide[data-theme="light"]::before{
+  background:radial-gradient(58% 80% at 100% 0%,rgba(92,130,220,.16) 0%,rgba(92,130,220,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(18,168,153,.10) 0%,rgba(18,168,153,0) 60%)}
+.slide[data-theme="light"]>*{position:relative;z-index:2}
+
+/* entrada escalonada: estado de repouso é VISÍVEL; o oculto vive só nos keyframes */
+.slide.active .rv{animation:rvIn .5s cubic-bezier(.22,.7,.2,1) both}
+.slide.active .rv:nth-child(1){animation-delay:.05s}.slide.active .rv:nth-child(2){animation-delay:.12s}
+.slide.active .rv:nth-child(3){animation-delay:.19s}.slide.active .rv:nth-child(4){animation-delay:.26s}
+.slide.active .rv:nth-child(5){animation-delay:.33s}.slide.active .rv:nth-child(6){animation-delay:.40s}
+@keyframes rvIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .fan>*{animation:fanIn .42s cubic-bezier(.22,.7,.2,1) both}
+@keyframes fanIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.slide.active .fan>*:nth-child(1){animation-delay:.14s}.slide.active .fan>*:nth-child(2){animation-delay:.18s}
+.slide.active .fan>*:nth-child(3){animation-delay:.22s}.slide.active .fan>*:nth-child(4){animation-delay:.26s}
+.slide.active .fan>*:nth-child(5){animation-delay:.30s}.slide.active .fan>*:nth-child(6){animation-delay:.34s}
+.slide.active .fan>*:nth-child(7){animation-delay:.38s}.slide.active .fan>*:nth-child(8){animation-delay:.42s}
+.slide.active .fan>*:nth-child(n+9){animation-delay:.46s}
+body.no-motion .slide.active .rv,body.no-motion .slide.active .fan>*{animation:none}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+/* ---------- 2 · CROMO: marca, navegação, progresso, rodapé ---------- */
+.brand{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
+  font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(195,215,238,.72);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent5);display:block}
+.brand.on-light{color:#46526E}
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:62;display:flex;align-items:center;gap:13px;
+  padding:7px 15px;border-radius:999px;background:rgba(4,16,42,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(195,215,238,.2);color:#DCE7F7;font-family:var(--font-body);font-size:11px;letter-spacing:.06em;
+  opacity:.55;transition:opacity .3s ease}
+.nav:hover,.nav:focus-within{opacity:1}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(195,215,238,.34);
+  transition:transform .25s ease,background .25s ease}
+.dot:hover{background:var(--accent3);transform:scale(1.35)}
+.dot.sec{background:rgba(67,170,160,.6)}
+.dot.on{background:var(--accent5);transform:scale(1.5)}
+.nbtn{background:transparent;border:1px solid rgba(195,215,238,.45);color:inherit;border-radius:999px;min-width:30px;height:24px;
+  padding:0 8px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font-body);opacity:.85;transition:opacity .2s,background .2s}
+.nbtn:hover{opacity:1;background:rgba(195,215,238,.16)}
+.nbtn:focus-visible,.dot:focus-visible{outline:2px solid var(--hlink);outline-offset:2px}
+.count{font-variant-numeric:tabular-nums;min-width:58px;text-align:center;opacity:.85;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(195,215,238,.24)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:64;background:rgba(195,215,238,.16)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent6),var(--accent5));transition:width .5s cubic-bezier(.22,.7,.2,1)}
+.sfoot{position:absolute;left:92px;right:92px;top:852px;height:16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);z-index:6;pointer-events:none}
+.slide[data-theme="dark"]>.sfoot,.slide[data-theme="light"]>.sfoot{position:absolute;z-index:6}
+.slide[data-theme="dark"] .sfoot{color:rgba(195,215,238,.52)}
+.sfoot b{font-weight:600;color:var(--accent5)}
+
+/* ---------- 3 · TIPOGRAFIA ---------- */
+h1,h2,h3,h4{font-family:var(--font-heading);margin:0;font-weight:700;letter-spacing:-.012em}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent5);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent5);flex:0 0 auto}
+.slide[data-theme="dark"] .eyebrow{color:var(--accent6)}
+.slide[data-theme="dark"] .eyebrow::before{background:var(--accent6)}
+h2.sh{font-size:40px;line-height:1.12;margin:12px 0 0;max-width:1300px;text-wrap:balance}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:1240px;margin-top:10px}
+.slide[data-theme="dark"] .lede{color:rgba(219,231,247,.86)}
+.takeaway{margin-top:auto;padding-top:12px;border-top:1px solid var(--rule);font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.takeaway b{color:var(--accent5);font-weight:700}
+.slide[data-theme="dark"] .takeaway{border-top-color:rgba(195,215,238,.2);color:rgba(219,231,247,.84)}
+.num{font-family:var(--font-heading);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:.92}
+.unit{font-size:.52em;font-weight:700;letter-spacing:0;margin-left:2px;opacity:.72}
+.src{font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em}
+
+/* ---------- 4 · CAPA ---------- */
+.t-cover{justify-content:flex-end;padding:74px 92px 100px}
+.t-cover .kicker{font-size:12.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--accent6);margin-bottom:26px}
+.t-cover h1{text-wrap:balance;font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.028em;max-width:960px;position:relative;width:fit-content}
+.t-cover h1 .l2{display:block;color:var(--accent3)}
+.t-cover .csub{font-size:18px;line-height:1.55;color:rgba(219,231,247,.9);max-width:900px;margin-top:26px}
+.t-cover .cmeta{margin-top:32px;display:flex;align-items:stretch;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(195,215,238,.78)}
+.t-cover .cmeta>span{padding:0 22px;border-left:1px solid rgba(195,215,238,.3)}
+.t-cover .cmeta>span:first-child{padding-left:0;border-left:0}
+.rule{width:88px;height:4px;background:var(--accent5);margin:28px 0 0}
+.slide.active .rule{animation:ruleGrow .8s cubic-bezier(.22,.7,.2,1) .55s both}
+@keyframes ruleGrow{from{width:0}to{width:88px}}
+.t-cover.active h1::after{content:"";position:absolute;inset:-7% -5%;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.15) 48%,transparent 66%);background-size:260% 100%;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);
+  animation:sheen 7.5s ease-in-out 1.6s infinite backwards}
+@keyframes sheen{0%{background-position:150% 0}55%,100%{background-position:-90% 0}}
+.slide.t-cover>.cover-score{position:absolute;right:92px;top:120px;width:380px;z-index:3;display:flex;flex-direction:column;gap:12px}
+.cs-row{background:rgba(6,30,72,.66);border:1px solid rgba(195,215,238,.22);border-radius:12px;padding:16px 18px;backdrop-filter:blur(6px)}
+.cs-row .who{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(195,215,238,.8);font-weight:700}
+.cs-row .val{font-family:var(--font-heading);font-size:46px;font-weight:800;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
+.cs-row .bar{height:6px;border-radius:0 3px 3px 0;margin-top:10px;background:rgba(195,215,238,.12);overflow:hidden}
+.cs-row .bar i{display:block;height:100%;border-radius:0 3px 3px 0;transform-origin:0 50%}
+.slide.active .cs-row .bar i{animation:kvhIn 1.1s cubic-bezier(.22,.7,.2,1) .5s both}
+.cs-row .note{font-size:12px;color:rgba(219,231,247,.72);margin-top:8px}
+
+/* ---------- 5 · DIVISÓRIA ---------- */
+.t-div{justify-content:center;overflow:hidden}
+.t-div .dnum{font-family:var(--font-heading);font-size:132px;font-weight:800;line-height:.92;color:rgba(195,215,238,.16);letter-spacing:-.04em;margin-bottom:8px}
+.t-div.active .dnum{animation:dnumIn 1.1s cubic-bezier(.22,.7,.2,1) both}
+@keyframes dnumIn{from{opacity:0;transform:translateY(26px) scale(1.14);letter-spacing:.06em}to{opacity:1;transform:none;letter-spacing:-.04em}}
+.t-div .eyebrow{margin-bottom:16px}
+.t-div h1{font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.026em;max-width:980px}
+.t-div .dsub{margin-top:22px;font-size:18px;line-height:1.6;color:rgba(219,231,247,.86);max-width:860px}
+.t-div.active::after{content:"";position:absolute;top:-30%;bottom:-30%;width:36%;left:-40%;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(126,160,235,.16) 42%,rgba(191,210,242,.24) 52%,rgba(126,160,235,.14) 62%,transparent);
+  filter:blur(14px);animation:beam 3.4s cubic-bezier(.3,.6,.25,1) .25s both}
+@keyframes beam{from{left:-45%;opacity:0}25%{opacity:1}to{left:118%;opacity:0}}
+.dchips{margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;padding:7px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.34);color:rgba(219,231,247,.9)}
+.chip.on{background:rgba(67,170,160,.18);border-color:rgba(67,170,160,.6);color:#BFF3EC}
+.lchip{display:inline-flex;font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px;
+  background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+
+/* ---------- 6 · KPIs ---------- */
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kgrid.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 14px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:118px;position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent1)}
+html[data-theme-mode="dark"] .kcard::before{background:var(--c1)}
+.kcard.acc::before{background:var(--accent5)}
+.kcard.pos::before{background:var(--accent6)}
+.kcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.kcard .num{font-size:52px;color:var(--num1);white-space:nowrap}
+.kcard.acc .num{color:var(--accent5)}
+.kcard.pos .num{color:var(--pos)}
+.kcard .klab{font-size:15px;font-weight:600;line-height:1.3;margin-top:10px;color:var(--ink)}
+.kcard .ksub{font-size:13px;line-height:1.35;color:var(--ink-faint);margin-top:4px}
+.kgrid.tight .kcard{min-height:0;padding:12px 15px 11px}
+.kgrid.tight .kcard .num{font-size:38px}
+.kgrid.tight .kcard .klab{font-size:14px;margin-top:8px}
+
+/* ---------- 7 · CARDS / COLUNAS ---------- */
+.cards{display:grid;gap:14px;margin-top:20px}
+.cards.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 15px;display:flex;flex-direction:column;
+  transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.card .ctag{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.card .ctag em{font-style:normal;color:var(--ink-faint);letter-spacing:.08em}
+.card h3{font-size:20px;line-height:1.22;margin-bottom:9px}
+.card p,.card li{font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.card ul{margin:0;padding-left:19px}
+.card li+li{margin-top:6px}
+.card li b,.card p b{color:var(--ink);font-weight:600}
+.card .cnum{font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1;color:var(--num1);letter-spacing:-.02em;margin:2px 0 7px;font-variant-numeric:tabular-nums}
+.card.sig{background:linear-gradient(150deg,rgba(67,170,160,.14),rgba(67,170,160,.05));border-color:rgba(67,170,160,.42)}
+.card.sig .ctag{color:var(--pos)}
+.card.flag{background:linear-gradient(150deg,rgba(211,93,0,.11),rgba(211,93,0,.04));border-color:rgba(211,93,0,.4)}
+.card.dk{background:linear-gradient(150deg,#062A5C,#041B3F);border-color:rgba(195,215,238,.24);color:#fff}
+.card.dk h3{color:#fff}.card.dk p,.card.dk li{color:rgba(219,231,247,.86)}.card.dk li b,.card.dk p b{color:#fff}
+.card.dk .ctag{color:var(--accent6)}
+.quote{font-family:var(--font-heading);font-size:18px;line-height:1.38;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.quote::before{content:"“";color:var(--accent5);font-size:30px;line-height:0;vertical-align:-10px;margin-right:3px}
+.qby{font-size:13px;color:var(--ink-faint);margin-top:8px;letter-spacing:.04em}
+.card.dk .quote{color:#fff}.card.dk .qby{color:rgba(195,215,238,.7)}
+.lr{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;flex:1;min-height:0}
+.lr>*{min-height:0;display:flex;flex-direction:column}
+.lr.w58{grid-template-columns:1.32fr 1fr}
+.lr.n58{grid-template-columns:1fr 1.32fr}
+.lr.w64{grid-template-columns:1.6fr 1fr}
+.colh{font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.colh.a{color:var(--accent5);border-bottom-color:rgba(211,93,0,.42)}
+.colh.b{color:var(--pos);border-bottom-color:rgba(67,170,160,.45)}
+.steps{display:grid;gap:9px}
+.steps.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--mist);border:1px solid var(--rule);border-radius:9px;padding:15px 17px}
+.step .sn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent1);color:#fff;font-family:var(--font-heading);
+  font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+html[data-theme-mode="dark"] .step .sn{background:var(--c1)}
+.step.o .sn{background:var(--accent5)}
+.step.g .sn{background:var(--accent6)}
+.step h4{font-size:17px;line-height:1.25;margin-bottom:4px}
+.step p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13.5px;padding:6px 11px;border-radius:8px;background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+.pill b{color:var(--ink)}
+
+.fill{flex:1;min-height:0;grid-auto-rows:1fr}
+.big .card{padding:20px 22px 18px}
+.big .card p,.big .card li{font-size:16.5px;line-height:1.5}
+.big .card h3{font-size:22px}
+.big .card .ctag{font-size:12px}
+.big .quote{font-size:19px}
+.steps.fill .step{align-items:center}
+.big .step h4{font-size:18px}.big .step p{font-size:15.5px}
+.kgrid.tall .kcard{min-height:150px}
+.kgrid.tall .kcard .num{font-size:58px}
+/* tabela compacta */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:left;font-weight:700;padding:0 8px 7px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;color:var(--ink);font-family:var(--font-heading);font-size:13.5px;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl th.n{text-align:right}
+.tbl tr:hover td{background:rgba(42,84,181,.05)}
+
+/* ---------- 8 · GRÁFICOS ---------- */
+.chart{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px;position:relative;display:flex;flex-direction:column}
+.chart .hbars{flex:1;justify-content:space-evenly}
+.chart h4{font-size:17px;margin-bottom:4px}
+.chart .csub{font-size:13px;color:var(--ink-faint);margin-bottom:12px}
+.hbars{display:flex;flex-direction:column;gap:12px}
+.hb{display:grid;grid-template-columns:var(--lw,170px) 1fr 76px;align-items:center;gap:10px;cursor:default;border-radius:6px;padding:1px 0}
+.hb .hl{font-size:14.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:24px;position:relative}
+.hb .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.hb .ht i.c2{background:var(--c2)}.hb .ht i.c3{background:var(--c3)}.hb .ht i.c4{background:var(--c4)}.hb .ht i.cm{background:var(--c-mute)}
+.slide.active .hb .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+@keyframes kvhIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hb b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;font-weight:700}
+.hb:hover{background:rgba(42,84,181,.06)}
+.hb .ht .ref{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1.5px dashed var(--axis);left:var(--x)}
+.hbars.thin .hb .ht{height:18px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:10px;border-radius:2px;display:inline-block}
+.legend i.dash{height:0;border-top:1.5px dashed var(--axis);width:16px;border-radius:0}
+.dumb{display:flex;flex-direction:column;gap:16px;margin-top:6px}
+.db{display:grid;grid-template-columns:140px 1fr 100px;gap:10px;align-items:center;font-size:14.5px}
+.db .dt{position:relative;height:20px}
+.db .dt::before{content:"";position:absolute;left:0;right:0;top:9px;height:2px;background:var(--grid)}
+.db .seg{position:absolute;top:8px;height:4px;background:var(--c-mute);left:var(--a);width:calc(var(--b) - var(--a));border-radius:2px}
+.db .p{position:absolute;top:3px;width:14px;height:14px;border-radius:50%;margin-left:-7px;border:2px solid var(--paper);box-shadow:0 0 0 1px var(--rule)}
+.db .p.a{left:var(--a);background:var(--c-mute)}.db .p.b{left:var(--b);background:var(--c1)}
+.slide.active .db .p.b{animation:kvdIn .5s cubic-bezier(.3,1.55,.5,1) both;animation-delay:var(--d,.5s)}
+@keyframes kvdIn{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.db b{text-align:right;font-variant-numeric:tabular-nums}
+svg.line{display:block;width:100%;height:auto;overflow:visible}
+svg.line .gl{stroke:var(--grid);stroke-width:1}
+svg.line .ax{fill:var(--ink-faint);font-size:12.5px;font-family:var(--font-body)}
+svg.line .ln{fill:none;stroke:var(--c1);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.slide.active svg.line .ln{stroke-dasharray:900;animation:draw 1.4s cubic-bezier(.25,.75,.2,1) .3s both}
+@keyframes draw{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+svg.line .mk{fill:var(--c1);stroke:var(--mist);stroke-width:2}
+svg.line .mk.last{fill:var(--accent5)}
+svg.line .ref{stroke:var(--axis);stroke-width:1.5;stroke-dasharray:5 4}
+svg.line .lbl{fill:var(--ink);font-size:13px;font-weight:700;font-family:var(--font-body)}
+svg.line .hit{fill:transparent;cursor:crosshair}
+svg.line .xh{stroke:var(--axis);stroke-width:1;opacity:0}
+.stack{display:flex;height:30px;border-radius:6px;overflow:hidden;gap:2px;margin-top:6px}
+.stack i{display:block;height:100%;background:var(--c1)}
+.stack i.c2{background:var(--c2)}.stack i.c3{background:var(--c3)}
+#tip{position:fixed;z-index:300;pointer-events:none;background:#0A1C3F;color:#EAF1FB;font-size:12px;line-height:1.4;
+  padding:8px 11px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.3);border:1px solid rgba(195,215,238,.25);
+  opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;max-width:280px}
+#tip.on{opacity:1;transform:none}
+#tip b{color:#fff}
+
+/* ---------- 9 · VISÃO GERAL / DICA ---------- */
+#ov{position:fixed;inset:0;z-index:180;background:rgba(2,8,22,.95);display:none;padding:52px 46px 40px;overflow:auto}
+#ov.on{display:block}
+#ov h3{color:#fff;font-size:19px;margin-bottom:5px}
+#ov .ovh{color:rgba(195,215,238,.6);font-size:12px;letter-spacing:.1em;margin-bottom:22px}
+#ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:13px}
+.ovc{background:rgba(195,215,238,.07);border:1px solid rgba(195,215,238,.2);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.ovc:hover{background:rgba(67,170,160,.16);border-color:rgba(67,170,160,.5);transform:translateY(-2px)}
+.ovc.on{border-color:var(--accent5);background:rgba(211,93,0,.16)}
+.ovc .on2{font-family:var(--font-heading);font-size:11px;font-weight:700;color:var(--accent6);letter-spacing:.1em;display:block;margin-bottom:5px}
+.ovc .ot{color:#EAF1FB;font-size:12.5px;line-height:1.35;font-weight:500;display:block}
+#hint{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:70;background:rgba(4,16,42,.86);color:#DCE7F7;font-size:12px;
+  padding:8px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.2);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}
+#hint.on{opacity:1}
+
+/* ---------- 10 · LEITURA EM TELA ESTREITA (celular) E IMPRESSÃO ---------- */
+html.mobile,html.mobile body{height:auto;overflow:auto;background:var(--paper)}
+html.mobile #shell{position:static}
+html.mobile .deck{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none!important;box-shadow:none;background:var(--paper)}
+html.mobile #field,html.mobile .nav,html.mobile .brand,html.mobile .progress,html.mobile #hint{display:none}
+html.mobile .slide{position:relative;inset:auto;opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;padding:36px 16px 44px;min-height:0}
+html.mobile .slide[data-theme="dark"]{background:linear-gradient(160deg,#00122F,#062A5C)}
+html.mobile .slide .rv,html.mobile .slide .fan>*{animation:none!important}
+html.mobile .sfoot{position:static!important;margin-top:18px;letter-spacing:.08em;font-size:10px;flex-wrap:wrap;gap:6px}
+html.mobile h2.sh{font-size:26px}
+html.mobile .t-cover h1{font-size:38px}
+html.mobile .t-div h1{font-size:36px}
+html.mobile .t-div .dnum{font-size:72px}
+html.mobile .t-cover{padding-top:48px}
+html.mobile .slide.t-cover>.cover-score{position:static;width:100%;margin-top:26px}
+html.mobile .t-cover .cmeta{flex-wrap:wrap;gap:8px 0}
+html.mobile .kgrid,html.mobile .kgrid.k3,html.mobile .cards.c3,html.mobile .cards.c2,html.mobile .lr,html.mobile .lr.w58,html.mobile .lr.n58,html.mobile .lr.w64,html.mobile .vs,html.mobile .steps.s2{grid-template-columns:1fr}
+html.mobile .kgrid{grid-template-columns:1fr 1fr}
+html.mobile .kcard .num,html.mobile .kgrid.tall .kcard .num,html.mobile .kgrid.tight .kcard .num{font-size:26px;white-space:normal}
+html.mobile .kgrid.tall .kcard{min-height:0}
+html.mobile .fill{grid-auto-rows:auto;flex:none}
+html.mobile .big .card p,html.mobile .big .card li{font-size:15px}
+html.mobile .hb{--lw:108px!important;grid-template-columns:var(--lw) 1fr 52px}
+html.mobile .db{grid-template-columns:70px 1fr 74px}
+html.mobile .tbl{font-size:11.5px}
+html.mobile .tbl td:first-child{white-space:normal}
+html.mobile .takeaway{margin-top:18px}
+html.mobile .lr{margin-top:14px}
+
+/* ---------- 11 · HIERARQUIA DE DESTAQUES ---------- */
+.tierpill{position:absolute;top:64px;right:92px;z-index:6;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;border:1px solid;display:flex;align-items:center;gap:8px}
+.slide>.tierpill{position:absolute}
+.tierpill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:block}
+.tierpill.t1{color:var(--c4);border-color:rgba(142,91,199,.45);background:rgba(142,91,199,.08)}
+.tierpill.t2{color:var(--c1);border-color:rgba(42,84,181,.4);background:rgba(42,84,181,.07)}
+.tierpill.t3{color:var(--ink-faint);border-color:var(--rule);background:var(--mist)}
+.sfoot{text-transform:none;letter-spacing:.04em;font-size:12px}
+.sfoot b{color:var(--accent5);font-weight:700}
+.tiers{display:flex;flex-direction:column;gap:14px;margin-top:20px;flex:1;min-height:0}
+.trow{display:grid;grid-template-columns:200px repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.tlab{display:flex;flex-direction:column;justify-content:center;padding-left:16px;border-left:4px solid var(--rule);
+  font-family:var(--font-heading);font-size:17px;font-weight:700;line-height:1.2;color:var(--ink)}
+.tlab b{display:block;font-family:var(--font-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.trow.t1 .tlab{border-color:var(--c4)}.trow.t1 .tlab b{color:var(--c4)}
+.trow.t2 .tlab{border-color:var(--c1)}.trow.t2 .tlab b{color:var(--c1)}
+.trow.t3 .tlab{border-color:var(--c-mute)}.trow.t3 .tlab b{color:var(--ink-faint)}
+.trow .kcard{min-height:0;padding:14px 16px 12px;justify-content:center}
+.trow .kcard .num{font-size:38px}
+.trow .kcard .klab{font-size:14px;margin-top:8px}
+.trow .kcard .ksub{font-size:12px}
+.trow.t1 .kcard{background:linear-gradient(150deg,rgba(142,91,199,.10),rgba(142,91,199,.03));border-color:rgba(142,91,199,.3)}
+.kcard.t1::before{background:var(--c4)!important}
+.kcard.t1 .num{color:var(--c4)}
+.trow.t3 .kcard::before{background:var(--c-mute)}
+.trow.t3 .kcard .num{color:var(--ink-soft)}
+.slide.t-cover>.cover-score{width:440px;top:110px}
+.ord-h{font-size:11.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(195,215,238,.7);margin-bottom:2px}
+.cs-row{border-left-width:4px!important}
+.cs-row.t1{border-left-color:#9C6FD8!important}.cs-row.t2{border-left-color:#5C82DC!important}.cs-row.t3{border-left-color:rgba(195,215,238,.5)!important}
+.cs-row.t1 .who{color:#C9AEF2}.cs-row.t2 .who{color:#A9C2F2}
+.cs-row .ttl{font-family:var(--font-heading);font-size:18px;font-weight:700;line-height:1.28;margin-top:8px;color:#fff}
+.t-cover h1{max-width:930px}
+.gbars{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:space-evenly;margin-top:6px}
+.gb{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;align-items:center}
+.gb .gl{grid-row:span 2;font-size:14.5px;font-weight:600;color:var(--ink)}
+.gt{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center}
+.gt b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.gt .ht{height:22px;position:relative;display:block}
+.gt .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.gt .ht i.c2{background:var(--c2)}
+.slide.active .gt .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+.card.t1c .ctag{color:#C9AEF2}.card.t2c .ctag{color:#A9C2F2}.card.t3c .ctag{color:rgba(195,215,238,.8)}
+.card.t1c{border-left:4px solid #9C6FD8}.card.t2c{border-left:4px solid #5C82DC}.card.t3c{border-left:4px solid rgba(195,215,238,.45)}
+.dot.t1{box-shadow:0 0 0 1px #9C6FD8}.dot.t2{box-shadow:0 0 0 1px #5C82DC}
+body.idle .nav{opacity:0;pointer-events:none}
+html.mobile .trow{grid-template-columns:1fr 1fr}
+html.mobile .tlab{grid-column:1/-1}
+html.mobile .slide>.tierpill{position:static;align-self:flex-start;margin-bottom:12px}
+html.mobile .slide.t-cover>.cover-score{width:100%}
+html.mobile .gb{grid-template-columns:90px 1fr}
+
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  #shell{position:static}.deck{position:relative;left:0;top:0;transform:none!important;box-shadow:none}
+  .nav,.progress,#hint,#field{display:none}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;filter:none;page-break-after:always;height:900px}
+  .slide .rv,.slide .fan>*{animation:none!important}
+  @page{size:1600px 900px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+
+/* ---------- Speech AI: modos compactos aplicados quando o conteúdo não cabe no slide ---------- */
+.slide.dense .lede{font-size:16px;line-height:1.45}
+.slide.dense .card p,.slide.dense .card li{font-size:13.5px;line-height:1.42}
+.slide.dense .card{padding-top:12px;padding-bottom:12px}
+.slide.dense .kcard .num{font-size:44px}
+.slide.dense .kcard .klab{font-size:13.5px}
+.slide.dense .kcard .ksub{font-size:12px}
+.slide.dense .step p{font-size:13px}
+.slide.dense .step h4{font-size:15.5px}
+.slide.dense .takeaway{font-size:14.5px}
+.slide.dense .sh{font-size:36px}
+.slide.dense2 .lede{display:none}
+.slide.dense2 .card p,.slide.dense2 .card li{font-size:12.5px;line-height:1.38}
+.slide.dense2 .card .quote{font-size:13.5px}
+.slide.dense2 .kgrid{margin-top:12px}
+.slide.dense2 .cards{margin-top:12px}
+.slide.dense2 .sh{font-size:32px}
+.kcard .num .unit.word{font-size:.42em;margin-left:6px;letter-spacing:0}
+</style>
+</head>
+<body>
+<div class="progress"><i id="pbar"></i></div>
+<div id="shell">
+<main class="deck" id="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="brand" id="brand"><i></i>Resumo da edição · Valor Econômico</div>
+<section class="slide t-cover active" data-theme="dark" data-title="Capa">
+  <div class="cover-score rv" aria-label="Ordem de leitura">
+    <p class="ord-h">Ordem de leitura</p>
+    <div class="cs-row t1"><p class="who">01 · 1º destaque · Tecnologia e IA</p><p class="ttl">Startup apoiada pela Nvidia lança modelo de IA aberto para enfrentar rivais chineses</p><p class="note">B8 · Empresas › Tecnologia</p></div>
+    <div class="cs-row t2"><p class="who">02 · 2º destaque · Economia e mercados</p><p class="ttl">Euforia pós-1º turno: Ibovespa sobe 7,7% e dólar cai a R$ 5</p><p class="note">C1 · Finanças › Mercados</p></div>
+    <div class="cs-row t3"><p class="who">03 · 3º destaque · Política e demais temas</p><p class="ttl">Flávio articula apoios, Lula revê campanha e PL elege maior bancada da Câmara desde 1990</p><p class="note">A8 · Política › Eleições</p></div>
+  </div>
+  <p class="kicker rv">Resumo da edição · Valor Econômico</p>
+  <h1 class="rv">Nvidia banca IA aberta contra a China<span class="l2">e bolsa sobe 7,7% com Flávio na frente</span></h1>
+  <p class="csub rv">Startup apoiada pela Nvidia lança modelo de IA aberto para enfrentar rivais chineses. Após o 1º turno, Ibovespa sobe 7,7% e dólar cai a R$ 5. Flávio articula apoios, Lula revê a campanha e o PL elege a maior bancada da Câmara desde 1990.</p>
+  <div class="cmeta rv"><span>6 de outubro de 2026</span><span>Ano 27 · nº 6604</span><span>Terça-feira</span><span>Processado em 06/10/2026</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Seção: <b>Capa</b> · Valor Econômico</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-title="A edição em uma página">
+  <p class="eyebrow rv">Em uma página</p>
+  <h2 class="sh rv">Doze números para entender a edição</h2>
+  <div class="tiers fan">
+    <div class="trow t1"><p class="tlab"><b>1º destaque</b>Tecnologia e IA</p>
+      <div class="kcard acc t1"><div class="num">US$ 22,6 bi</div><p class="klab">Valor da PTC na compra pela Schneider Electric</p><p class="ksub">Prêmio de 42% · B1</p></div>
+      <div class="kcard t1"><div class="num">US$ 25 bi</div><p class="klab">Valor de mercado da Reflection AI</p><p class="ksub">Nvidia aportou US$ 800 mi · B8</p></div>
+      <div class="kcard pos t1"><div class="num">56<span class="unit">%</span></div><p class="klab">Fatia dos tokens processados por modelos abertos</p><p class="ksub">Agosto; eram 7% em dezembro · B8</p></div>
+      <div class="kcard t1"><div class="num">US$ 1 tri</div><p class="klab">Gastos previstos com dispositivos vestíveis de 2026 a 2032</p><p class="ksub">Counterpoint Research · B8</p></div>
+    </div>
+    <div class="trow t2"><p class="tlab"><b>2º destaque</b>Economia e mercados</p>
+      <div class="kcard acc"><div class="num">7,7<span class="unit">%</span></div><p class="klab">Alta do Ibovespa, maior desde março de 2020</p><p class="ksub">Recorde de 206.912 pontos · C2</p></div>
+      <div class="kcard pos"><div class="num">R$ 5,001</div><p class="klab">Dólar após queda de 4,12% no dia</p><p class="ksub">Maior baixa desde junho de 2018 · C3</p></div>
+      <div class="kcard acc"><div class="num">4.647</div><p class="klab">Demissões na Casas Bahia em agosto, segundo perícia</p><p class="ksub">Estoque 40% menor · B3</p></div>
+      <div class="kcard pos"><div class="num">R$ 7,65 bi</div><p class="klab">Investimento previsto pela indústria de óleos vegetais</p><p class="ksub">Capacidade +13,1% · B10</p></div>
+    </div>
+    <div class="trow t3"><p class="tlab"><b>3º destaque</b>Política e demais temas</p>
+      <div class="kcard acc"><div class="num">47,03<span class="unit">%</span></div><p class="klab">Votos válidos de Flávio Bolsonaro no 1º turno</p><p class="ksub">Lula: 45,16% · A11</p></div>
+      <div class="kcard"><div class="num">121</div><p class="klab">Deputados eleitos pelo PL</p><p class="ksub">Maior bancada desde 1990 · A14</p></div>
+      <div class="kcard acc"><div class="num">R$ 2,24 bi</div><p class="klab">Dívidas judiciais recuperadas via protesto em cartório</p><p class="ksub">2020 a agosto de 2026 · E1</p></div>
+      <div class="kcard"><div class="num">32<span class="unit">%</span></div><p class="klab">Aprovação de Trump, menor da carreira</p><p class="ksub">Reuters/Ipsos · A19</p></div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Seções: <b>A19, A21, B1…</b> · Tecnologia e IA · <b>A2, A4, A20…</b> · Economia e mercados · <b>A1, A8, A10…</b> · Política e demais temas</span><span class="pg"></span></div>
+</section><section class="slide t-div" data-theme="dark" data-divider="1" data-tier="1" data-title="01 · Tecnologia e IA (1º destaque)">
+  <p class="dnum rv">01</p>
+  <p class="eyebrow rv">1º destaque · A19, A21, B1, B6, B8, B9, C6</p>
+  <h1 class="rv">Tecnologia e inteligência artificial</h1>
+  <p class="dsub rv">Com apoio da Nvidia, a Reflection AI lança um modelo aberto para disputar com a China. A Noruega propõe vetar óculos de IA, e um articulista alerta para os riscos dos agentes autônomos. A IA aplicada movimenta fusões, saúde e agro, e a optogenética leva o Nobel.</p>
+  <div class="dchips rv"><span class="chip on">Reflection AI e Nvidia</span><span class="chip">Regulação e riscos</span><span class="chip">IA aplicada e Nobel</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>1º destaque · Tecnologia e IA</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="1" data-title="Reflection AI e o código aberto">
+  <p class="eyebrow rv">Empresas › Tecnologia · B8</p>
+  <h2 class="sh rv">Startup apoiada pela Nvidia lança modelo aberto para enfrentar a dominância chinesa</h2>
+  <p class="lede rv">A Reflection AI apresentou o Beam, seu primeiro modelo de código aberto. A empresa diz que ele está no nível do GLM-5.2, da chinesa Z.ai, e custa uma fração do que cobram os rivais americanos.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">US$ 25 bi</div><p class="klab">Valor de mercado da Reflection antes do primeiro modelo</p><p class="ksub">Fundada em 2024 · B8</p></div>
+  <div class="kcard"><div class="num">US$ 4 bi</div><p class="klab">Capital captado desde o lançamento</p><p class="ksub">Sequoia, 1789 Capital e outros · B8</p></div>
+  <div class="kcard"><div class="num">US$ 800 mi</div><p class="klab">Investimento da Nvidia na Reflection</p><p class="ksub">Inclui acesso a chips · B8</p></div>
+  <div class="kcard pos"><div class="num">56<span class="unit">%</span></div><p class="klab">Fatia dos tokens processados por modelos abertos no AI Gateway da Vercel</p><p class="ksub">Agosto; eram 7% em dezembro · B8</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Geopolítica da IA <em>B8</em></p><p>A Reflection tem parcerias com o Pentágono e o Departamento de Energia, e acordos para criar modelos para aliados como a Coreia do Sul. Os detalhes técnicos de desempenho do Beam não foram divulgados.</p>
+</div>
+  <div class="card"><p class="ctag">Scott Bessent · Tesouro dos EUA <em>B8</em></p><p>Bessent pediu ao Congresso mais modelos abertos americanos. Laboratórios chineses lideram esse segmento. Huang, CEO da Nvidia, defende o uso desses modelos por empresas dos EUA.</p><p class="quote" style="margin-top:7px">Não podemos permitir que esses grandes laboratórios capturem o processo regulatório, pois isso impedirá a inovação</p><p class="qby">Scott Bessent</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> O avanço dos modelos abertos ameaça o modelo de cobrança da OpenAI e da Anthropic. Se o Beam entregar o que promete, a guerra de preços na IA tende a ficar mais forte.</p>
+  <div class="sfoot"><span>Seção: <b>B8</b> · Empresas › Tecnologia</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="1" data-title="Regulação e riscos da IA">
+  <p class="eyebrow rv">Tecnologia › Regulação · B8, A21</p>
+  <h2 class="sh rv">Noruega propõe vetar óculos de IA em espaços públicos, e articulista alerta para o ‘quarto escuro’ da IA</h2>
+  <p class="lede rv">A Noruega será o primeiro grande país a proibir temporariamente os óculos com IA em parques, praias e escolas. Na Opinião, Edvaldo Santana questiona a ideia de que o “humano no controle” basta para conter agentes autônomos.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">US$ 1 tri</div><p class="klab">Gastos previstos dos consumidores com dispositivos vestíveis</p><p class="ksub">De 2026 a 2032, segundo a Counterpoint · B8</p></div>
+  <div class="kcard"><div class="num">53</div><p class="klab">Imagens de usuários do ChatGPT publicadas por agentes de IA invasores</p><p class="ksub">Segundo o artigo de Santana · A21</p></div>
+  <div class="kcard"><div class="num">-5<span class="unit">pp</span></div><p class="klab">Queda na chance de primeiro emprego de formados em áreas expostas à IA</p><p class="ksub">Estimativa do Censo dos EUA · A21</p></div>
+  <div class="kcard"><div class="num">13<span class="unit">%</span></div><p class="klab">Diferença salarial para baixo desses formados</p><p class="ksub">Segundo a coluna de Rana Foroohar (FT) · A21</p></div>
+</div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Noruega · óculos inteligentes <em>B8</em></p><p>O governo vai mandar ao Parlamento um projeto com proibição temporária e criar um grupo de especialistas para propor leis permanentes. Escolas de Oslo e a Equinor já baniram esses óculos.</p><p class="quote" style="margin-top:7px">Estou preocupado com a introdução de uma poderosa nova tecnologia</p><p class="qby">Torgeir Micaelsen, ministro da Digitalização</p>
+</div>
+  <div class="card"><p class="ctag">Edvaldo Santana · Opinião <em>A21</em></p><p>Para o articulista, o encontro entre Trump e Xi, em 24 e 25 de setembro, só abriu um diálogo. Ele vê a plataforma de segurança da Nvidia, lançada em 28 de setembro, como sólida, mas incapaz de captar a intenção dos agentes.</p><p class="quote" style="margin-top:7px">O humano no controle era a promessa. O humano supervisor é a realidade.</p><p class="qby">Edvaldo Santana</p>
+</div>
+  <div class="card"><p class="ctag">Rana Foroohar · FT <em>A21</em></p><p>A colunista afirma que a IA favorece trabalhadores mais velhos e experientes. Segundo ela, isso piora o mercado em duas camadas: nos EUA, o desemprego é de 7,1% entre 20 e 24 anos, contra 3,6% entre 25 e 54.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> A regulação de IA começa a chegar ao consumidor, com os óculos e as réplicas digitais. A segurança dos agentes autônomos, porém, ainda depende da autorregulação das grandes empresas.</p>
+  <div class="sfoot"><span>Seções: <b>B8</b> · Empresas › Tecnologia · <b>A21</b> · Opinião</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="1" data-title="IA aplicada e ciência">
+  <p class="eyebrow rv">IA aplicada · B1, B6, B8, B9, A19, C6</p>
+  <h2 class="sh rv">Da indústria ao câncer: IA e biotecnologia movimentam negócios, e a optogenética leva o Nobel</h2>
+  <div class="cards c3 big fill fan" style="margin-top:10px">
+  <div class="card"><p class="ctag">Schneider compra PTC <em>B1</em></p><p>A Schneider Electric vai pagar US$ 205 por ação, prêmio de 42%, numa operação que avalia a PTC em US$ 22,6 bilhões. O objetivo é preparar o portfólio para a IA industrial. Com a compra, quase um quarto da receita do grupo virá de software.</p>
+</div>
+  <div class="card"><p class="ctag">Banlek · fotos com IA <em>B8</em></p><p>A plataforma já vendeu R$ 700 milhões e projeta chegar a R$ 1 bilhão no início de 2027. Usa reconhecimento facial e reúne 250 mil fotógrafos. A IA faz 90% dos atendimentos e 80% da análise de risco.</p>
+</div>
+  <div class="card"><p class="ctag">Teste de câncer · Fleury e Einstein <em>B6</em></p><p>A Genesis Genomics traz ao Brasil o Galleri, da Grail, que rastreia cerca de 50 tipos de câncer pelo DNA. O exame custa R$ 6.990. Nos EUA, foram 117 mil testes no 1º semestre, alta de 42%.</p>
+</div>
+  <div class="card"><p class="ctag">Agro 4.0 <em>B9</em></p><p>Telemetria e IA criam novas funções no campo, como analista de dados e piloto de drone. Em setembro, a John Deere lançou uma IA própria. Em 2025, o agro empregava 28,4 milhões de pessoas, alta de 2,2%.</p>
+</div>
+  <div class="card"><p class="ctag">Nobel de Medicina <em>A19</em></p><p>Karl Deisseroth, Peter Hegemann e Georg Nagel ganharam o Nobel pela optogenética, técnica que ativa ou desativa neurônios com luz. Os três dividem 12 milhões de coroas suecas, cerca de US$ 1,2 milhão.</p><p class="quote" style="margin-top:7px">Esse método é hoje utilizado em laboratórios de todo o mundo para desvendar os mistérios do cérebro</p><p class="qby">Thomas Perlmann</p>
+</div>
+  <div class="card"><p class="ctag">IPOs nos EUA <em>C6</em></p><p>Elo e Wellhub (antigo Gympass) já enviaram documentos de forma confidencial à SEC, a comissão de valores dos EUA, para uma possível listagem no mercado americano.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> A IA aplicada já aparece em grandes fusões, em plataformas brasileiras e no diagnóstico médico. O valor de negócios como a PTC mostra o preço que o mercado dá ao software industrial.</p>
+  <div class="sfoot"><span>Seções: <b>B1</b> · Empresas · <b>B6</b> · Empresas › Saúde · <b>B8</b> · Empresas › Tecnologia</span><span class="pg"></span></div>
+</section><section class="slide t-div" data-theme="dark" data-divider="1" data-tier="2" data-title="02 · Economia e mercados (2º destaque)">
+  <p class="dnum rv">02</p>
+  <p class="eyebrow rv">2º destaque · A2, A4, A20, B2, C1, C2, C3, B3, B6, B10</p>
+  <h1 class="rv">Economia e mercados</h1>
+  <p class="dsub rv">O 1º turno provocou rali histórico na bolsa, no câmbio e nos juros, enquanto a comida cara segue pesando na percepção da economia. Casas Bahia encolhe antes da recuperação judicial, petróleo tem leilão recorde e diesel caro, e agro e montadoras crescem.</p>
+  <div class="dchips rv"><span class="chip on">Rali pós-1º turno</span><span class="chip">Juros e Selic</span><span class="chip">Inflação de alimentos</span><span class="chip">Casas Bahia</span><span class="chip">Petróleo e diesel</span><span class="chip">Soja e veículos</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>2º destaque · Economia e mercados</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Rali histórico pós-1º turno">
+  <p class="eyebrow rv">Finanças › Mercados · C1–C3</p>
+  <h2 class="sh rv">Bolsa sobe 7,7% e dólar cai 4,12% após 1º turno: maior alta do Ibovespa desde 2020</h2>
+  <p class="lede rv">Com Flávio Bolsonaro à frente e Congresso mais à direita, a Faria Lima tratou a eleição como liquidada, mesmo sem um plano econômico detalhado do candidato do PL.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">206.912<span class="unit">pts</span></div><p class="klab">Ibovespa no fechamento, recorde nominal</p><p class="ksub">Alta de 7,70% no dia · C2</p></div>
+  <div class="kcard pos"><div class="num">R$ 5,001</div><p class="klab">Dólar à vista após queda de 4,12%</p><p class="ksub">Maior baixa diária desde jun/2018 · C3</p></div>
+  <div class="kcard pos"><div class="num">R$ 400 bi</div><p class="klab">Ganho de valor de mercado das empresas do Ibovespa</p><p class="ksub">Total chega a R$ 5,2 trilhões · C2</p></div>
+  <div class="kcard"><div class="num">R$ 79,3 bi</div><p class="klab">Volume negociado no Ibovespa</p><p class="ksub">Maior da série desde 2000 · C2</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Bancos revisam recomendações <em>C1–C2</em></p><p>J.P. Morgan elevou ações brasileiras para &#39;overweight&#39; e vê alta de 12% a 20% do MSCI Brazil; Goldman Sachs vê dólar entre R$ 4,50 e R$ 4,80; Citi e Wells Fargo embolsaram parte dos lucros.</p><p class="quote" style="margin-top:7px">O Brasil está tão descontado há tanto tempo que não me surpreenderia se víssemos movimentos adicionais como o que vimos hoje</p><p class="qby">Marcelo Mello, SulAmérica Investimentos</p>
+</div>
+  <div class="card"><p class="ctag">Contraponto · Capital Economics <em>B2</em></p><p>William Jackson vê queda do dólar como temporária e projeta R$ 5,40 até o fim de 2027, pois o câmbio é movido mais por carry trade e commodities do que pela política.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> O rali precificou mais a troca de governo que um programa: Flávio ainda não detalhou plano fiscal nem equipe. Com dólar abaixo de R$ 5 e bolsa acima de 200 mil pontos, boa parte do cenário otimista já está nos preços.</p>
+  <div class="sfoot"><span>Seções: <b>C1–C3</b> · Finanças › Mercados · <b>B2</b> · Empresas › Pipeline</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Juros futuros desabam">
+  <p class="eyebrow rv">Finanças › Juros · C1, A20</p>
+  <h2 class="sh rv">Juros futuros caem até 1,3 ponto e B3 amplia duas vezes o limite de oscilação do DI</h2>
+  <p class="lede rv">Taxas das NTN-Bs ficam abaixo de 7% e o mercado passa a apostar em cortes mais rápidos da Selic, hoje em 13,75%.</p>
+  <div class="lr rv">
+    <div><div class="chart">
+  <h4>Taxas do DI antes e depois do 1º turno</h4>
+  <p class="csub">% ao ano, fechamento de 2/out e 5/out · B3, Valor PRO</p>
+  <div class="hbars" style="--lw:162px">
+    <div class="hb" data-tip="&lt;b&gt;DI jan/2028 antes&lt;/b&gt;&lt;br&gt;13,51%"><span class="hl">DI jan/2028 antes</span><span class="ht"><i class="cm" style="--w:96.6%;--d:0.2s"></i></span><b>13,51%</b></div>
+    <div class="hb" data-tip="&lt;b&gt;DI jan/2028 depois&lt;/b&gt;&lt;br&gt;12,665%"><span class="hl">DI jan/2028 depois</span><span class="ht"><i style="--w:90.5%;--d:0.3s"></i></span><b>12,665%</b></div>
+    <div class="hb" data-tip="&lt;b&gt;DI jan/2031 antes&lt;/b&gt;&lt;br&gt;13,99%"><span class="hl">DI jan/2031 antes</span><span class="ht"><i class="cm" style="--w:100.0%;--d:0.4s"></i></span><b>13,99%</b></div>
+    <div class="hb" data-tip="&lt;b&gt;DI jan/2031 depois&lt;/b&gt;&lt;br&gt;12,655%"><span class="hl">DI jan/2031 depois</span><span class="ht"><i style="--w:90.5%;--d:0.5s"></i></span><b>12,655%</b></div>
+  </div>
+  <p class="src">A B3 não ampliava o limite do DI duas vezes no mesmo dia desde 13 de março de 2020.</p>
+</div></div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+  <div class="kcard acc"><div class="num">45<span class="unit">%</span></div><p class="klab">Chance de corte de 0,5 pp da Selic em dezembro, nas opções digitais</p><p class="ksub">Era de 18% antes da eleição · A20</p></div>
+  <div class="kcard pos"><div class="num">6,72<span class="unit">%</span></div><p class="klab">Juro real da NTN-B 2050, ante 7,15%</p><p class="ksub">NTN-B 2028 caiu a 6,98% · C1</p></div>
+</div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+  <div class="card"><p class="ctag">Solange Srour · UBS GWM <em>C1</em></p><p>Para a economista, um Congresso mais à direita não garante pautas fiscais; o risco é a agenda econômica disputar espaço com a crise institucional e o STF.</p><p class="quote" style="margin-top:7px">Reforma precisa ser liderada pelo Executivo</p><p class="qby">Solange Srour</p>
+</div>
+  <div class="card"><p class="ctag">Editorial do Valor <em>A20</em></p><p>O jornal avalia que o otimismo &#39;por enquanto se apoia apenas em promessas&#39; e vê componentes especulativos nas apostas na Selic, já que a inflação de curto prazo subiu.</p>
+</div>
+</div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> A queda dos juros longos depende de um ajuste fiscal crível que ainda não foi apresentado. O Focus voltou a projetar IPCA acima de 5%, o que limita a margem do Banco Central para acelerar os cortes.</p>
+  <div class="sfoot"><span>Seções: <b>C1</b> · Finanças › Mercados · <b>A20</b> · Opinião › Editorial</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Comida pesa mais que o IPCA">
+  <p class="eyebrow rv">Brasil › Conjuntura · A2, A4</p>
+  <h2 class="sh rv">Alimentos sobem 60,8% desde 2020, contra 42,7% do IPCA, e explicam o mal-estar com a economia</h2>
+  <p class="lede rv">A renda real subiu, mas deflacionada pelo preço da comida teria caído 4,9%, segundo o FGV Ibre.</p>
+  <div class="lr rv">
+    <div><div class="chart">
+  <h4>Preços e renda desde a pandemia</h4>
+  <p class="csub">Variação acumulada em % · abr/2020 a ago/2026 · 4intelligence, IBGE</p>
+  <div class="hbars" style="--lw:216px">
+    <div class="hb" data-tip="&lt;b&gt;Alimentação no domicílio&lt;/b&gt;&lt;br&gt;60,8%"><span class="hl">Alimentação no domicílio</span><span class="ht"><i style="--w:100.0%;--d:0.2s"></i></span><b>60,8%</b></div>
+    <div class="hb" data-tip="&lt;b&gt;IPCA&lt;/b&gt;&lt;br&gt;42,7%"><span class="hl">IPCA</span><span class="ht"><i class="cm" style="--w:70.2%;--d:0.3s"></i></span><b>42,7%</b></div>
+    <div class="hb" data-tip="&lt;b&gt;Renda real do trabalho&lt;/b&gt;&lt;br&gt;9,5%"><span class="hl">Renda real do trabalho</span><span class="ht"><i class="cm" style="--w:15.6%;--d:0.4s"></i></span><b>9,5%</b></div>
+  </div>
+  <p class="src">Renda medida de abr/2020 a jul/2026.</p>
+</div></div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+  <div class="kcard acc"><div class="num">81,9<span class="unit">%</span></div><p class="klab">Trabalhadores que citam comida como maior peso no orçamento</p><p class="ksub">Recorde da série FGV; 87% na baixa renda · A2</p></div>
+  <div class="kcard"><div class="num">5,01<span class="unit">%</span></div><p class="klab">IPCA projetado para 2026 no Focus</p><p class="ksub">Alta de 0,02 pp na semana · A2</p></div>
+</div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+  <div class="card"><p class="ctag">Fabio Romão · 4intelligence <em>A4</em></p><p>A maior parte da alta ocorreu até meados de 2022; de 2023 a agosto de 2026 alimentos subiram 12,9%, abaixo dos 17,9% do IPCA.</p><p class="quote" style="margin-top:7px">Comer ficou mais caro e os alívios de curto prazo pouco têm ajudado</p><p class="qby">Fabio Romão</p>
+</div>
+  <div class="card"><p class="ctag">Pressão à frente <em>A2</em></p><p>A Tendências projeta alta de 6,7% para Alimentação e Bebidas no IPCA de 2026, ante 2,95% em 2025, com El Niño e diesel mais caro.</p>
+</div>
+</div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> O descompasso entre indicadores recordes e percepção ruim tem base nos números: a comida subiu mais que a renda. Com El Niño e diesel em alta, a pressão sobre alimentos tende a voltar no quarto trimestre.</p>
+  <div class="sfoot"><span>Seções: <b>A4</b> · Brasil › Conjuntura · <b>A2</b> · Brasil › Conjuntura</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Casas Bahia: laudo da perícia">
+  <p class="eyebrow rv">Empresas › Varejo · B3</p>
+  <h2 class="sh rv">Perícia mostra Casas Bahia com estoque 40% menor e 4.647 demissões em agosto</h2>
+  <p class="lede rv">Laudo pedido pela Justiça de São Paulo antecede decisão sobre o processamento da recuperação judicial da varejista.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">-40,5<span class="unit">%</span></div><p class="klab">Queda do estoque fiduciário nos CDs entre abril e agosto</p><p class="ksub">De R$ 3,18 bi para R$ 1,89 bi · B3</p></div>
+  <div class="kcard acc"><div class="num">4.647</div><p class="klab">Vínculos de trabalho cortados entre 3 e 28 de agosto</p><p class="ksub">De 29.737 para 25.090 (-15,6%) · B3</p></div>
+  <div class="kcard"><div class="num">R$ 17,32 bi</div><p class="klab">Passivo informado, em 28,8 mil registros de credores</p><p class="ksub">10 maiores concentram 50,57% · B3</p></div>
+  <div class="kcard"><div class="num">735</div><p class="klab">Lojas em atividade, de um total de 744</p><p class="ksub">25 de 29 CDs operam normalmente · B3</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Riscos apontados <em>B3</em></p><p>Caixa operacional ajustado negativo em R$ 298 milhões no 1º semestre; avisos de corte de energia em 22 unidades; BTG notificou inadimplemento de R$ 76,4 milhões.</p>
+</div>
+  <div class="card"><p class="ctag">Próximos passos <em>B3</em></p><p>Rede busca financiamento DIP de até R$ 1 bilhão, mas bancos cogitam menos da metade. Depósitos judiciais e recursais somam R$ 756 milhões e podem ser liberados.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> Sem desabastecimento visível, mas com estoque e equipe encolhendo, a Casas Bahia perde poder de competição num varejo já freado por juros altos. O deferimento da RJ e o tamanho do DIP definem o fôlego.</p>
+  <div class="sfoot"><span>Seção: <b>B3</b> · Empresas › Varejo</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Petróleo: leilão e diesel">
+  <p class="eyebrow rv">Empresas › Petróleo e energia · B6, A4</p>
+  <h2 class="sh rv">ANP leiloa mais de 300 blocos amanhã, enquanto diesel sobe 7% nos postos</h2>
+  <p class="lede rv">Governo espera arrecadar ao menos R$ 2,18 bilhões; escassez global pressiona o combustível importado.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">313</div><p class="klab">Blocos em oferta na concessão, mais 13 áreas no pré-sal</p><p class="ksub">Maior oferta da história da ANP · B6</p></div>
+  <div class="kcard"><div class="num">R$ 2,18 bi</div><p class="klab">Arrecadação mínima esperada em bônus de assinatura</p><p class="ksub">Pagamento até 30/dez · B6</p></div>
+  <div class="kcard acc"><div class="num">R$ 7,35</div><p class="klab">Preço do diesel S-10 por litro nos postos</p><p class="ksub">+7% (R$ 0,47) em um mês · A4</p></div>
+  <div class="kcard"><div class="num">R$ 15,4 bi</div><p class="klab">Gasto do governo com subsídios a combustíveis líquidos</p><p class="ksub">Segundo a ANP · A4</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Leilão da ANP <em>B6</em></p><p>Petrobras, Prio, TotalEnergies e Shell estão habilitadas; 46 empresas aptas na concessão e 19 na partilha. Foz do Amazonas e Pelotas ficam sem blocos marinhos desta vez.</p>
+</div>
+  <div class="card"><p class="ctag">Sergio Araújo · Abicom <em>A4</em></p><p>Refinarias dos EUA respondem por 80% das importações de diesel em outubro; o Brasil importa cerca de 30% do consumo.</p><p class="quote" style="margin-top:7px">Se os EUA realmente proibirem a exportação, novembro vai ser preocupante.</p><p class="qby">Sergio Araújo, presidente da Abicom</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> O leilão testa o apetite das petroleiras por reposição de reservas; o diesel mostra a dependência de importação dos EUA e o custo fiscal crescente dos subsídios.</p>
+  <div class="sfoot"><span>Seções: <b>B6</b> · Empresas › Petróleo · <b>A4</b> · Brasil › Conjuntura</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="2" data-title="Soja e veículos em alta">
+  <p class="eyebrow rv">Agronegócios e Indústria · B10, B6</p>
+  <h2 class="sh rv">Indústria de óleos investe R$ 7,65 bi e venda de veículos tem melhor setembro da história</h2>
+  <p class="lede rv">Biodiesel e farelo puxam a expansão das esmagadoras; crédito subsidiado e chinesas impulsionam montadoras.</p>
+  <div class="kgrid fan">
+  <div class="kcard pos"><div class="num">R$ 7,65 bi</div><p class="klab">Investimentos previstos em processamento nos próximos 12 meses</p><p class="ksub">Ante R$ 5,76 bi em 2025 · B10</p></div>
+  <div class="kcard pos"><div class="num">261,9<span class="unit word">mil t/dia</span></div><p class="klab">Capacidade de processamento de oleaginosas</p><p class="ksub">Alta de 13,1% sobre 231,6 mil · B10</p></div>
+  <div class="kcard pos"><div class="num">281,3<span class="unit">mil</span></div><p class="klab">Veículos licenciados em setembro</p><p class="ksub">+15,65% na comparação anual · B6</p></div>
+  <div class="kcard"><div class="num">2,25<span class="unit">mi</span></div><p class="klab">Veículos vendidos de janeiro a setembro</p><p class="ksub">2025 inteiro: 2,68 milhões · B6</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Daniel Amaral · Abiove <em>B10</em></p><p>Plantas ativas passaram de 131 para 148; investimentos podem gerar 13,4 mil empregos. Setor espera B17 em março de 2027.</p><p class="quote" style="margin-top:7px">Os biocombustíveis ganharam um papel importante na questão energética</p><p class="qby">Daniel Furlan Amaral, Abiove</p>
+</div>
+  <div class="card"><p class="ctag">Montadoras · Fenabrave <em>B6</em></p><p>Carros subiram 21,2% no mês; elétricos +176,93% e híbridos +108,4%. Hyundai (7,72%) passou a BYD (5,86%) no 3º lugar entre leves.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> Biodiesel sustenta investimento no agro industrial, e as vendas de carros resistem ao crédito caro, ajudadas por subsídios e por compras antecipadas de locadoras antes do Imposto Seletivo.</p>
+  <div class="sfoot"><span>Seções: <b>B10</b> · Agronegócios · <b>B6</b> · Empresas › Montadoras</span><span class="pg"></span></div>
+</section><section class="slide t-div" data-theme="dark" data-divider="1" data-tier="3" data-title="03 · Política e demais temas (3º destaque)">
+  <p class="dnum rv">03</p>
+  <p class="eyebrow rv">3º destaque · A1, A8, A10, A11, A12, A14, A15, A22, A2, A6, A19, A20, C6, E1</p>
+  <h1 class="rv">Política e demais temas</h1>
+  <p class="dsub rv">Flávio lidera e soma aliados, PL domina Congresso e Rio pode decidir governo sem 2º turno. Espanha vai às urnas, optogenética leva o Nobel, editorial cobra ajuste fiscal e protestos em cartório ganham força.</p>
+  <div class="dchips rv"><span class="chip on">Estratégias do 2º turno</span><span class="chip">PL domina o Congresso</span><span class="chip">Rio e mapa do voto</span><span class="chip">Espanha e Nobel</span><span class="chip">Editorial e opinião</span><span class="chip">Justiça, educação, cidade</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>3º destaque · Política e demais temas</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="Estratégias do 2º turno">
+  <p class="eyebrow rv">Política › Eleições · A1, A8, A11</p>
+  <h2 class="sh rv">Flávio larga na frente nas alianças; Lula faz “freio de arrumação” na campanha</h2>
+  <p class="lede rv">Senador do PL soma apoios de Tarcísio, Zema e Temer e busca Caiado e União-PP; petista mira SP, MG e Nordeste e critica a própria comunicação.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">47,03<span class="unit">%</span></div><p class="klab">Votos válidos de Flávio Bolsonaro no 1º turno</p><p class="ksub">Lula teve 45,16% · A11</p></div>
+  <div class="kcard"><div class="num">1,7 mi</div><p class="klab">Votos que Lula perdeu em SP ante 2022</p><p class="ksub">Em MG, perdeu 600 mil · A8</p></div>
+  <div class="kcard"><div class="num">19</div><p class="klab">Senadores eleitos pelo PL</p><p class="ksub">Mais 11 governadores aliados · A8</p></div>
+  <div class="kcard pos"><div class="num">25/out</div><p class="klab">Data do segundo turno</p><p class="ksub">Campanha do PL começa dia 8 · A6, A8</p></div>
+</div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Flávio Bolsonaro · PL <em>A8</em></p><p>Reuniu-se com Tarcísio, que prometeu “empenho total”; encontra Caiado hoje em Goiânia e União-PP amanhã. Republicanos tende à neutralidade por causa de Hugo Motta. Vai aceitar debate com Lula.</p><p class="quote" style="margin-top:7px">Quer, portanto, reconexão. E reconexão é Flávio.</p><p class="qby">Michel Temer</p>
+</div>
+  <div class="card"><p class="ctag">Lula · PT <em>A8</em></p><p>Admite precisar “fazer mais rádio, mais selfie” e ir aos debates. Auxiliares criticam Sidônio Palmeira e Raul Rabelo. Governo estuda novas “bondades”, sem decisão; Alckmin terá papel maior em SP.</p><p class="quote" style="margin-top:7px">carregando nas costas a promiscuidade que ficou estabelecida</p><p class="qby">Lula, sobre o STF</p>
+</div>
+  <div class="card"><p class="ctag">Trump <em>A11</em></p><p>Presidente dos EUA chamou o resultado de Flávio de “grande vitória” e confundiu Brasil com Índia em post. Nos EUA, Flávio teve 61,1% dos válidos.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> Flávio converte rapidamente a direita derrotada em apoio, enquanto Lula precisa de votos que, no 1º turno, foram para candidatos de centro e direita. A aritmética e o histórico (ninguém virou do 2º lugar) pesam contra o petista.</p>
+  <div class="sfoot"><span>Seções: <b>A1</b> · Capa · <b>A8</b> · Política › Eleições · <b>A11</b> · Política › Eleições</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="PL domina o Congresso">
+  <p class="eyebrow rv">Política › Congresso · A14, A15, A22</p>
+  <h2 class="sh rv">PL elege 121 deputados, maior bancada desde 1990, e terá 28 senadores</h2>
+  <p class="lede rv">Onda bolsonarista encolhe o Centrão, complica Alcolumbre e Motta e reabre debate sobre impeachment de ministros do STF.</p>
+  <div class="lr rv">
+    <div><div class="chart">
+  <h4>Maiores bancadas eleitas para a Câmara</h4>
+  <p class="csub">Número de deputados · SGM/Câmara</p>
+  <div class="hbars" style="--lw:110px">
+    <div class="hb" data-tip="&lt;b&gt;PL&lt;/b&gt;&lt;br&gt;121"><span class="hl">PL</span><span class="ht"><i style="--w:100.0%;--d:0.2s"></i></span><b>121</b></div>
+    <div class="hb" data-tip="&lt;b&gt;PT-PCdoB-PV&lt;/b&gt;&lt;br&gt;88"><span class="hl">PT-PCdoB-PV</span><span class="ht"><i class="cm" style="--w:72.7%;--d:0.3s"></i></span><b>88</b></div>
+    <div class="hb" data-tip="&lt;b&gt;União-PP&lt;/b&gt;&lt;br&gt;87"><span class="hl">União-PP</span><span class="ht"><i class="cm" style="--w:71.9%;--d:0.4s"></i></span><b>87</b></div>
+    <div class="hb" data-tip="&lt;b&gt;PSD&lt;/b&gt;&lt;br&gt;43"><span class="hl">PSD</span><span class="ht"><i class="cm" style="--w:35.5%;--d:0.5s"></i></span><b>43</b></div>
+    <div class="hb" data-tip="&lt;b&gt;Republicanos&lt;/b&gt;&lt;br&gt;41"><span class="hl">Republicanos</span><span class="ht"><i class="cm" style="--w:33.9%;--d:0.6s"></i></span><b>41</b></div>
+    <div class="hb" data-tip="&lt;b&gt;MDB&lt;/b&gt;&lt;br&gt;36"><span class="hl">MDB</span><span class="ht"><i class="cm" style="--w:29.8%;--d:0.7s"></i></span><b>36</b></div>
+  </div>
+  <p class="src">PL cresce 23 cadeiras; nem PL nem PT têm maioria sozinhos.</p>
+</div></div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+  <div class="kcard acc"><div class="num">3,1 mi</div><p class="klab">Votos de Nikolas Ferreira, deputado mais votado da história</p><p class="ksub">Recorde anterior: 1,84 mi · A14</p></div>
+  <div class="kcard"><div class="num">28</div><p class="klab">Senadores do PL a partir de 2027</p><p class="ksub">PT terá 9; MDB, 8 · A15</p></div>
+</div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+  <div class="card"><p class="ctag">STF na mira <em>A15</em></p><p>Ministros se dividem sobre impeachment. Um estima “uns 60 votos, no mínimo” com Flávio no poder. Moraes, Toffoli e Dino são citados. Nunes Marques quer julgar após o 2º turno caso que pode soltar Jair Bolsonaro.</p><p class="quote" style="margin-top:7px">O Tribunal é maior do que tudo e do que todos, e ele permanecerá</p><p class="qby">Edson Fachin</p>
+</div>
+  <div class="card"><p class="ctag">Lucio Rennó · UnB <em>A22</em></p><p>Prevê anistia ao 8 de janeiro e confronto com o Supremo como primeiras pautas da nova legislatura.</p><p class="quote" style="margin-top:7px">Lula, num cenário com esse Congresso, dificilmente governará</p><p class="qby">Lucio Rennó</p>
+</div>
+</div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> Com maior bancada nas duas Casas, o PL ganha poder de agenda, mas ainda depende do Centrão para presidir a Câmara. A relação com o STF tende a dominar o início de 2027.</p>
+  <div class="sfoot"><span>Seções: <b>A14</b> · Política › Eleições · <b>A15</b> · Política › Eleições · <b>A22</b> · Política › Entrevista</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="Rio e mapa do voto">
+  <p class="eyebrow rv">Política › Estados · A10, A12, A15</p>
+  <h2 class="sh rv">Garotinho desiste de recurso e pode dar a Ruas vitória no 1º turno no Rio</h2>
+  <p class="lede rv">Votos anulados elevariam o candidato do PL acima de 50%; Paes fala em “tapetão”. Flávio avançou nos pequenos municípios do Nordeste.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">49,27<span class="unit">%</span></div><p class="klab">Votos válidos de Douglas Ruas (PL) no Rio</p><p class="ksub">Paes teve 42,76% · A12</p></div>
+  <div class="kcard"><div class="num">274.411</div><p class="klab">Votos de Garotinho, hoje anulados sub judice</p><p class="ksub">3,17% dos válidos · A12</p></div>
+  <div class="kcard"><div class="num">520 mil</div><p class="klab">Votos a mais de Flávio ante o pai nos grotões do NE</p><p class="ksub">Lula perdeu 270 mil ali · A10</p></div>
+  <div class="kcard pos"><div class="num">71,1<span class="unit">%</span></div><p class="klab">Votos de Flávio em Roraima, maior razão evangélicos/católicos</p><p class="ksub">Lula teve 71% no Piauí · A15</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Garotinho x Paes <em>A12</em></p><p>Ministro Floriano de Azevedo Marques deu dois dias para a PGE se manifestar. Especialistas divergem: desvio de finalidade ou perda de objeto, com homologação monocrática.</p><p class="quote" style="margin-top:7px">Quando vi que não aconteceu, [o recurso] perdeu o objeto</p><p class="qby">Anthony Garotinho</p>
+</div>
+  <div class="card"><p class="ctag">César Felício · Valor <em>A10</em></p><p>Lula liderou em 2.046 cidades pequenas, ante 2.682 em 2022, e perdeu 1,27 milhão de votos nesse estrato; metrópoles viraram sua maior base.</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> O Rio pode ter eleição decidida por via processual, com risco de novo contencioso. No país, a erosão de Lula nos grotões nordestinos reduz sua margem para virar.</p>
+  <div class="sfoot"><span>Seções: <b>A12</b> · Política › Eleições · <b>A10</b> · Política › Análise · <b>A15</b> · Política › Eleições</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="Espanha, Nobel e Trump">
+  <p class="eyebrow rv">Internacional · A19</p>
+  <h2 class="sh rv">Sánchez antecipa eleição na Espanha; optogenética leva o Nobel de Medicina</h2>
+  <p class="lede rv">Premiê convoca eleições para 29 de novembro após Parlamento derrubar decretos de habitação; nos EUA, aprovação de Trump segue no menor nível.</p>
+  <div class="kgrid fan">
+  <div class="kcard acc"><div class="num">29/nov</div><p class="klab">Data das eleições antecipadas na Espanha</p><p class="ksub">Socialistas atrás nas pesquisas · A19</p></div>
+  <div class="kcard"><div class="num">US$ 1,2 mi</div><p class="klab">Prêmio dividido pelos três laureados do Nobel de Medicina</p><p class="ksub">12 milhões de coroas suecas · A19</p></div>
+  <div class="kcard"><div class="num">32<span class="unit">%</span></div><p class="klab">Americanos que aprovam a presidência de Trump</p><p class="ksub">Recorde de baixa, Reuters/Ipsos · A19</p></div>
+  <div class="kcard"><div class="num">24<span class="unit">%</span></div><p class="klab">Aprovação de Trump entre hispano-americanos</p><p class="ksub">52% pretendem votar democrata · A19</p></div>
+</div>
+  <div class="cards c2 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Espanha <em>A19</em></p><p>Sánchez busca novo Parlamento após rejeição de decretos de habitação e protestos por aluguel. Pesquisas indicam coalizão PP-Vox, que levaria a extrema direita ao governo pela primeira vez desde 1975.</p><p class="quote" style="margin-top:7px">Precisamos nos mobilizar. Parte da maioria social está insatisfeita</p><p class="qby">Pedro Sánchez</p>
+</div>
+  <div class="card"><p class="ctag">Nobel de Medicina <em>A19</em></p><p>Karl Deisseroth (EUA), Peter Hegemann e Georg Nagel (Alemanha) premiados pela optogenética, que ativa ou desativa neurônios com luz; ensaios já restauram visão em casos de retinite pigmentosa.</p><p class="quote" style="margin-top:7px">Método contribuiu para desvendar segredos do cérebro</p><p class="qby">Thomas Perlmann</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> A eleição espanhola é aposta de alto risco: os socialistas oscilaram entre 26% e 31% de aprovação e o governo não aprova Orçamento desde 2023.</p>
+  <div class="sfoot"><span>Seção: <b>A19</b> · Internacional</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="Editorial e opinião">
+  <p class="eyebrow rv">Opinião · A20, A2, C6</p>
+  <h2 class="sh rv">Valor vê no rali recado por ajuste fiscal; colunistas cobram Lula e apontam poder deslocado</h2>
+  <div class="kgrid k3 fan">
+  <div class="kcard acc"><div class="num">R$ 410 bi</div><p class="klab">Ganho de valor de mercado das ações na B3 em um dia, citado no editorial</p><p class="ksub">Editorial do Valor · A20</p></div>
+  <div class="kcard"><div class="num">20<span class="unit">%</span></div><p class="klab">Fatia das emendas no orçamento discricionário em 2024, ante menos de 4% em 2014</p><p class="ksub">Luiz Schymura · A2</p></div>
+  <div class="kcard"><div class="num">R$ 1 tri</div><p class="klab">Meta antiga de venda de imóveis da União, que o editorial diz não resolver o fiscal</p><p class="ksub">Editorial do Valor · A20</p></div>
+</div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+  <div class="card"><p class="ctag">Editorial do Valor <em>A20</em></p><p>Para o jornal, o otimismo se apoia em promessas: Flávio foi vago sobre ajuste e reformas, e Lula precisa se comprometer com corte estrutural de despesas até 25 de outubro.</p>
+</div>
+  <div class="card"><p class="ctag">Marcelo Trindade · C6 <em>C6</em></p><p>O articulista defende que Lula adote pilares do programa de Simone Tebet, indique ministros do STF independentes e repita o gesto da Carta ao Povo Brasileiro de 2002.</p><p class="quote" style="margin-top:7px">A vitória ou a derrota será dele</p><p class="qby">Marcelo Trindade</p>
+</div>
+  <div class="card"><p class="ctag">Luiz Schymura · FGV Ibre <em>A2</em></p><p>Sustenta que o Executivo perdeu recursos de coordenação para Congresso e STF e que esse poder não volta automaticamente.</p><p class="quote" style="margin-top:7px">Instituições têm memória</p><p class="qby">Luiz Schymura</p>
+</div>
+</div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> Editorial e colunistas convergem num ponto: o mercado precificou mudança sem plano econômico conhecido, e o segundo turno é a janela para compromissos explícitos.</p>
+  <div class="sfoot"><span>Seções: <b>A20</b> · Opinião · <b>A2</b> · Brasil · <b>C6</b> · Finanças</span><span class="pg"></span></div>
+</section><section class="slide" data-theme="light" data-tier="3" data-title="Mosaico: Justiça, educação, cidade">
+  <p class="eyebrow rv">Legislação, educação e cidade · E1, A6, A20</p>
+  <h2 class="sh rv">Protestos em cartório recuperam R$ 2,24 bi; Stanford defende matemática antes dos 6 anos</h2>
+  <div class="cards c3 big fill fan" style="margin-top:10px">
+  <div class="card"><p class="ctag">Legislação · Protesto <em>E1</em></p><p>Dívidas de decisões judiciais protestadas em cartório renderam R$ 2,24 bilhões de 2020 a agosto, 15,8% do total. Os casos saltaram de 28.133 em 2020 para 104.294 em 2025.</p><p class="quote" style="margin-top:7px">O procedimento é muito célere</p><p class="qby">André Gomes Netto, IEPTB</p>
+</div>
+  <div class="card"><p class="ctag">Financiamento imobiliário <em>E1</em></p><p>ONR fecha acordo com BB, Caixa, Sicoob e Sicredi para automatizar análise de imóveis; testes a partir de fevereiro. Visualizações de matrículas por bancos foram de 91.395 em 2023 a 274.179 em 2025.</p>
+</div>
+  <div class="card"><p class="ctag">Educação · Deborah Stipek <em>A6</em></p><p>Professora de Stanford diz que base em matemática antes dos 6 anos reduz desigualdade; Brasil tem 95% das crianças de 4 e 5 anos na pré-escola.</p><p class="quote" style="margin-top:7px">Estudos mostram correlação entre aprendizado de matemática e indicadores econômicos</p><p class="qby">Deborah Stipek</p>
+</div>
+  <div class="card"><p class="ctag">Cidade · Fundurb SP <em>A20</em></p><p>Receita da outorga onerosa em São Paulo foi de R$ 870 milhões em 2024 para R$ 1,54 bilhão em 2025, alta de 77%; Ivan Maglio cobra prestação de contas territorial.</p>
+</div>
+</div>
+  <div class="sfoot"><span>Seções: <b>E1</b> · Legislação &amp; Tributos · <b>A6</b> · Brasil › Educação · <b>A20</b> · Opinião</span><span class="pg"></span></div>
+</section><section class="slide t-div" data-theme="dark" data-divider="1" data-title="O que acompanhar">
+  <p class="eyebrow rv">Agenda · na ordem de prioridade</p>
+  <h1 class="rv" style="font-size:58px;max-width:1400px">O que acompanhar nas próximas semanas</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    <div class="card dk t1c"><p class="ctag">1º · Tecnologia · em breve</p><p><b>Lançamento do Beam:</b> A Reflection AI promete lançar em breve o Beam em parceria com empresas, com custo menor que o dos rivais americanos.</p></div>
+    <div class="card dk t1c"><p class="ctag">1º · Tecnologia · em breve</p><p><b>Veto norueguês a óculos de IA:</b> O governo da Noruega vai apresentar ao Parlamento o projeto de proibição temporária dos óculos com IA em espaços públicos.</p></div>
+    <div class="card dk t2c"><p class="ctag">2º · Economia · 25/out</p><p><b>Segundo turno e plano fiscal:</b> O mercado espera de Flávio e Lula compromissos fiscais concretos e a definição das equipes econômicas para sustentar o rali.</p></div>
+    <div class="card dk t2c"><p class="ctag">2º · Economia · 7/out</p><p><b>Leilão da ANP:</b> Sessões de concessão e partilha com 313 blocos e 13 áreas do pré-sal; arrecadação mínima esperada de R$ 2,18 bilhões.</p></div>
+    <div class="card dk t3c"><p class="ctag">3º · Política · 25/out</p><p><b>Segundo turno presidencial:</b> Flávio e Lula disputam a Presidência; campanha do PL começa dia 8 e debates entre os dois estão em negociação.</p></div>
+    <div class="card dk t3c"><p class="ctag">3º · Política · 29/nov</p><p><b>Eleições na Espanha:</b> Socialistas de Sánchez estão atrás nas pesquisas; coalizão PP-Vox levaria extrema direita ao governo pela primeira vez desde 1975.</p></div>
+  </div>
+  <div class="sfoot"><span>Fonte: Valor Econômico, edição de 6 de outubro de 2026</span><span class="pg"></span></div>
+</section>
+</main>
+</div>
+
+<nav class="nav" aria-label="Controles da apresentação">
+  <button class="nbtn" id="btnPrev" aria-label="Slide anterior">&lsaquo;</button>
+  <span class="count" id="counter">1</span>
+  <button class="nbtn" id="btnNext" aria-label="Próximo slide">&rsaquo;</button>
+  <span class="sep"></span>
+  <div class="dots" id="dots"></div>
+  <span class="sep"></span>
+  <button class="nbtn" id="btnOv" aria-label="Visão geral dos slides" title="Visão geral (O)">&#9783;</button>
+  <button class="nbtn" id="btnTheme" aria-label="Alternar modo escuro" title="Modo escuro (D)">&#9788;</button>
+  <button class="nbtn" id="btnFs" aria-label="Tela cheia" title="Tela cheia (F)">&#9974;</button>
+</nav>
+<div id="ov" role="dialog" aria-modal="true" aria-label="Todos os slides"><h3>Todos os slides</h3><p class="ovh">Clique para ir ao slide · O ou Esc para fechar</p><div id="ovg"></div></div>
+<div id="hint">← → navegam · O visão geral · D modo escuro · F tela cheia</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, deck=document.getElementById('deck');
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var TOTAL=slides.length, idx=0;
+var counter=document.getElementById('counter'), pbar=document.getElementById('pbar'), brand=document.getElementById('brand');
+
+/* ---------- palco: escala fixa 1600x900, ou leitura vertical em telas estreitas ---------- */
+function isMobile(){ return window.innerWidth < 820 || (window.innerWidth < 1000 && window.innerHeight > window.innerWidth); }
+function fitStage(){
+  if (isMobile()){ root.classList.add('mobile'); deck.style.transform='none'; return; }
+  root.classList.remove('mobile');
+  var pad = 22;
+  var k = Math.min((window.innerWidth-pad)/1600,(window.innerHeight-pad)/900);
+  deck.style.transform='translate(-50%,-50%) scale('+k+')';
+}
+window.addEventListener('resize',fitStage);
+
+/* ---------- navegação ---------- */
+var dotsBox=document.getElementById('dots'), ovg=document.getElementById('ovg');
+slides.forEach(function(s,i){
+  var d=document.createElement('button'); d.className='dot'+(s.dataset.divider?' sec':''); d.setAttribute('aria-label','Ir ao slide '+(i+1));
+  d.title=s.dataset.title||''; d.addEventListener('click',function(){goTo(i,i<idx);}); dotsBox.appendChild(d);
+  var c=document.createElement('button'); c.className='ovc';
+  c.innerHTML='<span class="on2">'+(i+1<10?'0':'')+(i+1)+'</span><span class="ot"></span>';
+  c.querySelector('.ot').textContent=s.dataset.title||'';
+  c.addEventListener('click',function(){toggleOv(false);goTo(i,i<idx);}); ovg.appendChild(c);
+});
+function update(){
+  counter.textContent=(idx+1)+' / '+TOTAL;
+  pbar.style.width=(idx/(TOTAL-1)*100)+'%';
+  [].forEach.call(dotsBox.children,function(d,i){d.classList.toggle('on',i===idx);});
+  [].forEach.call(ovg.children,function(c,i){c.classList.toggle('on',i===idx);});
+  var s=slides[idx];
+  var onLight=s.dataset.theme==='light' && root.dataset.themeMode!=='dark';
+  brand.classList.toggle('on-light',onLight);
+  if (FIELD) FIELD.setMode(s.dataset.theme==='dark' || root.dataset.themeMode==='dark', !!s.dataset.divider || s.classList.contains('t-cover'));
+  deck.style.setProperty('--field-a', s.dataset.divider ? .9 : 1);
+}
+function goTo(n,back){
+  n=Math.max(0,Math.min(TOTAL-1,n));
+  if (n===idx) return;
+  document.body.classList.toggle('back',!!back);
+  slides[idx].classList.remove('active'); idx=n; slides[idx].classList.add('active');
+  update(); hideTip();
+  setTimeout(function(){document.body.classList.remove('back');},620);
+}
+function next(){goTo(idx+1,false);} function prev(){goTo(idx-1,true);}
+document.getElementById('btnNext').addEventListener('click',next);
+document.getElementById('btnPrev').addEventListener('click',prev);
+var ov=document.getElementById('ov');
+function toggleOv(on){ ov.classList.toggle('on', on===undefined ? !ov.classList.contains('on') : on); }
+document.getElementById('btnOv').addEventListener('click',function(){toggleOv();});
+function toggleTheme(){ root.dataset.themeMode = root.dataset.themeMode==='dark' ? 'light' : 'dark'; update(); }
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+function toggleFs(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.getElementById('btnFs').addEventListener('click',toggleFs);
+document.addEventListener('keydown',function(e){
+  if (e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if (root.classList.contains('mobile')) return;
+  var k=e.key;
+  if (k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if (k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if (k==='Home'){goTo(0,true);} else if (k==='End'){goTo(TOTAL-1,false);}
+  else if (k==='o'||k==='O'){toggleOv();} else if (k==='Escape'){toggleOv(false);}
+  else if (k==='d'||k==='D'){toggleTheme();} else if (k==='f'||k==='F'){toggleFs();}
+});
+var tx=null;
+deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+deck.addEventListener('touchend',function(e){ if(tx===null||root.classList.contains('mobile'))return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?next():prev();} tx=null; });
+
+/* ---------- tooltip de hover (barras, pontos, segmentos) ---------- */
+var tip=document.getElementById('tip');
+function showTip(html,x,y){ tip.innerHTML=html; tip.classList.add('on');
+  var w=tip.offsetWidth,h=tip.offsetHeight; var px=x+14, py=y-h-12;
+  if (px+w>window.innerWidth-8) px=x-w-14; if (py<8) py=y+16; tip.style.left=px+'px'; tip.style.top=py+'px'; }
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mousemove',function(e){
+  var t=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if (t) showTip(t.getAttribute('data-tip'),e.clientX,e.clientY); else if (!e.target.closest('svg.line')) hideTip();
+});
+
+/* ---------- gráfico de linha: abstenção ---------- */
+function lineChart(svg,data,opt){
+  var W=640,H=420,L=48,R=24,T=20,B=36, NS='http://www.w3.org/2000/svg';
+  var x=function(i){return L+i*(W-L-R)/(data.length-1);}, y=function(v){return T+(opt.max-v)/(opt.max-opt.min)*(H-T-B);};
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+  opt.ticks.forEach(function(t){ el('line',{x1:L,x2:W-R,y1:y(t),y2:y(t),'class':'gl'}); var tx=el('text',{x:L-8,y:y(t)+4,'text-anchor':'end','class':'ax'}); tx.textContent=t.toString().replace('.',',')+'%'; });
+  if (opt.ref){ el('line',{x1:L,x2:W-R,y1:y(opt.ref.v),y2:y(opt.ref.v),'class':'ref'}); var rt=el('text',{x:W-R,y:y(opt.ref.v)-6,'text-anchor':'end','class':'ax'}); rt.textContent=opt.ref.label; }
+  data.forEach(function(d,i){ var t=el('text',{x:x(i),y:H-10,'text-anchor':'middle','class':'ax'}); t.textContent=d.k; });
+  el('path',{d:data.map(function(d,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(d.v).toFixed(1);}).join(' '),'class':'ln'});
+  var xh=el('line',{y1:T,y2:H-B,'class':'xh'});
+  data.forEach(function(d,i){ el('circle',{cx:x(i),cy:y(d.v),r:i===data.length-1?6:4.5,'class':'mk'+(i===data.length-1?' last':'')}); });
+  var lb=el('text',{x:x(data.length-1)-10,y:y(data[data.length-1].v)+22,'text-anchor':'end','class':'lbl'}); lb.textContent='21,08% em 2026';
+  var lb2=el('text',{x:x(1),y:y(data[1].v)+22,'text-anchor':'middle','class':'lbl'}); lb2.textContent='16,75%';
+  var hit=el('rect',{x:L,y:T,width:W-L-R,height:H-T-B,'class':'hit'});
+  hit.addEventListener('mousemove',function(e){
+    var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)/r.width*W;
+    var i=Math.round((px-L)/((W-L-R)/(data.length-1))); i=Math.max(0,Math.min(data.length-1,i));
+    xh.setAttribute('x1',x(i)); xh.setAttribute('x2',x(i)); xh.style.opacity=1;
+    showTip('<b>'+data[i].k+'</b><br>Abstenção: '+data[i].v.toFixed(2).replace('.',',')+'%',e.clientX,e.clientY);
+  });
+  hit.addEventListener('mouseleave',function(){xh.style.opacity=0;hideTip();});
+}
+
+/* ---------- campo animado (pontos à deriva) atrás dos slides escuros ---------- */
+var FIELD=(function(){
+  var cv=document.getElementById('field'); if(!cv||!cv.getContext) return null;
+  var ctx=cv.getContext('2d'), DPR=Math.min(window.devicePixelRatio||1,1.6), W=1600,H=900;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  var N=900, pts=[], running=false, show=true, ring=true, t0=0;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (var i=0;i<N;i++){
+    var z=Math.random()*.8+.2, a=Math.random()*Math.PI*2, rr=i%3===0?230:(i%3===1?150:320);
+    pts.push({x:Math.random()*W,y:Math.random()*H,z:z,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.22,
+      ring:i<N*.42, tx:1230+Math.cos(a)*rr*(0.96+Math.random()*.08), ty:440+Math.sin(a)*rr*(0.96+Math.random()*.08), ph:Math.random()*6.28});
+  }
+  function frame(ts){
+    if (!running) return;
+    var t=ts/1000; ctx.clearRect(0,0,W,H);
+    for (var i=0;i<N;i++){
+      var p=pts[i];
+      if (ring && p.ring){
+        var ang=t*.05*(p.z>.6?1:-1), cx=1230, cy=440, dx=p.tx-cx, dy=p.ty-cy;
+        var gx=cx+dx*Math.cos(ang)-dy*Math.sin(ang), gy=cy+dx*Math.sin(ang)+dy*Math.cos(ang);
+        p.x+=(gx-p.x)*.03; p.y+=(gy-p.y)*.03;
+      } else {
+        p.x+=p.vx*p.z*1.4; p.y+=p.vy*p.z*1.4;
+        if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10; if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+      }
+      var al=(.18+.55*p.z)*(.75+.25*Math.sin(t*1.3+p.ph));
+      ctx.fillStyle=p.ring&&ring ? 'rgba(143,180,236,'+al+')' : 'rgba(195,215,238,'+(al*.8)+')';
+      ctx.beginPath(); ctx.arc(p.x,p.y,.6+1.5*p.z,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(!running && show && !reduce && !document.hidden && !root.classList.contains('mobile')){ running=true; requestAnimationFrame(frame);} }
+  function stop(){ running=false; }
+  document.addEventListener('visibilitychange',function(){ document.hidden?stop():start(); });
+  if (reduce){ /* um quadro estático */ ctx.fillStyle='rgba(195,215,238,.4)'; pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1,0,6.283);ctx.fill();}); }
+  return { setMode:function(dark,r){ show=dark; ring=r; if(show) start(); else { stop(); ctx.clearRect(0,0,W,H);} } };
+})();
+
+
+/* ---------- selo de destaque + navegação que se recolhe ---------- */
+var TIERN={'1':'1º destaque · Tecnologia e IA','2':'2º destaque · Economia e mercados','3':'3º destaque · Política e demais temas'};
+slides.forEach(function(s,i){
+  var t=s.dataset.tier; if(!t) return;
+  if (s.dataset.theme==='light'){ var p=document.createElement('div'); p.className='tierpill t'+t; p.innerHTML='<i></i>'+TIERN[t]; s.insertBefore(p,s.firstChild); }
+  if (dotsBox.children[i]) dotsBox.children[i].classList.add('t'+t);
+});
+var idleT=null;
+function wake(){ document.body.classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(function(){ if(!document.querySelector('.nav:hover')) document.body.classList.add('idle'); },2600); }
+['mousemove','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev,wake,{passive:true}); });
+wake();
+
+fitStage(); update();
+var hint=document.getElementById('hint');
+if (!root.classList.contains('mobile')){ setTimeout(function(){hint.classList.add('on');},900); setTimeout(function(){hint.classList.remove('on');},5200); }
+})();
+</script>
+</body>
+</html>

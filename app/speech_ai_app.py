@@ -17,6 +17,7 @@ Author: Rodrigo Magalhães
 """
 
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from config.config_manager import ConfigManager
@@ -92,9 +93,27 @@ class SpeechAIApp:
 
     # -------------------------------------------------
 
-    def run(self):
+    @staticmethod
+    def audio_filename(base_name: str) -> str:
+
+        """
+        Nome do mp3: nome do arquivo processado (sem extensão) + data e hora.
+        Ex.: script_agentes -> script_agentes_2026-10-05_18-30-00.mp3
+        """
+
+        return f"{base_name}_{datetime.now():%Y-%m-%d_%H-%M-%S}.mp3"
+
+    # -------------------------------------------------
+
+    def run(self, script_file=None, output_filename=None):
+
+        script_file = Path(script_file or self.project_root / self.cfg.script_file)
+
+        output_filename = output_filename or self.audio_filename(script_file.stem)
 
         print()
+
+        print(f"Script............. {script_file}")
 
         print("Starting pipeline...")
 
@@ -106,7 +125,7 @@ class SpeechAIApp:
         # TEXT ANALYZER
         # =====================================================
 
-        analyzer = TextAnalyzer(self.cfg)
+        analyzer = TextAnalyzer(self.cfg, script_file)
 
         presentation = analyzer.run()
 
@@ -204,7 +223,7 @@ class SpeechAIApp:
 
             / self.cfg.output_directory
 
-            / self.cfg.output_filename
+            / output_filename
 
         )
 
@@ -261,6 +280,8 @@ class SpeechAIApp:
         print()
 
         self.logger.info("Pipeline finished")
+
+        return audio_file
 
     # -------------------------------------------------
 

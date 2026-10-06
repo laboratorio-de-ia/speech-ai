@@ -1,0 +1,33 @@
+  python main.py
+      Processo diário: para cada PDF em input/Jornais,
+      identifica o jornal, executa a skill, importa o
+      script.txt para input/, gera o áudio em output/ e
+      arquiva o PDF em input/Jornais/processados/.
+
+  python main.py --script
+      Gera o áudio a partir de input/script.txt.
+
+  python main.py --skill valor-economico --pdf "Valor.pdf"
+      Executa uma skill sobre um PDF específico.
+
+  python main.py --skill estado-de-sp
+      Sem --pdf: usa o script.txt mais recente já gerado
+      pela skill na pasta de jornais.
+
+  python main.py --list-skills
+  
+  
+  
+	python main.py --txt        # somente os arquivos .txt de input\
+	python main.py --jornais    # somente os PDFs de input\Jornais
+	python main.py              # os dois (.txt primeiro, depois os jornais)
+
+- --txt --jornais juntos têm o mesmo efeito de rodar sem parâmetros.
+- O antigo --script continua funcionando, com o mesmo efeito de --txt.
+- --skill não pode ser combinado com --txt ou --jornais; nesse caso o programa avisa e para.
+
+Testei todas as combinações sem processar nada de verdade: cada etapa só registrava que foi chamada. Todas chamaram a etapa certa, e as combinações inválidas pararam com a mensagem de erro. Sua pasta input não foi alterada.
+
+O input\script.txt que sobrou do teste anterior continua lá. Ele só será processado se você rodar com --txt ou sem parâmetros.
+
+Nada foi commitado.

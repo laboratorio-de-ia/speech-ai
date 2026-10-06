@@ -1,0 +1,53 @@
+
+============================================================
+ Speech AI Pipeline
+============================================================
+Version : 1.0.0
+============================================================
+
+============================================================
+ Script Inbox
+============================================================
+Folder............. D:\Laboratorio de IA\speech-ai\speech-ai\input
+Scripts found...... 1
+============================================================
+
+Script............. D:\Laboratorio de IA\speech-ai\speech-ai\input\script.txt
+Starting pipeline...
+
+
+============================================================
+ Speech Intelligence
+============================================================
+Language........... pt
+Voice.............. pt-BR-FranciscaNeural
+Reading Style...... Conversational
+Complexity......... Low
+Pacing............ Fast
+Recommended WPM.... 145
+Rate............... -5%
+Pitch.............. +1Hz
+Confidence......... 1.0
+============================================================
+
+
+============================================================
+ Pipeline Finished
+============================================================
+Slides............. 1
+Words.............. 1008
+Sentences.......... 75
+Paragraphs......... 21
+Characters......... 5607
+Estimated Duration. 6.95 min
+
+Narration.......... D:\Laboratorio de IA\speech-ai\speech-ai\output\narration.txt
+Speech............. D:\Laboratorio de IA\speech-ai\speech-ai\output\speech.txt
+Audio.............. D:\Laboratorio de IA\speech-ai\speech-ai\output\script_2026-10-06_18-19-38.mp3
+
+
+============================================================
+ Scripts Summary
+============================================================
+[OK]    script.txt: D:\Laboratorio de IA\speech-ai\speech-ai\output\script_2026-10-06_18-19-38.mp3
+============================================================

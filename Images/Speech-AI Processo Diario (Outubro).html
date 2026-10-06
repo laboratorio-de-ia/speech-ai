@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Speech-AI Processo Diário</title>
+<style>
+  :root{
+    --navy:#0b1f5c; --blue:#1d4ed8; --blue-l:#eef4ff; --blue-b:#7ea3f2;
+    --orange:#e8891a; --orange-l:#fff7ec; --orange-b:#f3c27c;
+    --purple:#6d3fc0; --purple-l:#f6f2ff; --purple-b:#b9a2ea;
+    --green:#1f8a4c; --green-l:#f1faf3; --green-b:#9fd3b2;
+    --teal:#0e7c86; --ink:#1b2333; --mute:#5b6478; --line:#d7deea; --ok:#22a052;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1536px;height:1024px;background:#fff;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);overflow:hidden}
+  svg.i{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  svg.i.lg{width:34px;height:34px}
+  .ok{color:var(--ok);font-weight:700}
+
+  /* header */
+  header{height:84px;display:grid;grid-template-columns:230px 1fr 300px;align-items:center;padding:0 14px}
+  .logo b{font-size:46px;font-weight:900;letter-spacing:1px;color:var(--navy);line-height:1}
+  .logo b span{color:#1aa3e8}
+  .logo small{display:block;font-size:12px;color:var(--navy);margin-top:2px}
+  .title{text-align:center}
+  .title h1{font-size:36px;font-weight:900;color:var(--navy);letter-spacing:.5px}
+  .title h2{font-size:21px;font-weight:600;color:#1a73d9;margin-top:2px}
+  .status{justify-self:end;text-align:right}
+  .status .pill{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;padding:9px 14px;border-radius:7px}
+  .status .pill i{background:var(--ok);width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font-style:normal;font-size:11px}
+  .status small{display:block;font-size:11.5px;color:var(--navy);margin-top:6px}
+
+  main{display:grid;grid-template-columns:222px 1fr 256px;gap:12px;padding:0 10px;height:870px}
+
+  /* side cards */
+  .side{display:flex;flex-direction:column;gap:9px}
+  .card{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fbfcfe}
+  .card h3{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:var(--navy);margin-bottom:7px;text-transform:uppercase}
+  .card h3 svg{color:var(--blue)}
+  .card p{font-size:12px;line-height:1.45}
+  .card ul{list-style:none;font-size:11.6px;line-height:1.55}
+  .card ul li::before{content:"•";color:var(--navy);margin-right:6px}
+  .card ul.blue li{color:#1a4fb8}
+  .cmd{font-family:Consolas,monospace;font-size:11px;background:#fff;border:1px solid var(--line);border-radius:5px;padding:4px 6px;margin-bottom:4px}
+  .cmd b{color:var(--blue)}
+  .cmd span{display:block;font-family:"Segoe UI",Arial;color:var(--mute);font-size:10.5px}
+  .tree{font-family:Consolas,monospace;font-size:10.6px;line-height:1.5;white-space:pre;color:var(--ink)}
+  .tree em{font-style:normal;color:var(--mute)}
+  .tree b{color:var(--navy)}
+
+  /* center layers */
+  .center{display:flex;flex-direction:column;gap:0}
+  .layer{border:1.5px solid;border-radius:9px;padding:6px 10px 8px;position:relative}
+  .layer > .lt{text-align:center;font-size:13.5px;font-weight:800;letter-spacing:.3px;margin-bottom:6px}
+  .layer > .lt small{font-size:10.5px;font-weight:700;display:block;letter-spacing:.2px}
+  .l-green{border-color:var(--green-b);background:var(--green-l)} .l-green>.lt{color:var(--green)}
+  .l-blue{border-color:var(--blue-b);background:var(--blue-l)} .l-blue>.lt{color:var(--blue)}
+  .l-orange{border-color:var(--orange-b);background:var(--orange-l)} .l-orange>.lt{color:#c76d06}
+  .l-purple{border-color:var(--purple-b);background:var(--purple-l)} .l-purple>.lt{color:var(--purple)}
+  .row{display:grid;gap:12px}
+  .box{background:#fff;border:1px solid var(--line);border-radius:7px;padding:7px 10px;display:flex;gap:10px;align-items:flex-start}
+  .box h4{font-size:12.3px;font-weight:800;text-transform:uppercase;margin-bottom:2px}
+  .box p,.box li{font-size:11px;line-height:1.38;color:var(--ink)}
+  .box ul{list-style:none} .box ul li::before{content:"•";margin-right:5px}
+  .box code{font-family:Consolas,monospace;font-size:10.5px;color:var(--navy)}
+  .l-green .box h4,.l-green svg{color:var(--green)}
+  .l-blue .box h4,.l-blue svg{color:var(--blue)}
+  .l-orange .box h4,.l-orange svg{color:#d77a0d}
+  .l-purple .box h4,.l-purple svg{color:var(--purple)}
+  .tag{display:inline-block;font-size:10px;font-weight:700;border-radius:4px;padding:1px 6px;margin-top:3px}
+  .tag.ia{background:#ffe9cc;color:#a85a00}
+  .tag.local{background:#dcf3e4;color:#17663a}
+  .arrows{height:22px;display:flex;justify-content:space-around;align-items:center;font-size:11px;color:var(--navy);position:relative}
+  .arrows .a{width:2px;height:16px;background:var(--navy);position:relative}
+  .arrows .a::after{content:"";position:absolute;left:-4px;bottom:-4px;border:5px solid transparent;border-top:6px solid var(--navy)}
+  .arrows .lbl{position:absolute;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-weight:600;white-space:nowrap}
+  .arrows .lbl code{font-family:Consolas,monospace;color:var(--blue);font-weight:700}
+  .flow{display:flex;align-items:stretch;gap:6px}
+  .flow .box{flex:1}
+  .flow .sep{align-self:center;color:var(--blue);font-weight:900;font-size:16px}
+  .infra{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;border:1.5px solid var(--line);border-radius:9px;padding:6px 8px 7px;position:relative;margin-top:8px}
+  .infra .lt{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#fff;padding:0 8px;font-size:12px;font-weight:800;color:var(--navy)}
+  .infra div.it{display:flex;gap:6px;align-items:center;font-size:10.5px;line-height:1.25;border:1px solid var(--line);border-radius:6px;padding:5px 6px;background:#fff}
+  .infra div.it b{display:block;font-size:10.8px;color:var(--navy)}
+  .infra svg{color:var(--blue)}
+
+  /* right */
+  .prod{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff;margin-bottom:6px}
+  .prod svg{color:var(--blue)}
+  .prod b{font-size:12.3px;color:var(--navy)}
+  .prod span{display:block;font-size:11px;color:var(--ink)}
+  table.kpi{width:100%;border-collapse:collapse;font-size:11px}
+  table.kpi th{font-size:10.5px;color:var(--mute);text-align:right;font-weight:700;padding:2px 3px}
+  table.kpi th:first-child,table.kpi td:first-child{text-align:left}
+  table.kpi td{text-align:right;padding:3px 3px;border-top:1px solid var(--line)}
+  table.kpi td:first-child{font-weight:700;color:var(--navy)}
+  .prod span.tag{display:inline-block}
+  .note{font-size:10.8px;color:var(--mute);margin-top:5px}
+  .note b{color:var(--navy)}
+
+  footer{position:absolute;left:8px;right:8px;bottom:6px;height:56px;background:var(--navy);border-radius:9px;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;color:#fff;font-size:14px;padding:0 26px}
+  footer div{display:flex;align-items:center;gap:12px}
+  footer svg{color:#5fb2ff}
+
+  .stepflow{display:flex;align-items:stretch;gap:5px}
+  .stepflow .box{flex:1;flex-direction:column;gap:3px;padding:6px 8px}
+  .stepflow .box .hd{display:flex;align-items:center;gap:7px}
+  .stepflow .sep{align-self:center;color:#c76d06;font-weight:900;font-size:16px}
+  .time{font-family:Consolas,monospace;font-size:10.5px;font-weight:700;color:var(--navy);background:#eef2fb;border-radius:4px;padding:1px 5px;margin-left:auto;white-space:nowrap}
+  table.kpi td.hi{color:var(--green);font-weight:800}
+  table.kpi tr.old td{color:var(--mute)}
+  .arrows{height:16px}
+  .par{display:inline-block;font-size:10px;font-weight:700;color:var(--blue);background:var(--blue-l);border:1px solid var(--blue-b);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="txt" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></symbol>
+    <symbol id="news" viewBox="0 0 24 24"><path d="M4 5h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v10a2 2 0 0 1-2 2M7 9h7M7 13h7M7 17h4"/></symbol>
+    <symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+    <symbol id="html" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M9 13l-2 2 2 2M15 13l2 2-2 2"/></symbol>
+    <symbol id="wave" viewBox="0 0 24 24"><path d="M3 12h1M6 9v6M9 6v12M12 9v6M15 4v16M18 8v8M21 11v2"/></symbol>
+    <symbol id="lang" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+    <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="build" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></symbol>
+    <symbol id="mp3" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+    <symbol id="log" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="term" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></symbol>
+    <symbol id="folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-4A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2z"/></symbol>
+    <symbol id="box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+    <symbol id="chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></symbol>
+    <symbol id="shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></symbol>
+    <symbol id="pc" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+    <symbol id="py" viewBox="0 0 24 24"><path d="M12 3c-4 0-4 1.5-4 3v2h4v1H6c-2 0-3 1.5-3 4s1 4 3 4h2v-3c0-1.5 1-3 3-3h4c1.5 0 2.5-1 2.5-2.5V6c0-1.5-1.5-3-5.5-3z"/><path d="M12 21c4 0 4-1.5 4-3v-2h-4v-1h6c2 0 3-1.5 3-4"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="logo"><b>SPEECH<span>·AI</span></b><small>Texto e Jornais → Áudio com IA</small></div>
+  <div class="title"><h1>SPEECH-AI – PROCESSO DIÁRIO DE ÁUDIO</h1><h2>Jornais (Valor + Estadão) e Roteiros .txt → Resumo HTML + MP3 em até 5 minutos</h2></div>
+  <div class="status"><span class="pill">STATUS: PROCESSO RÁPIDO + FRONTEND <i>✓</i></span><small>Última atualização: 06/10/2026</small></div>
+</header>
+
+<main>
+  <!-- LEFT -->
+  <aside class="side">
+    <div class="card">
+      <h3><svg class="i"><use href="#target"/></svg>Propósito</h3>
+      <p>Transformar, todos os dias, os jornais <b>Valor Econômico</b> e <b>O Estado de S. Paulo</b> e roteiros de texto em resumos executivos e áudios narrados em português — em minutos.</p>
+    </div>
+    <div class="card">
+      <h3><svg class="i"><use href="#term"/></svg>Como executar</h3>
+      <div class="cmd"><b>start.bat</b><span>Frontend web: enviar e processar</span></div>
+      <div class="cmd"><b>python main.py</b><span>Tudo: 1º .txt → 2º jornais</span></div>
+      <div class="cmd"><b>python main.py --txt</b><span>Somente roteiros .txt</span></div>
+      <div class="cmd"><b>python main.py --jornais</b><span>Somente PDFs de jornais</span></div>
+      <div class="cmd"><b>--skill valor|estadao</b> [--pdf]<span>Um jornal / skill acionada direto</span></div>
+    </div>
+    <div class="card">
+      <h3><svg class="i"><use href="#folder"/></svg>Estrutura</h3>
+<div class="tree"><b>speech-ai/</b>
+├─ <b>input/</b>   <em>*.txt</em>
+│  └─ <b>Jornais/</b>  <em>*.pdf</em>
+├─ <b>newsroom/</b> <em>processo rápido</em>
+│  └─ templates/ <em>visual fixo</em>
+├─ skill_bridge/
+├─ <b>web/</b>     <em>frontend</em>
+├─ Skill/      <em>SKILL.md</em>
+├─ <b>output/</b>   <em>*.mp3</em>
+│  └─ Jornais/ <em>html+script</em>
+├─ logs/
+└─ start.bat</div>
+    </div>
+    <div class="card" style="flex:1">
+      <h3><svg class="i"><use href="#rocket"/></svg>Próximos passos</h3>
+      <ul class="blue">
+        <li>Rodar o Estadão de ponta a ponta</li>
+        <li>Revisar áudios e HTMLs</li>
+        <li>Agendar execução diária</li>
+        <li>Commit no Git</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- CENTER -->
+  <section class="center">
+    <div class="layer l-green">
+      <div class="lt">ENTRADA (INPUT)</div>
+      <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="box"><svg class="i lg"><use href="#lang"/></svg><div><h4>Frontend web</h4><p><code>start.bat</code> · envia arquivos e aciona as rotinas</p></div></div>
+        <div class="box"><svg class="i lg"><use href="#txt"/></svg><div><h4>Roteiros .txt</h4><p><code>input\*.txt</code> · texto pronto para narração</p></div></div>
+        <div class="box"><svg class="i lg"><use href="#news"/></svg><div><h4>Jornais PDF</h4><p><code>input\Jornais\*.pdf</code> · Valor + Estadão</p></div></div>
+      </div>
+    </div>
+    <div class="arrows"><div class="a"></div><span class="lbl"><code>python main.py [--txt | --jornais]</code> · ordem: 1º .txt → 2º jornais</span><div class="a"></div></div>
+
+    <div class="layer l-blue">
+      <div class="lt">ORQUESTRAÇÃO – MAIN.PY<small>PYTHON LOCAL · SEM IA</small></div>
+      <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="box"><svg class="i lg"><use href="#txt"/></svg><div><h4>ScriptInbox</h4><p>Cada .txt de <code>input\</code> vira áudio e é arquivado.</p><span class="tag local">--txt</span></div></div>
+        <div class="box"><svg class="i lg"><use href="#search"/></svg><div><h4>NewspaperInbox</h4><p>Identifica o jornal pelo nome ou pela capa.</p><span class="tag local">--jornais</span></div></div>
+        <div class="box"><svg class="i lg"><use href="#gear"/></svg><div><h4>SkillPipeline</h4><p>Processo rápido (<code>engine: fast</code>) e voz.</p><span class="tag local">--jornais / --skill</span></div></div>
+      </div>
+    </div>
+    <div class="arrows"><div class="a" style="visibility:hidden"></div><div class="a"></div><div class="a"></div></div>
+
+    <div class="layer l-orange">
+      <div class="lt">PROCESSO RÁPIDO DE JORNAIS – NEWSROOM<small>A IA SÓ ESCREVE O CONTEÚDO · ~2 A 3 MIN E US$ 1 A 2,60 POR JORNAL</small></div>
+      <div class="stepflow">
+        <div class="box"><div class="hd"><svg class="i"><use href="#news"/></svg><h4>1 · Extração</h4><span class="time">~2 s</span></div><p>pdftotext por página; mapa página › seção; sem anúncios e editais.</p><span class="tag local">Python</span></div>
+        <span class="sep">→</span>
+        <div class="box" style="flex:1.35"><div class="hd"><svg class="i"><use href="#spark"/></svg><h4>2 · IA editorial</h4><span class="time">85–130 s</span></div><p><b>5 chamadas em paralelo</b>: tecnologia · mercados · empresas · política · demais temas. Opus 5.5, JSON; jornal lido do <b>cache</b>.</p><span class="tag ia">IA · claude -p</span></div>
+        <span class="sep">→</span>
+        <div class="box"><div class="hd"><svg class="i"><use href="#target"/></svg><h4>3 · Capa</h4><span class="time">~11 s</span></div><p>Manchete-síntese e abertura do áudio.</p><span class="tag ia">IA · Sonnet 5.5</span></div>
+        <span class="sep">→</span>
+        <div class="box"><div class="hd"><svg class="i"><use href="#html"/></svg><h4>4 · Montagem</h4><span class="time">~15 s</span></div><p>Roteiro validado e HTML fixo com checagem de layout.</p><span class="tag local">Python + Playwright</span></div>
+      </div>
+    </div>
+    <div class="arrows"><div class="a" style="visibility:hidden"></div><div class="a"></div><div class="a" style="visibility:hidden"></div></div>
+
+    <div class="layer l-purple">
+      <div class="lt">SAÍDA DOS JORNAIS<small>output\Jornais\&lt;Jornal&gt; - DD-MM-AAAA\</small></div>
+      <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="box"><svg class="i lg"><use href="#html"/></svg><div><h4>Resumo HTML (deck)</h4><p>1º tecnologia → 2º economia → 3º demais temas; página e seção no rodapé.</p></div></div>
+        <div class="box"><svg class="i lg"><use href="#txt"/></svg><div><h4>script.txt</h4><p>700–1.100 palavras, escrito para voz: sem símbolos, números por extenso.</p></div></div>
+        <div class="box"><svg class="i lg"><use href="#chart"/></svg><div><h4>Auditoria</h4><p><code>editorial.json</code> (conteúdo da IA) e <code>relatorio.json</code> (tempos e custos).</p></div></div>
+      </div>
+    </div>
+    <div class="arrows"><div class="a"></div><span class="lbl">.txt de input + script.txt dos jornais</span><div class="a"></div></div>
+
+    <div class="layer l-blue">
+      <div class="lt">SPEECH PIPELINE – TEXTO → ÁUDIO <span class="par">em paralelo com o HTML</span><small>PYTHON LOCAL · SEM CUSTO DE IA</small></div>
+      <div class="flow">
+        <div class="box"><svg class="i"><use href="#build"/></svg><div><h4>Text Analyzer</h4><p>Normaliza e estrutura</p></div></div>
+        <span class="sep">→</span>
+        <div class="box"><svg class="i"><use href="#lang"/></svg><div><h4>Speech Intelligence</h4><p>Idioma + voz (pt-BR Francisca)</p></div></div>
+        <span class="sep">→</span>
+        <div class="box"><svg class="i"><use href="#log"/></svg><div><h4>Narration / Speech</h4><p>Pausas e ritmo</p></div></div>
+        <span class="sep">→</span>
+        <div class="box"><svg class="i"><use href="#mic"/></svg><div><h4>TTS Edge</h4><p>Síntese neural MP3</p></div></div>
+      </div>
+    </div>
+    <div class="arrows"><div class="a"></div><div class="a"></div><div class="a"></div></div>
+
+    <div class="layer l-green">
+      <div class="lt">RESULTADO E ARQUIVAMENTO</div>
+      <div class="row" style="grid-template-columns:1.25fr 1fr 1fr">
+        <div class="box"><svg class="i lg"><use href="#mp3"/></svg><div><h4>Áudio MP3</h4><p><code>output\&lt;nome do arquivo&gt;_AAAA-MM-DD_HH-MM-SS.mp3</code></p></div></div>
+        <div class="box"><svg class="i lg"><use href="#archive"/></svg><div><h4>Arquivados</h4><p><code>input\processados\</code><br><code>input\Jornais\processados\</code></p></div></div>
+        <div class="box"><svg class="i lg"><use href="#log"/></svg><div><h4>Logs</h4><p><code>logs\app.log</code><br><code>logs\web_jobs\*.log</code></p></div></div>
+      </div>
+    </div>
+
+    <div class="infra">
+      <span class="lt">FERRAMENTAS (LOCAL · WINDOWS)</span>
+      <div class="it"><svg class="i"><use href="#py"/></svg><div><b>Python 3.12</b>Orquestração</div></div>
+      <div class="it"><svg class="i"><use href="#spark"/></svg><div><b>Claude Code</b>claude -p · cache</div></div>
+      <div class="it"><svg class="i"><use href="#news"/></svg><div><b>pdftotext</b>Extração do PDF</div></div>
+      <div class="it"><svg class="i"><use href="#html"/></svg><div><b>Jinja2 + Playwright</b>HTML e layout</div></div>
+      <div class="it"><svg class="i"><use href="#mic"/></svg><div><b>Edge TTS</b>Vozes neurais</div></div>
+      <div class="it"><svg class="i"><use href="#lang"/></svg><div><b>FastAPI</b>Frontend web</div></div>
+    </div>
+  </section>
+
+  <!-- RIGHT -->
+  <aside class="side">
+    <div class="card">
+      <h3><svg class="i"><use href="#box"/></svg>Fluxos</h3>
+      <div class="prod"><svg class="i lg"><use href="#news"/></svg><div><b>JORNAIS <span class="ok" style="display:inline">✓</span></b><span>PDF → HTML + roteiro + MP3</span><span class="tag ia">usa IA</span></div></div>
+      <div class="prod"><svg class="i lg"><use href="#txt"/></svg><div><b>ROTEIROS .TXT <span class="ok" style="display:inline">✓</span></b><span>Texto → MP3</span><span class="tag local">sem IA</span></div></div>
+      <div class="prod"><svg class="i lg"><use href="#lang"/></svg><div><b>FRONTEND WEB <span class="ok" style="display:inline">✓</span></b><span>Upload, execução e resultados</span></div></div>
+    </div>
+    <div class="card">
+      <h3><svg class="i"><use href="#chart"/></svg>Antes × agora</h3>
+      <table class="kpi">
+        <tr><th>Jornal</th><th>Tempo</th><th>US$</th></tr>
+        <tr class="old"><td>Antes (skill)</td><td>15–20 min</td><td>5,60–6,50</td></tr>
+        <tr><td>Valor 06/10</td><td class="hi">2 min 21 s</td><td class="hi">1,02</td></tr>
+        <tr><td>Estadão*</td><td class="hi">~3,5 min</td><td class="hi">2,57</td></tr>
+      </table>
+      <p class="note">Valor: PDF → MP3 completo · 21 slides · 964 palavras · <b>166/166 números conferidos</b> no jornal. *Edição de 05/10, estimado com o áudio.</p>
+    </div>
+    <div class="card">
+      <h3><svg class="i"><use href="#shield"/></svg>Resiliência</h3>
+      <ul>
+        <li>Falha em um item não para os demais</li>
+        <li>Item com falha fica na entrada e é reprocessado</li>
+        <li>Slide apertado → modo compacto automático</li>
+        <li>Limite de uso da IA → retoma na próxima execução</li>
+        <li><code>engine: agent</code> volta à skill completa</li>
+      </ul>
+    </div>
+    <div class="card" style="flex:1">
+      <h3><svg class="i"><use href="#code"/></svg>Componentes</h3>
+      <ul>
+        <li><b>main.py</b> – ponto de entrada</li>
+        <li><b>newsroom/</b> Extractor, Editor, Renderer, ScriptWriter</li>
+        <li><b>skill_bridge/</b> Inbox, Pipeline, Runner</li>
+        <li><b>web/</b> API FastAPI + página</li>
+        <li><b>config/settings.json</b> – engine, modelos, esforço</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div><svg class="i lg"><use href="#pc"/></svg>Ambiente: Local (Windows)</div>
+  <div><svg class="i lg"><use href="#code"/></svg>Desenvolvimento: VSCode + Claude Code</div>
+  <div><svg class="i lg"><use href="#spark"/></svg>IA: Claude Opus 5.5 + Sonnet 5.5</div>
+  <div><svg class="i lg"><use href="#mic"/></svg>Voz: Microsoft Edge TTS</div>
+</footer>
+
+
+
+</body>
+</html>

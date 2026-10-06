@@ -1,0 +1,212 @@
+Slide 1 – AI Governance Overview
+
+
+Hello everyone.
+
+Good morning, good afternoon and good evening, depending on where you are joining us from.
+
+Thank you very much for being here today.
+
+My name is Rodrigo, Currently, I am responsible for AI projects in South America, supporting all business areas and their demands.
+
+Today I would like to share how we are building AI Governance in South America.
+
+Our region includes several countries and many different business areas.
+
+Because of this diversity, we needed a simple governance model that allows innovation while maintaining security, compliance and business value.
+
+Our vision is not only to develop AI solutions.
+
+Our goal is to create an environment where AI can be used responsibly, efficiently and at scale.
+
+Our governance is based on four main pillars.
+
+The first pillar is Governance.
+It defines how decisions are made.
+
+The second pillar is AI Platforms and Tools.
+It provides employees with approved technologies.
+
+The third pillar is AI Culture and Knowledge.
+It focuses on education and adoption.
+
+Finally, the fourth pillar is AI Use Cases.
+It helps transform business ideas into real solutions.
+
+Together, these four pillars create one complete AI ecosystem.
+
+
+Slide 2 – Organization Structure
+
+This slide shows how our organization is structured.
+
+AI Governance starts with executive sponsorship.
+
+Our executive sponsors define priorities and support strategic decisions.
+
+The AI Governance Manager coordinates all governance activities across South America.
+
+We also have AI experts who provide technical guidance and support project implementation.
+
+One important part of our model is the Business Ambassador network.
+
+Business Ambassadors represent different business functions.
+
+They understand local business challenges and identify opportunities where AI can create value.
+
+Working together with them, we have our Functional ICT teams.
+
+They evaluate technical feasibility and support solution development.
+
+Another important connection is with the Global Center of Excellence for Generative AI.
+
+This collaboration allows us to align regional initiatives with global standards, best practices and corporate strategy.
+
+In summary, our model combines business, technology and governance into one collaborative structure.
+
+
+Slide 3 – Governance Committees
+
+
+
+Governance is not only about approving projects.
+
+It is also about creating transparency, reducing risks and supporting innovation.
+
+For this reason, we created three governance committees.
+
+The first committee is the Executive Committee.
+
+This committee meets every quarter.
+
+Its main responsibility is strategic decision-making.
+
+It reviews important AI initiatives, monitors business results and defines priorities for the region.
+
+The second committee is the Operative Committee.
+
+This committee meets every month.
+
+It works much closer to day-to-day activities.
+
+The team supports AI literacy, evaluates new opportunities, helps teams use the approved AI platforms and follows project execution.
+
+It is also responsible for sharing successful initiatives across different business areas.
+
+The third committee is the Regulatory Committee.
+
+This committee focuses on responsible AI.
+
+It evaluates privacy, security, legal requirements and ethical risks.
+
+It also monitors changes in AI regulations in different countries.
+
+The objective is to make sure AI solutions are compliant before they are implemented.
+
+Together, these three committees provide strategic direction, operational support and regulatory oversight.
+
+
+Slide 4 – Business Ambassadors Network
+
+
+One of the biggest success factors of our governance model is our Business Ambassador network.
+
+Instead of having AI managed only by the IT organization, we involve people from every business area.
+
+These ambassadors help identify business problems that AI can solve.
+
+They also encourage collaboration between departments.
+
+Another important responsibility is promoting AI adoption inside their teams.
+
+To support this community, we created a central AI portal.
+
+This portal contains governance documentation, AI news, training materials, videos, available AI tools and useful references.
+
+It has become the main communication channel for AI inside South America.
+
+Our objective is to make AI knowledge available to everyone, regardless of their technical background.
+
+
+Slide 5 – AI Community and Knowledge Sharing
+
+
+
+Technology alone is not enough.
+
+People are the key to successful AI adoption.
+
+Because of this, we invest heavily in knowledge sharing.
+
+During the year we organize AI events for all employees.
+
+Internal AI Ambassadors present solutions already implemented inside Stellantis.
+
+These presentations allow other teams to learn from successful projects.
+
+We also invite external companies and technology partners.
+
+They share market trends, new technologies and practical experiences.
+
+These sessions are open to the entire organization.
+
+They help create curiosity, inspire innovation and increase AI maturity across the region.
+
+Every event also creates new networking opportunities between business and technology teams.
+
+
+Slide 6 – AI Portfolio and Results
+
+
+
+This final slide shows our AI portfolio.
+
+Today, South America has more than 280 AI initiatives registered in our inventory.
+
+These initiatives cover almost every business function, including Manufacturing, Supply Chain, Engineering, Finance, Human Resources and Sales.
+
+Each initiative follows a governance process from idea generation to production.
+
+Some projects are already delivering business value.
+
+Others are currently under development, proof of concept or business evaluation.
+
+We also classify projects into two categories.
+
+The first category is Self-Service AI.
+
+These are solutions that employees can safely create using approved AI platforms.
+
+The second category is Non Self-Service AI.
+
+These projects usually require software development, integration or more advanced governance.
+
+Having one centralized inventory gives us complete visibility of our AI landscape.
+
+It allows us to monitor progress, prioritize investments, measure business impact and identify opportunities for collaboration between different teams.
+
+Most importantly, it helps us avoid duplicated efforts and accelerate innovation across the region.
+
+Closing
+
+
+
+To conclude,
+
+AI Governance is much more than a process.
+
+It is the foundation that allows innovation to happen in a safe, responsible and scalable way.
+
+Our experience in South America shows that successful AI adoption depends on three key elements:
+
+strong governance,
+collaboration between business and technology,
+and continuous learning.
+
+We are still evolving, but we have already built a solid foundation that supports both local innovation and global alignment.
+
+We hope our experience can also contribute to discussions across other regions.
+
+Thank you very much for your attention.
+
+It will be a pleasure to answer your questions.

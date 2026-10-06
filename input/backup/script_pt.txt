@@ -1,0 +1,23 @@
+Slide 1 – Visão Geral
+Olá a todos.
+Bom dia, boa tarde ou boa noite, dependendo de onde vocês estão nos assistindo.
+Meu nome é Renato e sou responsável por projetos de Automação e Inteligência Artificial na América do Sul.
+Hoje quero compartilhar com vocês como estamos evoluindo nossa jornada de automação na região.
+Nossa visão vai além de automatizar processos. Queremos criar um ambiente onde a tecnologia trabalhe a favor das pessoas, gerando valor real para o negócio.
+
+Slide 2 – Estrutura e Governança
+Nossa estrutura combina times técnicos, áreas de negócio e parceiros estratégicos.
+Trabalhamos com squads organizados por domínio: Financeiro, Supply Chain, Banco, Peças e Serviços, entre outros.
+Cada squad tem autonomia para identificar oportunidades, desenvolver soluções e garantir a entrega com qualidade.
+A governança garante visibilidade, controle e alinhamento com as diretrizes globais.
+
+Slide 3 – Portfólio e Resultados
+Hoje gerenciamos mais de 300 robôs em produção na América do Sul.
+Esses robôs atuam em diversas áreas do negócio, gerando economia de tempo, redução de erros e ganho de eficiência.
+Além da automação tradicional, estamos expandindo para soluções de Inteligência Artificial Generativa, com casos de uso em atendimento, análise de dados e suporte à decisão.
+
+Encerramento
+Para concluir: automação bem governada não é só tecnologia. É sobre pessoas, processos e uma cultura de 
+melhoria contínua.
+Seguimos evoluindo, e estamos apenas no começo dessa jornada.
+Muito obrigado pela atenção. Fico à disposição para perguntas.

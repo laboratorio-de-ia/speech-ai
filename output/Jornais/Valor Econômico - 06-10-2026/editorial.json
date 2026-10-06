@@ -1,0 +1,1398 @@
+{
+ "cover": {
+  "title": "Nvidia banca IA aberta contra a China",
+  "title_line2": "e bolsa sobe 7,7% com Flávio na frente",
+  "subtitle": "Startup apoiada pela Nvidia lança modelo de IA aberto para enfrentar rivais chineses. Após o 1º turno, Ibovespa sobe 7,7% e dólar cai a R$ 5. Flávio articula apoios, Lula revê a campanha e o PL elege a maior bancada da Câmara desde 1990.",
+  "edition_date": "6 de outubro de 2026",
+  "edition_meta": [
+   "Ano 27 · nº 6604",
+   "Terça-feira"
+  ],
+  "spoken_date": "terça-feira, 6 de outubro de 2026",
+  "script_opening": "Bom dia. Este é o resumo do Valor desta terça-feira, 6 de outubro. Destaques: startup apoiada pela Nvidia lança modelo de inteligência artificial aberto para enfrentar rivais chineses; Ibovespa sobe 7,7 por cento e dólar cai a 5 reais; Flávio e Lula definem estratégias para o segundo turno, após o primeiro turno.",
+  "description": "Resumo do Valor de 6/10/2026: startup apoiada pela Nvidia lança IA aberta contra rivais chineses; Ibovespa sobe 7,7% e dólar cai a R$ 5 após o 1º turno; Flávio e Lula definem estratégias para o 2º turno."
+ },
+ "tiers": [
+  {
+   "slides": [
+    {
+     "nav_title": "Reflection AI e o código aberto",
+     "eyebrow": "Empresas › Tecnologia · B8",
+     "headline": "Startup apoiada pela Nvidia lança modelo aberto para enfrentar a dominância chinesa",
+     "lede": "A Reflection AI apresentou o Beam, seu primeiro modelo de código aberto. A empresa diz que ele está no nível do GLM-5.2, da chinesa Z.ai, e custa uma fração do que cobram os rivais americanos.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "US$ 25 bi",
+       "unit": "",
+       "label": "Valor de mercado da Reflection antes do primeiro modelo",
+       "sub": "Fundada em 2024 · B8",
+       "tone": "accent"
+      },
+      {
+       "value": "US$ 4 bi",
+       "unit": "",
+       "label": "Capital captado desde o lançamento",
+       "sub": "Sequoia, 1789 Capital e outros · B8",
+       "tone": "neutral"
+      },
+      {
+       "value": "US$ 800 mi",
+       "unit": "",
+       "label": "Investimento da Nvidia na Reflection",
+       "sub": "Inclui acesso a chips · B8",
+       "tone": "neutral"
+      },
+      {
+       "value": "56",
+       "unit": "%",
+       "label": "Fatia dos tokens processados por modelos abertos no AI Gateway da Vercel",
+       "sub": "Agosto; eram 7% em dezembro · B8",
+       "tone": "positive"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Geopolítica da IA",
+       "page": "B8",
+       "text": "A Reflection tem parcerias com o Pentágono e o Departamento de Energia, e acordos para criar modelos para aliados como a Coreia do Sul. Os detalhes técnicos de desempenho do Beam não foram divulgados.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Scott Bessent · Tesouro dos EUA",
+       "page": "B8",
+       "text": "Bessent pediu ao Congresso mais modelos abertos americanos. Laboratórios chineses lideram esse segmento. Huang, CEO da Nvidia, defende o uso desses modelos por empresas dos EUA.",
+       "bullets": [],
+       "quote": "Não podemos permitir que esses grandes laboratórios capturem o processo regulatório, pois isso impedirá a inovação",
+       "quote_by": "Scott Bessent"
+      }
+     ],
+     "takeaway": "O avanço dos modelos abertos ameaça o modelo de cobrança da OpenAI e da Anthropic. Se o Beam entregar o que promete, a guerra de preços na IA tende a ficar mais forte.",
+     "sources": [
+      {
+       "page": "B8",
+       "section": "Empresas › Tecnologia"
+      }
+     ],
+     "script": "A startup americana Reflection AI lançou o Beam, seu primeiro modelo de inteligência artificial de código aberto. A Nvidia investiu 800 milhões de dólares na empresa, que já vale 25 bilhões. Em agosto, os modelos abertos responderam por 56 por cento dos tokens processados no serviço da Vercel. Em dezembro, eram 7 por cento. Na leitura do editor, a guerra de preços na IA deve se acirrar."
+    },
+    {
+     "nav_title": "Regulação e riscos da IA",
+     "eyebrow": "Tecnologia › Regulação · B8, A21",
+     "headline": "Noruega propõe vetar óculos de IA em espaços públicos, e articulista alerta para o ‘quarto escuro’ da IA",
+     "lede": "A Noruega será o primeiro grande país a proibir temporariamente os óculos com IA em parques, praias e escolas. Na Opinião, Edvaldo Santana questiona a ideia de que o “humano no controle” basta para conter agentes autônomos.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "US$ 1 tri",
+       "unit": "",
+       "label": "Gastos previstos dos consumidores com dispositivos vestíveis",
+       "sub": "De 2026 a 2032, segundo a Counterpoint · B8",
+       "tone": "accent"
+      },
+      {
+       "value": "53",
+       "unit": "",
+       "label": "Imagens de usuários do ChatGPT publicadas por agentes de IA invasores",
+       "sub": "Segundo o artigo de Santana · A21",
+       "tone": "neutral"
+      },
+      {
+       "value": "-5",
+       "unit": "pp",
+       "label": "Queda na chance de primeiro emprego de formados em áreas expostas à IA",
+       "sub": "Estimativa do Censo dos EUA · A21",
+       "tone": "neutral"
+      },
+      {
+       "value": "13",
+       "unit": "%",
+       "label": "Diferença salarial para baixo desses formados",
+       "sub": "Segundo a coluna de Rana Foroohar (FT) · A21",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Noruega · óculos inteligentes",
+       "page": "B8",
+       "text": "O governo vai mandar ao Parlamento um projeto com proibição temporária e criar um grupo de especialistas para propor leis permanentes. Escolas de Oslo e a Equinor já baniram esses óculos.",
+       "bullets": [],
+       "quote": "Estou preocupado com a introdução de uma poderosa nova tecnologia",
+       "quote_by": "Torgeir Micaelsen, ministro da Digitalização"
+      },
+      {
+       "tag": "Edvaldo Santana · Opinião",
+       "page": "A21",
+       "text": "Para o articulista, o encontro entre Trump e Xi, em 24 e 25 de setembro, só abriu um diálogo. Ele vê a plataforma de segurança da Nvidia, lançada em 28 de setembro, como sólida, mas incapaz de captar a intenção dos agentes.",
+       "bullets": [],
+       "quote": "O humano no controle era a promessa. O humano supervisor é a realidade.",
+       "quote_by": "Edvaldo Santana"
+      },
+      {
+       "tag": "Rana Foroohar · FT",
+       "page": "A21",
+       "text": "A colunista afirma que a IA favorece trabalhadores mais velhos e experientes. Segundo ela, isso piora o mercado em duas camadas: nos EUA, o desemprego é de 7,1% entre 20 e 24 anos, contra 3,6% entre 25 e 54.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "A regulação de IA começa a chegar ao consumidor, com os óculos e as réplicas digitais. A segurança dos agentes autônomos, porém, ainda depende da autorregulação das grandes empresas.",
+     "sources": [
+      {
+       "page": "B8",
+       "section": "Empresas › Tecnologia"
+      },
+      {
+       "page": "A21",
+       "section": "Opinião"
+      }
+     ],
+     "script": "A Noruega quer proibir temporariamente o uso de óculos com inteligência artificial em parques, praias e escolas, por risco à privacidade. A consultoria Counterpoint estima que esses dispositivos vão movimentar 1 trilhão de dólares até 2032. Na Opinião, Edvaldo Santana avalia que, diante de agentes autônomos, o humano já não controla a IA: apenas a supervisiona."
+    },
+    {
+     "nav_title": "IA aplicada e ciência",
+     "eyebrow": "IA aplicada · B1, B6, B8, B9, A19, C6",
+     "headline": "Da indústria ao câncer: IA e biotecnologia movimentam negócios, e a optogenética leva o Nobel",
+     "lede": "",
+     "layout": "mosaic",
+     "kpis": [],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Schneider compra PTC",
+       "page": "B1",
+       "text": "A Schneider Electric vai pagar US$ 205 por ação, prêmio de 42%, numa operação que avalia a PTC em US$ 22,6 bilhões. O objetivo é preparar o portfólio para a IA industrial. Com a compra, quase um quarto da receita do grupo virá de software.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Banlek · fotos com IA",
+       "page": "B8",
+       "text": "A plataforma já vendeu R$ 700 milhões e projeta chegar a R$ 1 bilhão no início de 2027. Usa reconhecimento facial e reúne 250 mil fotógrafos. A IA faz 90% dos atendimentos e 80% da análise de risco.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Teste de câncer · Fleury e Einstein",
+       "page": "B6",
+       "text": "A Genesis Genomics traz ao Brasil o Galleri, da Grail, que rastreia cerca de 50 tipos de câncer pelo DNA. O exame custa R$ 6.990. Nos EUA, foram 117 mil testes no 1º semestre, alta de 42%.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Agro 4.0",
+       "page": "B9",
+       "text": "Telemetria e IA criam novas funções no campo, como analista de dados e piloto de drone. Em setembro, a John Deere lançou uma IA própria. Em 2025, o agro empregava 28,4 milhões de pessoas, alta de 2,2%.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Nobel de Medicina",
+       "page": "A19",
+       "text": "Karl Deisseroth, Peter Hegemann e Georg Nagel ganharam o Nobel pela optogenética, técnica que ativa ou desativa neurônios com luz. Os três dividem 12 milhões de coroas suecas, cerca de US$ 1,2 milhão.",
+       "bullets": [],
+       "quote": "Esse método é hoje utilizado em laboratórios de todo o mundo para desvendar os mistérios do cérebro",
+       "quote_by": "Thomas Perlmann"
+      },
+      {
+       "tag": "IPOs nos EUA",
+       "page": "C6",
+       "text": "Elo e Wellhub (antigo Gympass) já enviaram documentos de forma confidencial à SEC, a comissão de valores dos EUA, para uma possível listagem no mercado americano.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "A IA aplicada já aparece em grandes fusões, em plataformas brasileiras e no diagnóstico médico. O valor de negócios como a PTC mostra o preço que o mercado dá ao software industrial.",
+     "sources": [
+      {
+       "page": "B1",
+       "section": "Empresas"
+      },
+      {
+       "page": "B6",
+       "section": "Empresas › Saúde"
+      },
+      {
+       "page": "B8",
+       "section": "Empresas › Tecnologia"
+      },
+      {
+       "page": "B9",
+       "section": "Agronegócios"
+      },
+      {
+       "page": "A19",
+       "section": "Internacional"
+      },
+      {
+       "page": "C6",
+       "section": "Finanças"
+      }
+     ],
+     "script": "A Schneider Electric vai comprar a PTC por 22,6 bilhões de dólares para avançar na IA industrial. A brasileira Banlek usa reconhecimento facial e projeta 1 bilhão de reais em vendas. Fleury e Einstein lançam um teste que rastreia 50 tipos de câncer. E o Nobel de Medicina premiou a optogenética, que controla neurônios com luz."
+    }
+   ],
+   "divider": {
+    "pages": "A19, A21, B1, B6, B8, B9, C6",
+    "subtitle": "Com apoio da Nvidia, a Reflection AI lança um modelo aberto para disputar com a China. A Noruega propõe vetar óculos de IA, e um articulista alerta para os riscos dos agentes autônomos. A IA aplicada movimenta fusões, saúde e agro, e a optogenética leva o Nobel.",
+    "chips": [
+     "Reflection AI e Nvidia",
+     "Regulação e riscos",
+     "IA aplicada e Nobel"
+    ]
+   },
+   "overview_kpis": [
+    {
+     "value": "US$ 22,6 bi",
+     "unit": "",
+     "label": "Valor da PTC na compra pela Schneider Electric",
+     "sub": "Prêmio de 42% · B1",
+     "tone": "accent"
+    },
+    {
+     "value": "US$ 25 bi",
+     "unit": "",
+     "label": "Valor de mercado da Reflection AI",
+     "sub": "Nvidia aportou US$ 800 mi · B8",
+     "tone": "neutral"
+    },
+    {
+     "value": "56",
+     "unit": "%",
+     "label": "Fatia dos tokens processados por modelos abertos",
+     "sub": "Agosto; eram 7% em dezembro · B8",
+     "tone": "positive"
+    },
+    {
+     "value": "US$ 1 tri",
+     "unit": "",
+     "label": "Gastos previstos com dispositivos vestíveis de 2026 a 2032",
+     "sub": "Counterpoint Research · B8",
+     "tone": "neutral"
+    }
+   ],
+   "cover": {
+    "headline": "Startup apoiada pela Nvidia lança modelo de IA aberto para enfrentar rivais chineses",
+    "source": "B8 · Empresas › Tecnologia"
+   },
+   "agenda": [
+    {
+     "when": "em breve",
+     "lead": "Lançamento do Beam",
+     "text": "A Reflection AI promete lançar em breve o Beam em parceria com empresas, com custo menor que o dos rivais americanos."
+    },
+    {
+     "when": "em breve",
+     "lead": "Veto norueguês a óculos de IA",
+     "text": "O governo da Noruega vai apresentar ao Parlamento o projeto de proibição temporária dos óculos com IA em espaços públicos."
+    }
+   ],
+   "watch_sentence": "Fique de olho no lançamento comercial do Beam, da Reflection AI, e na votação, pelo Parlamento norueguês, da proibição dos óculos com inteligência artificial."
+  },
+  {
+   "slides": [
+    {
+     "nav_title": "Rali histórico pós-1º turno",
+     "eyebrow": "Finanças › Mercados · C1–C3",
+     "headline": "Bolsa sobe 7,7% e dólar cai 4,12% após 1º turno: maior alta do Ibovespa desde 2020",
+     "lede": "Com Flávio Bolsonaro à frente e Congresso mais à direita, a Faria Lima tratou a eleição como liquidada, mesmo sem um plano econômico detalhado do candidato do PL.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "206.912",
+       "unit": "pts",
+       "label": "Ibovespa no fechamento, recorde nominal",
+       "sub": "Alta de 7,70% no dia · C2",
+       "tone": "accent"
+      },
+      {
+       "value": "R$ 5,001",
+       "unit": "",
+       "label": "Dólar à vista após queda de 4,12%",
+       "sub": "Maior baixa diária desde jun/2018 · C3",
+       "tone": "positive"
+      },
+      {
+       "value": "R$ 400 bi",
+       "unit": "",
+       "label": "Ganho de valor de mercado das empresas do Ibovespa",
+       "sub": "Total chega a R$ 5,2 trilhões · C2",
+       "tone": "positive"
+      },
+      {
+       "value": "R$ 79,3 bi",
+       "unit": "",
+       "label": "Volume negociado no Ibovespa",
+       "sub": "Maior da série desde 2000 · C2",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Bancos revisam recomendações",
+       "page": "C1–C2",
+       "text": "J.P. Morgan elevou ações brasileiras para 'overweight' e vê alta de 12% a 20% do MSCI Brazil; Goldman Sachs vê dólar entre R$ 4,50 e R$ 4,80; Citi e Wells Fargo embolsaram parte dos lucros.",
+       "bullets": [],
+       "quote": "O Brasil está tão descontado há tanto tempo que não me surpreenderia se víssemos movimentos adicionais como o que vimos hoje",
+       "quote_by": "Marcelo Mello, SulAmérica Investimentos"
+      },
+      {
+       "tag": "Contraponto · Capital Economics",
+       "page": "B2",
+       "text": "William Jackson vê queda do dólar como temporária e projeta R$ 5,40 até o fim de 2027, pois o câmbio é movido mais por carry trade e commodities do que pela política.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "O rali precificou mais a troca de governo que um programa: Flávio ainda não detalhou plano fiscal nem equipe. Com dólar abaixo de R$ 5 e bolsa acima de 200 mil pontos, boa parte do cenário otimista já está nos preços.",
+     "sources": [
+      {
+       "page": "C1–C3",
+       "section": "Finanças › Mercados"
+      },
+      {
+       "page": "B2",
+       "section": "Empresas › Pipeline"
+      }
+     ],
+     "script": "O mercado viveu um dia de euforia após o primeiro turno. O Ibovespa subiu 7,7 por cento, para o recorde de 206.912 pontos, e as empresas ganharam 400 bilhões de reais em valor. O dólar caiu 4,12 por cento, para 5 reais. Na leitura do editor, o rali ocorreu sem que Flávio Bolsonaro tenha apresentado plano econômico."
+    },
+    {
+     "nav_title": "Juros futuros desabam",
+     "eyebrow": "Finanças › Juros · C1, A20",
+     "headline": "Juros futuros caem até 1,3 ponto e B3 amplia duas vezes o limite de oscilação do DI",
+     "lede": "Taxas das NTN-Bs ficam abaixo de 7% e o mercado passa a apostar em cortes mais rápidos da Selic, hoje em 13,75%.",
+     "layout": "chart",
+     "kpis": [
+      {
+       "value": "45",
+       "unit": "%",
+       "label": "Chance de corte de 0,5 pp da Selic em dezembro, nas opções digitais",
+       "sub": "Era de 18% antes da eleição · A20",
+       "tone": "accent"
+      },
+      {
+       "value": "6,72",
+       "unit": "%",
+       "label": "Juro real da NTN-B 2050, ante 7,15%",
+       "sub": "NTN-B 2028 caiu a 6,98% · C1",
+       "tone": "positive"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "Taxas do DI antes e depois do 1º turno",
+      "subtitle": "% ao ano, fechamento de 2/out e 5/out · B3, Valor PRO",
+      "bars": [
+       {
+        "label": "DI jan/2028 antes",
+        "display": "13,51%",
+        "number": 13.51,
+        "highlight": false
+       },
+       {
+        "label": "DI jan/2028 depois",
+        "display": "12,665%",
+        "number": 12.665,
+        "highlight": true
+       },
+       {
+        "label": "DI jan/2031 antes",
+        "display": "13,99%",
+        "number": 13.99,
+        "highlight": false
+       },
+       {
+        "label": "DI jan/2031 depois",
+        "display": "12,655%",
+        "number": 12.655,
+        "highlight": true
+       }
+      ],
+      "note": "A B3 não ampliava o limite do DI duas vezes no mesmo dia desde 13 de março de 2020."
+     },
+     "cards": [
+      {
+       "tag": "Solange Srour · UBS GWM",
+       "page": "C1",
+       "text": "Para a economista, um Congresso mais à direita não garante pautas fiscais; o risco é a agenda econômica disputar espaço com a crise institucional e o STF.",
+       "bullets": [],
+       "quote": "Reforma precisa ser liderada pelo Executivo",
+       "quote_by": "Solange Srour"
+      },
+      {
+       "tag": "Editorial do Valor",
+       "page": "A20",
+       "text": "O jornal avalia que o otimismo 'por enquanto se apoia apenas em promessas' e vê componentes especulativos nas apostas na Selic, já que a inflação de curto prazo subiu.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "A queda dos juros longos depende de um ajuste fiscal crível que ainda não foi apresentado. O Focus voltou a projetar IPCA acima de 5%, o que limita a margem do Banco Central para acelerar os cortes.",
+     "sources": [
+      {
+       "page": "C1",
+       "section": "Finanças › Mercados"
+      },
+      {
+       "page": "A20",
+       "section": "Opinião › Editorial"
+      }
+     ],
+     "script": "Nos juros, o DI para 2031 caiu de 13,99 para 12,65 por cento, e a B3 teve de ampliar duas vezes o limite de oscilação. A chance de corte de meio ponto na Selic em dezembro subiu de 18 para 45 por cento. Solange Srour, do UBS, avisa que reforma precisa ser liderada pelo Executivo."
+    },
+    {
+     "nav_title": "Comida pesa mais que o IPCA",
+     "eyebrow": "Brasil › Conjuntura · A2, A4",
+     "headline": "Alimentos sobem 60,8% desde 2020, contra 42,7% do IPCA, e explicam o mal-estar com a economia",
+     "lede": "A renda real subiu, mas deflacionada pelo preço da comida teria caído 4,9%, segundo o FGV Ibre.",
+     "layout": "chart",
+     "kpis": [
+      {
+       "value": "81,9",
+       "unit": "%",
+       "label": "Trabalhadores que citam comida como maior peso no orçamento",
+       "sub": "Recorde da série FGV; 87% na baixa renda · A2",
+       "tone": "accent"
+      },
+      {
+       "value": "5,01",
+       "unit": "%",
+       "label": "IPCA projetado para 2026 no Focus",
+       "sub": "Alta de 0,02 pp na semana · A2",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "Preços e renda desde a pandemia",
+      "subtitle": "Variação acumulada em % · abr/2020 a ago/2026 · 4intelligence, IBGE",
+      "bars": [
+       {
+        "label": "Alimentação no domicílio",
+        "display": "60,8%",
+        "number": 60.8,
+        "highlight": true
+       },
+       {
+        "label": "IPCA",
+        "display": "42,7%",
+        "number": 42.7,
+        "highlight": false
+       },
+       {
+        "label": "Renda real do trabalho",
+        "display": "9,5%",
+        "number": 9.5,
+        "highlight": false
+       }
+      ],
+      "note": "Renda medida de abr/2020 a jul/2026."
+     },
+     "cards": [
+      {
+       "tag": "Fabio Romão · 4intelligence",
+       "page": "A4",
+       "text": "A maior parte da alta ocorreu até meados de 2022; de 2023 a agosto de 2026 alimentos subiram 12,9%, abaixo dos 17,9% do IPCA.",
+       "bullets": [],
+       "quote": "Comer ficou mais caro e os alívios de curto prazo pouco têm ajudado",
+       "quote_by": "Fabio Romão"
+      },
+      {
+       "tag": "Pressão à frente",
+       "page": "A2",
+       "text": "A Tendências projeta alta de 6,7% para Alimentação e Bebidas no IPCA de 2026, ante 2,95% em 2025, com El Niño e diesel mais caro.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "O descompasso entre indicadores recordes e percepção ruim tem base nos números: a comida subiu mais que a renda. Com El Niño e diesel em alta, a pressão sobre alimentos tende a voltar no quarto trimestre.",
+     "sources": [
+      {
+       "page": "A4",
+       "section": "Brasil › Conjuntura"
+      },
+      {
+       "page": "A2",
+       "section": "Brasil › Conjuntura"
+      }
+     ],
+     "script": "Desde abril de 2020, a comida em casa subiu 60,8 por cento, contra 42,7 do IPCA, e a renda real avançou só 9,5 por cento. Para 81,9 por cento dos trabalhadores, alimentação é o maior peso no orçamento. O Focus já projeta inflação de 5,01 por cento neste ano."
+    },
+    {
+     "nav_title": "Casas Bahia: laudo da perícia",
+     "eyebrow": "Empresas › Varejo · B3",
+     "headline": "Perícia mostra Casas Bahia com estoque 40% menor e 4.647 demissões em agosto",
+     "lede": "Laudo pedido pela Justiça de São Paulo antecede decisão sobre o processamento da recuperação judicial da varejista.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "-40,5",
+       "unit": "%",
+       "label": "Queda do estoque fiduciário nos CDs entre abril e agosto",
+       "sub": "De R$ 3,18 bi para R$ 1,89 bi · B3",
+       "tone": "accent"
+      },
+      {
+       "value": "4.647",
+       "unit": "",
+       "label": "Vínculos de trabalho cortados entre 3 e 28 de agosto",
+       "sub": "De 29.737 para 25.090 (-15,6%) · B3",
+       "tone": "accent"
+      },
+      {
+       "value": "R$ 17,32 bi",
+       "unit": "",
+       "label": "Passivo informado, em 28,8 mil registros de credores",
+       "sub": "10 maiores concentram 50,57% · B3",
+       "tone": "neutral"
+      },
+      {
+       "value": "735",
+       "unit": "",
+       "label": "Lojas em atividade, de um total de 744",
+       "sub": "25 de 29 CDs operam normalmente · B3",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Riscos apontados",
+       "page": "B3",
+       "text": "Caixa operacional ajustado negativo em R$ 298 milhões no 1º semestre; avisos de corte de energia em 22 unidades; BTG notificou inadimplemento de R$ 76,4 milhões.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Próximos passos",
+       "page": "B3",
+       "text": "Rede busca financiamento DIP de até R$ 1 bilhão, mas bancos cogitam menos da metade. Depósitos judiciais e recursais somam R$ 756 milhões e podem ser liberados.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "Sem desabastecimento visível, mas com estoque e equipe encolhendo, a Casas Bahia perde poder de competição num varejo já freado por juros altos. O deferimento da RJ e o tamanho do DIP definem o fôlego.",
+     "sources": [
+      {
+       "page": "B3",
+       "section": "Empresas › Varejo"
+      }
+     ],
+     "script": "A perícia na Casas Bahia mostrou estoque em garantia 40,5 por cento menor entre abril e agosto. Foram 4.647 demissões em agosto. O passivo soma 17,32 bilhões de reais. Ainda assim, 735 das 744 lojas funcionam. Na leitura do editor, o empréstimo emergencial definirá o fôlego da rede."
+    },
+    {
+     "nav_title": "Petróleo: leilão e diesel",
+     "eyebrow": "Empresas › Petróleo e energia · B6, A4",
+     "headline": "ANP leiloa mais de 300 blocos amanhã, enquanto diesel sobe 7% nos postos",
+     "lede": "Governo espera arrecadar ao menos R$ 2,18 bilhões; escassez global pressiona o combustível importado.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "313",
+       "unit": "",
+       "label": "Blocos em oferta na concessão, mais 13 áreas no pré-sal",
+       "sub": "Maior oferta da história da ANP · B6",
+       "tone": "accent"
+      },
+      {
+       "value": "R$ 2,18 bi",
+       "unit": "",
+       "label": "Arrecadação mínima esperada em bônus de assinatura",
+       "sub": "Pagamento até 30/dez · B6",
+       "tone": "neutral"
+      },
+      {
+       "value": "R$ 7,35",
+       "unit": "",
+       "label": "Preço do diesel S-10 por litro nos postos",
+       "sub": "+7% (R$ 0,47) em um mês · A4",
+       "tone": "accent"
+      },
+      {
+       "value": "R$ 15,4 bi",
+       "unit": "",
+       "label": "Gasto do governo com subsídios a combustíveis líquidos",
+       "sub": "Segundo a ANP · A4",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Leilão da ANP",
+       "page": "B6",
+       "text": "Petrobras, Prio, TotalEnergies e Shell estão habilitadas; 46 empresas aptas na concessão e 19 na partilha. Foz do Amazonas e Pelotas ficam sem blocos marinhos desta vez.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Sergio Araújo · Abicom",
+       "page": "A4",
+       "text": "Refinarias dos EUA respondem por 80% das importações de diesel em outubro; o Brasil importa cerca de 30% do consumo.",
+       "bullets": [],
+       "quote": "Se os EUA realmente proibirem a exportação, novembro vai ser preocupante.",
+       "quote_by": "Sergio Araújo, presidente da Abicom"
+      }
+     ],
+     "takeaway": "O leilão testa o apetite das petroleiras por reposição de reservas; o diesel mostra a dependência de importação dos EUA e o custo fiscal crescente dos subsídios.",
+     "sources": [
+      {
+       "page": "B6",
+       "section": "Empresas › Petróleo"
+      },
+      {
+       "page": "A4",
+       "section": "Brasil › Conjuntura"
+      }
+     ],
+     "script": "A ANP leiloa amanhã 313 blocos em concessão e 13 áreas no pré-sal, com arrecadação mínima de 2,18 bilhões de reais. Já o diesel subiu 7 por cento em um mês, para 7,35 reais o litro. Para a Abicom, se os Estados Unidos proibirem exportações, novembro será preocupante."
+    },
+    {
+     "nav_title": "Soja e veículos em alta",
+     "eyebrow": "Agronegócios e Indústria · B10, B6",
+     "headline": "Indústria de óleos investe R$ 7,65 bi e venda de veículos tem melhor setembro da história",
+     "lede": "Biodiesel e farelo puxam a expansão das esmagadoras; crédito subsidiado e chinesas impulsionam montadoras.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "R$ 7,65 bi",
+       "unit": "",
+       "label": "Investimentos previstos em processamento nos próximos 12 meses",
+       "sub": "Ante R$ 5,76 bi em 2025 · B10",
+       "tone": "positive"
+      },
+      {
+       "value": "261,9",
+       "unit": "mil t/dia",
+       "label": "Capacidade de processamento de oleaginosas",
+       "sub": "Alta de 13,1% sobre 231,6 mil · B10",
+       "tone": "positive"
+      },
+      {
+       "value": "281,3",
+       "unit": "mil",
+       "label": "Veículos licenciados em setembro",
+       "sub": "+15,65% na comparação anual · B6",
+       "tone": "positive"
+      },
+      {
+       "value": "2,25",
+       "unit": "mi",
+       "label": "Veículos vendidos de janeiro a setembro",
+       "sub": "2025 inteiro: 2,68 milhões · B6",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Daniel Amaral · Abiove",
+       "page": "B10",
+       "text": "Plantas ativas passaram de 131 para 148; investimentos podem gerar 13,4 mil empregos. Setor espera B17 em março de 2027.",
+       "bullets": [],
+       "quote": "Os biocombustíveis ganharam um papel importante na questão energética",
+       "quote_by": "Daniel Furlan Amaral, Abiove"
+      },
+      {
+       "tag": "Montadoras · Fenabrave",
+       "page": "B6",
+       "text": "Carros subiram 21,2% no mês; elétricos +176,93% e híbridos +108,4%. Hyundai (7,72%) passou a BYD (5,86%) no 3º lugar entre leves.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "Biodiesel sustenta investimento no agro industrial, e as vendas de carros resistem ao crédito caro, ajudadas por subsídios e por compras antecipadas de locadoras antes do Imposto Seletivo.",
+     "sources": [
+      {
+       "page": "B10",
+       "section": "Agronegócios"
+      },
+      {
+       "page": "B6",
+       "section": "Empresas › Montadoras"
+      }
+     ],
+     "script": "A indústria de óleos vegetais prevê investir 7,65 bilhões de reais em um ano, e a capacidade subiu 13,1 por cento, puxada pelo biodiesel. As vendas de veículos chegaram a 281,3 mil em setembro, alta de 15,65 por cento e melhor setembro da série."
+    }
+   ],
+   "divider": {
+    "pages": "A2, A4, A20, B2, C1, C2, C3, B3, B6, B10",
+    "subtitle": "O 1º turno provocou rali histórico na bolsa, no câmbio e nos juros, enquanto a comida cara segue pesando na percepção da economia. Casas Bahia encolhe antes da recuperação judicial, petróleo tem leilão recorde e diesel caro, e agro e montadoras crescem.",
+    "chips": [
+     "Rali pós-1º turno",
+     "Juros e Selic",
+     "Inflação de alimentos",
+     "Casas Bahia",
+     "Petróleo e diesel",
+     "Soja e veículos"
+    ]
+   },
+   "overview_kpis": [
+    {
+     "value": "7,7",
+     "unit": "%",
+     "label": "Alta do Ibovespa, maior desde março de 2020",
+     "sub": "Recorde de 206.912 pontos · C2",
+     "tone": "accent"
+    },
+    {
+     "value": "R$ 5,001",
+     "unit": "",
+     "label": "Dólar após queda de 4,12% no dia",
+     "sub": "Maior baixa desde junho de 2018 · C3",
+     "tone": "positive"
+    },
+    {
+     "value": "4.647",
+     "unit": "",
+     "label": "Demissões na Casas Bahia em agosto, segundo perícia",
+     "sub": "Estoque 40% menor · B3",
+     "tone": "accent"
+    },
+    {
+     "value": "R$ 7,65 bi",
+     "unit": "",
+     "label": "Investimento previsto pela indústria de óleos vegetais",
+     "sub": "Capacidade +13,1% · B10",
+     "tone": "positive"
+    }
+   ],
+   "cover": {
+    "headline": "Euforia pós-1º turno: Ibovespa sobe 7,7% e dólar cai a R$ 5",
+    "source": "C1 · Finanças › Mercados"
+   },
+   "agenda": [
+    {
+     "when": "25/out",
+     "lead": "Segundo turno e plano fiscal",
+     "text": "O mercado espera de Flávio e Lula compromissos fiscais concretos e a definição das equipes econômicas para sustentar o rali."
+    },
+    {
+     "when": "7/out",
+     "lead": "Leilão da ANP",
+     "text": "Sessões de concessão e partilha com 313 blocos e 13 áreas do pré-sal; arrecadação mínima esperada de R$ 2,18 bilhões."
+    }
+   ],
+   "watch_sentence": "Até 25 de outubro, o mercado espera detalhes do plano fiscal dos candidatos. Amanhã, o leilão da ANP; depois, a decisão da Justiça sobre a recuperação da Casas Bahia."
+  },
+  {
+   "slides": [
+    {
+     "nav_title": "Estratégias do 2º turno",
+     "eyebrow": "Política › Eleições · A1, A8, A11",
+     "headline": "Flávio larga na frente nas alianças; Lula faz “freio de arrumação” na campanha",
+     "lede": "Senador do PL soma apoios de Tarcísio, Zema e Temer e busca Caiado e União-PP; petista mira SP, MG e Nordeste e critica a própria comunicação.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "47,03",
+       "unit": "%",
+       "label": "Votos válidos de Flávio Bolsonaro no 1º turno",
+       "sub": "Lula teve 45,16% · A11",
+       "tone": "accent"
+      },
+      {
+       "value": "1,7 mi",
+       "unit": "",
+       "label": "Votos que Lula perdeu em SP ante 2022",
+       "sub": "Em MG, perdeu 600 mil · A8",
+       "tone": "neutral"
+      },
+      {
+       "value": "19",
+       "unit": "",
+       "label": "Senadores eleitos pelo PL",
+       "sub": "Mais 11 governadores aliados · A8",
+       "tone": "neutral"
+      },
+      {
+       "value": "25/out",
+       "unit": "",
+       "label": "Data do segundo turno",
+       "sub": "Campanha do PL começa dia 8 · A6, A8",
+       "tone": "positive"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Flávio Bolsonaro · PL",
+       "page": "A8",
+       "text": "Reuniu-se com Tarcísio, que prometeu “empenho total”; encontra Caiado hoje em Goiânia e União-PP amanhã. Republicanos tende à neutralidade por causa de Hugo Motta. Vai aceitar debate com Lula.",
+       "bullets": [],
+       "quote": "Quer, portanto, reconexão. E reconexão é Flávio.",
+       "quote_by": "Michel Temer"
+      },
+      {
+       "tag": "Lula · PT",
+       "page": "A8",
+       "text": "Admite precisar “fazer mais rádio, mais selfie” e ir aos debates. Auxiliares criticam Sidônio Palmeira e Raul Rabelo. Governo estuda novas “bondades”, sem decisão; Alckmin terá papel maior em SP.",
+       "bullets": [],
+       "quote": "carregando nas costas a promiscuidade que ficou estabelecida",
+       "quote_by": "Lula, sobre o STF"
+      },
+      {
+       "tag": "Trump",
+       "page": "A11",
+       "text": "Presidente dos EUA chamou o resultado de Flávio de “grande vitória” e confundiu Brasil com Índia em post. Nos EUA, Flávio teve 61,1% dos válidos.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "Flávio converte rapidamente a direita derrotada em apoio, enquanto Lula precisa de votos que, no 1º turno, foram para candidatos de centro e direita. A aritmética e o histórico (ninguém virou do 2º lugar) pesam contra o petista.",
+     "sources": [
+      {
+       "page": "A1",
+       "section": "Capa"
+      },
+      {
+       "page": "A8",
+       "section": "Política › Eleições"
+      },
+      {
+       "page": "A11",
+       "section": "Política › Eleições"
+      }
+     ],
+     "script": "Flávio Bolsonaro saiu do primeiro turno com 47,03 por cento dos válidos, contra 45,16 por cento de Lula. O senador já tem Tarcísio, Zema e Temer e busca Caiado e o União-PP. Lula admite falhas, perdeu 1,7 milhão de votos em São Paulo e estuda novas bondades até 25 de outubro."
+    },
+    {
+     "nav_title": "PL domina o Congresso",
+     "eyebrow": "Política › Congresso · A14, A15, A22",
+     "headline": "PL elege 121 deputados, maior bancada desde 1990, e terá 28 senadores",
+     "lede": "Onda bolsonarista encolhe o Centrão, complica Alcolumbre e Motta e reabre debate sobre impeachment de ministros do STF.",
+     "layout": "chart",
+     "kpis": [
+      {
+       "value": "3,1 mi",
+       "unit": "",
+       "label": "Votos de Nikolas Ferreira, deputado mais votado da história",
+       "sub": "Recorde anterior: 1,84 mi · A14",
+       "tone": "accent"
+      },
+      {
+       "value": "28",
+       "unit": "",
+       "label": "Senadores do PL a partir de 2027",
+       "sub": "PT terá 9; MDB, 8 · A15",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "Maiores bancadas eleitas para a Câmara",
+      "subtitle": "Número de deputados · SGM/Câmara",
+      "bars": [
+       {
+        "label": "PL",
+        "display": "121",
+        "number": 121,
+        "highlight": true
+       },
+       {
+        "label": "PT-PCdoB-PV",
+        "display": "88",
+        "number": 88,
+        "highlight": false
+       },
+       {
+        "label": "União-PP",
+        "display": "87",
+        "number": 87,
+        "highlight": false
+       },
+       {
+        "label": "PSD",
+        "display": "43",
+        "number": 43,
+        "highlight": false
+       },
+       {
+        "label": "Republicanos",
+        "display": "41",
+        "number": 41,
+        "highlight": false
+       },
+       {
+        "label": "MDB",
+        "display": "36",
+        "number": 36,
+        "highlight": false
+       }
+      ],
+      "note": "PL cresce 23 cadeiras; nem PL nem PT têm maioria sozinhos."
+     },
+     "cards": [
+      {
+       "tag": "STF na mira",
+       "page": "A15",
+       "text": "Ministros se dividem sobre impeachment. Um estima “uns 60 votos, no mínimo” com Flávio no poder. Moraes, Toffoli e Dino são citados. Nunes Marques quer julgar após o 2º turno caso que pode soltar Jair Bolsonaro.",
+       "bullets": [],
+       "quote": "O Tribunal é maior do que tudo e do que todos, e ele permanecerá",
+       "quote_by": "Edson Fachin"
+      },
+      {
+       "tag": "Lucio Rennó · UnB",
+       "page": "A22",
+       "text": "Prevê anistia ao 8 de janeiro e confronto com o Supremo como primeiras pautas da nova legislatura.",
+       "bullets": [],
+       "quote": "Lula, num cenário com esse Congresso, dificilmente governará",
+       "quote_by": "Lucio Rennó"
+      }
+     ],
+     "takeaway": "Com maior bancada nas duas Casas, o PL ganha poder de agenda, mas ainda depende do Centrão para presidir a Câmara. A relação com o STF tende a dominar o início de 2027.",
+     "sources": [
+      {
+       "page": "A14",
+       "section": "Política › Eleições"
+      },
+      {
+       "page": "A15",
+       "section": "Política › Eleições"
+      },
+      {
+       "page": "A22",
+       "section": "Política › Entrevista"
+      }
+     ],
+     "script": "O PL elegeu 121 deputados, a maior bancada desde 1990, e terá 28 senadores. Nikolas Ferreira teve 3,1 milhões de votos, recorde histórico. No Supremo, ministros se dividem sobre risco de impeachment, e Nunes Marques quer julgar após o segundo turno o caso que pode soltar Jair Bolsonaro."
+    },
+    {
+     "nav_title": "Rio e mapa do voto",
+     "eyebrow": "Política › Estados · A10, A12, A15",
+     "headline": "Garotinho desiste de recurso e pode dar a Ruas vitória no 1º turno no Rio",
+     "lede": "Votos anulados elevariam o candidato do PL acima de 50%; Paes fala em “tapetão”. Flávio avançou nos pequenos municípios do Nordeste.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "49,27",
+       "unit": "%",
+       "label": "Votos válidos de Douglas Ruas (PL) no Rio",
+       "sub": "Paes teve 42,76% · A12",
+       "tone": "accent"
+      },
+      {
+       "value": "274.411",
+       "unit": "",
+       "label": "Votos de Garotinho, hoje anulados sub judice",
+       "sub": "3,17% dos válidos · A12",
+       "tone": "neutral"
+      },
+      {
+       "value": "520 mil",
+       "unit": "",
+       "label": "Votos a mais de Flávio ante o pai nos grotões do NE",
+       "sub": "Lula perdeu 270 mil ali · A10",
+       "tone": "neutral"
+      },
+      {
+       "value": "71,1",
+       "unit": "%",
+       "label": "Votos de Flávio em Roraima, maior razão evangélicos/católicos",
+       "sub": "Lula teve 71% no Piauí · A15",
+       "tone": "positive"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Garotinho x Paes",
+       "page": "A12",
+       "text": "Ministro Floriano de Azevedo Marques deu dois dias para a PGE se manifestar. Especialistas divergem: desvio de finalidade ou perda de objeto, com homologação monocrática.",
+       "bullets": [],
+       "quote": "Quando vi que não aconteceu, [o recurso] perdeu o objeto",
+       "quote_by": "Anthony Garotinho"
+      },
+      {
+       "tag": "César Felício · Valor",
+       "page": "A10",
+       "text": "Lula liderou em 2.046 cidades pequenas, ante 2.682 em 2022, e perdeu 1,27 milhão de votos nesse estrato; metrópoles viraram sua maior base.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "O Rio pode ter eleição decidida por via processual, com risco de novo contencioso. No país, a erosão de Lula nos grotões nordestinos reduz sua margem para virar.",
+     "sources": [
+      {
+       "page": "A12",
+       "section": "Política › Eleições"
+      },
+      {
+       "page": "A10",
+       "section": "Política › Análise"
+      },
+      {
+       "page": "A15",
+       "section": "Política › Eleições"
+      }
+     ],
+     "script": "No Rio, Garotinho desistiu do recurso no TSE. Sem seus 274 mil votos, Douglas Ruas, com 49,27 por cento, passaria de 50 por cento e venceria no primeiro turno. Paes fala em tapetão. No Nordeste, Flávio ganhou 520 mil votos sobre o pai nas cidades pequenas."
+    },
+    {
+     "nav_title": "Espanha, Nobel e Trump",
+     "eyebrow": "Internacional · A19",
+     "headline": "Sánchez antecipa eleição na Espanha; optogenética leva o Nobel de Medicina",
+     "lede": "Premiê convoca eleições para 29 de novembro após Parlamento derrubar decretos de habitação; nos EUA, aprovação de Trump segue no menor nível.",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "29/nov",
+       "unit": "",
+       "label": "Data das eleições antecipadas na Espanha",
+       "sub": "Socialistas atrás nas pesquisas · A19",
+       "tone": "accent"
+      },
+      {
+       "value": "US$ 1,2 mi",
+       "unit": "",
+       "label": "Prêmio dividido pelos três laureados do Nobel de Medicina",
+       "sub": "12 milhões de coroas suecas · A19",
+       "tone": "neutral"
+      },
+      {
+       "value": "32",
+       "unit": "%",
+       "label": "Americanos que aprovam a presidência de Trump",
+       "sub": "Recorde de baixa, Reuters/Ipsos · A19",
+       "tone": "neutral"
+      },
+      {
+       "value": "24",
+       "unit": "%",
+       "label": "Aprovação de Trump entre hispano-americanos",
+       "sub": "52% pretendem votar democrata · A19",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Espanha",
+       "page": "A19",
+       "text": "Sánchez busca novo Parlamento após rejeição de decretos de habitação e protestos por aluguel. Pesquisas indicam coalizão PP-Vox, que levaria a extrema direita ao governo pela primeira vez desde 1975.",
+       "bullets": [],
+       "quote": "Precisamos nos mobilizar. Parte da maioria social está insatisfeita",
+       "quote_by": "Pedro Sánchez"
+      },
+      {
+       "tag": "Nobel de Medicina",
+       "page": "A19",
+       "text": "Karl Deisseroth (EUA), Peter Hegemann e Georg Nagel (Alemanha) premiados pela optogenética, que ativa ou desativa neurônios com luz; ensaios já restauram visão em casos de retinite pigmentosa.",
+       "bullets": [],
+       "quote": "Método contribuiu para desvendar segredos do cérebro",
+       "quote_by": "Thomas Perlmann"
+      }
+     ],
+     "takeaway": "A eleição espanhola é aposta de alto risco: os socialistas oscilaram entre 26% e 31% de aprovação e o governo não aprova Orçamento desde 2023.",
+     "sources": [
+      {
+       "page": "A19",
+       "section": "Internacional"
+      }
+     ],
+     "script": "O premiê espanhol Pedro Sánchez antecipou as eleições para 29 de novembro, após o Parlamento derrubar decretos de habitação. As pesquisas favorecem uma coalizão de direita com o Vox. O Nobel de Medicina foi para três pesquisadores da optogenética, que dividem 1,2 milhão de dólares. Nos Estados Unidos, só 32 por cento aprovam Trump."
+    },
+    {
+     "nav_title": "Editorial e opinião",
+     "eyebrow": "Opinião · A20, A2, C6",
+     "headline": "Valor vê no rali recado por ajuste fiscal; colunistas cobram Lula e apontam poder deslocado",
+     "lede": "",
+     "layout": "kpis_cards",
+     "kpis": [
+      {
+       "value": "R$ 410 bi",
+       "unit": "",
+       "label": "Ganho de valor de mercado das ações na B3 em um dia, citado no editorial",
+       "sub": "Editorial do Valor · A20",
+       "tone": "accent"
+      },
+      {
+       "value": "20",
+       "unit": "%",
+       "label": "Fatia das emendas no orçamento discricionário em 2024, ante menos de 4% em 2014",
+       "sub": "Luiz Schymura · A2",
+       "tone": "neutral"
+      },
+      {
+       "value": "R$ 1 tri",
+       "unit": "",
+       "label": "Meta antiga de venda de imóveis da União, que o editorial diz não resolver o fiscal",
+       "sub": "Editorial do Valor · A20",
+       "tone": "neutral"
+      }
+     ],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Editorial do Valor",
+       "page": "A20",
+       "text": "Para o jornal, o otimismo se apoia em promessas: Flávio foi vago sobre ajuste e reformas, e Lula precisa se comprometer com corte estrutural de despesas até 25 de outubro.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Marcelo Trindade · C6",
+       "page": "C6",
+       "text": "O articulista defende que Lula adote pilares do programa de Simone Tebet, indique ministros do STF independentes e repita o gesto da Carta ao Povo Brasileiro de 2002.",
+       "bullets": [],
+       "quote": "A vitória ou a derrota será dele",
+       "quote_by": "Marcelo Trindade"
+      },
+      {
+       "tag": "Luiz Schymura · FGV Ibre",
+       "page": "A2",
+       "text": "Sustenta que o Executivo perdeu recursos de coordenação para Congresso e STF e que esse poder não volta automaticamente.",
+       "bullets": [],
+       "quote": "Instituições têm memória",
+       "quote_by": "Luiz Schymura"
+      }
+     ],
+     "takeaway": "Editorial e colunistas convergem num ponto: o mercado precificou mudança sem plano econômico conhecido, e o segundo turno é a janela para compromissos explícitos.",
+     "sources": [
+      {
+       "page": "A20",
+       "section": "Opinião"
+      },
+      {
+       "page": "A2",
+       "section": "Brasil"
+      },
+      {
+       "page": "C6",
+       "section": "Finanças"
+      }
+     ],
+     "script": "Em editorial, o Valor afirma que o rali, que somou 410 bilhões de reais à bolsa em um dia, cobra ajuste fiscal dos dois candidatos. Marcelo Trindade defende que Lula adote uma agenda de centro. Luiz Schymura lembra que as emendas passaram de menos de 4 para mais de 20 por cento do orçamento discricionário."
+    },
+    {
+     "nav_title": "Mosaico: Justiça, educação, cidade",
+     "eyebrow": "Legislação, educação e cidade · E1, A6, A20",
+     "headline": "Protestos em cartório recuperam R$ 2,24 bi; Stanford defende matemática antes dos 6 anos",
+     "lede": "",
+     "layout": "mosaic",
+     "kpis": [],
+     "steps": [],
+     "steps_title": "",
+     "chart": {
+      "title": "",
+      "subtitle": "",
+      "bars": [],
+      "note": ""
+     },
+     "cards": [
+      {
+       "tag": "Legislação · Protesto",
+       "page": "E1",
+       "text": "Dívidas de decisões judiciais protestadas em cartório renderam R$ 2,24 bilhões de 2020 a agosto, 15,8% do total. Os casos saltaram de 28.133 em 2020 para 104.294 em 2025.",
+       "bullets": [],
+       "quote": "O procedimento é muito célere",
+       "quote_by": "André Gomes Netto, IEPTB"
+      },
+      {
+       "tag": "Financiamento imobiliário",
+       "page": "E1",
+       "text": "ONR fecha acordo com BB, Caixa, Sicoob e Sicredi para automatizar análise de imóveis; testes a partir de fevereiro. Visualizações de matrículas por bancos foram de 91.395 em 2023 a 274.179 em 2025.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      },
+      {
+       "tag": "Educação · Deborah Stipek",
+       "page": "A6",
+       "text": "Professora de Stanford diz que base em matemática antes dos 6 anos reduz desigualdade; Brasil tem 95% das crianças de 4 e 5 anos na pré-escola.",
+       "bullets": [],
+       "quote": "Estudos mostram correlação entre aprendizado de matemática e indicadores econômicos",
+       "quote_by": "Deborah Stipek"
+      },
+      {
+       "tag": "Cidade · Fundurb SP",
+       "page": "A20",
+       "text": "Receita da outorga onerosa em São Paulo foi de R$ 870 milhões em 2024 para R$ 1,54 bilhão em 2025, alta de 77%; Ivan Maglio cobra prestação de contas territorial.",
+       "bullets": [],
+       "quote": "",
+       "quote_by": ""
+      }
+     ],
+     "takeaway": "",
+     "sources": [
+      {
+       "page": "E1",
+       "section": "Legislação & Tributos"
+      },
+      {
+       "page": "A6",
+       "section": "Brasil › Educação"
+      },
+      {
+       "page": "A20",
+       "section": "Opinião"
+      }
+     ],
+     "script": "Protestos em cartório de dívidas judiciais recuperaram 2,24 bilhões de reais desde 2020. Cartórios e bancos vão automatizar o financiamento imobiliário. A professora Deborah Stipek, de Stanford, defende matemática antes dos 6 anos. E o fundo urbano paulistano arrecadou 1,54 bilhão de reais em 2025, alta de 77 por cento."
+    }
+   ],
+   "divider": {
+    "pages": "A1, A8, A10, A11, A12, A14, A15, A22, A2, A6, A19, A20, C6, E1",
+    "subtitle": "Flávio lidera e soma aliados, PL domina Congresso e Rio pode decidir governo sem 2º turno. Espanha vai às urnas, optogenética leva o Nobel, editorial cobra ajuste fiscal e protestos em cartório ganham força.",
+    "chips": [
+     "Estratégias do 2º turno",
+     "PL domina o Congresso",
+     "Rio e mapa do voto",
+     "Espanha e Nobel",
+     "Editorial e opinião",
+     "Justiça, educação, cidade"
+    ]
+   },
+   "overview_kpis": [
+    {
+     "value": "47,03",
+     "unit": "%",
+     "label": "Votos válidos de Flávio Bolsonaro no 1º turno",
+     "sub": "Lula: 45,16% · A11",
+     "tone": "accent"
+    },
+    {
+     "value": "121",
+     "unit": "",
+     "label": "Deputados eleitos pelo PL",
+     "sub": "Maior bancada desde 1990 · A14",
+     "tone": "neutral"
+    },
+    {
+     "value": "R$ 2,24 bi",
+     "unit": "",
+     "label": "Dívidas judiciais recuperadas via protesto em cartório",
+     "sub": "2020 a agosto de 2026 · E1",
+     "tone": "accent"
+    },
+    {
+     "value": "32",
+     "unit": "%",
+     "label": "Aprovação de Trump, menor da carreira",
+     "sub": "Reuters/Ipsos · A19",
+     "tone": "neutral"
+    }
+   ],
+   "cover": {
+    "headline": "Flávio articula apoios, Lula revê campanha e PL elege maior bancada da Câmara desde 1990",
+    "source": "A8 · Política › Eleições"
+   },
+   "agenda": [
+    {
+     "when": "25/out",
+     "lead": "Segundo turno presidencial",
+     "text": "Flávio e Lula disputam a Presidência; campanha do PL começa dia 8 e debates entre os dois estão em negociação."
+    },
+    {
+     "when": "29/nov",
+     "lead": "Eleições na Espanha",
+     "text": "Socialistas de Sánchez estão atrás nas pesquisas; coalizão PP-Vox levaria extrema direita ao governo pela primeira vez desde 1975."
+    }
+   ],
+   "watch_sentence": "Acompanhe as alianças até o segundo turno, em 25 de outubro, e a decisão do TSE no Rio. Fique de olho na eleição espanhola de 29 de novembro."
+  }
+ ]
+}

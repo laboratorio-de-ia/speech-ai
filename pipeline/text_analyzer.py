@@ -31,9 +31,11 @@ class TextAnalyzer:
 
     # -------------------------------------------------
 
-    def __init__(self, cfg: ConfigManager):
+    def __init__(self, cfg: ConfigManager, script_file=None):
 
         self.cfg = cfg
+
+        self.script_file = script_file or cfg.script_file
 
         self.raw_text = ""
 
@@ -45,7 +47,7 @@ class TextAnalyzer:
 
         logger.info("Loading script...")
 
-        script = Path(self.cfg.script_file)
+        script = Path(self.script_file)
 
         if not script.exists():
 
