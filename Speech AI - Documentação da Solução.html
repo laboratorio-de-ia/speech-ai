@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speech AI — Documentação da solução</title>
+<meta name="description" content="Documentação do Speech AI: processo rápido de jornais (Valor Econômico e Estadão) e roteiros .txt, da entrada ao HTML, roteiro e MP3; frontend, configuração, resiliência e custos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESUMO DE JORNAL · deck HTML de arquivo único
+   Linguagem visual herdada do modelo "Walk Challenge 2026":
+   palco 1600x900 escalável, capa e divisórias escuras com campo
+   animado, slides claros com KPIs, cards, barras e linha do tempo.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --dk1:#282B34; --dk2:#002855; --lt2:#C3D7EE;
+  --accent1:#243782; --accent3:#C3D7EE; --accent5:#D35D00; --accent6:#43AAA0; --hlink:#0082FB;
+  --font-heading:'Encode Sans Expanded','Encode Sans',Arial,sans-serif;
+  --font-body:'Encode Sans',Arial,sans-serif;
+  --field:#00163C; --paper:#FFFFFF; --mist:#F3F6FB; --mist-2:#E8EEF8; --rule:#D8E1EF;
+  --ink:#010834; --ink-soft:#4E5A75; --ink-faint:#7D879B;
+  /* paleta categórica validada do modelo (fundo claro) */
+  --c1:#2A54B5; --c2:#00968C; --c3:#D35D00; --c4:#8E5BC7; --c-mute:#AFBBD1;
+  --grid:#E4EAF4; --axis:#9AA6BC; --num1:#243782; --pos:#0A7F76;
+}
+/* modo escuro: degraus próprios, não uma inversão */
+html[data-theme-mode="dark"]{
+  --paper:#061B3E; --mist:#0C2650; --mist-2:#123061; --rule:#1E3D70;
+  --ink:#EAF1FB; --ink-soft:#A9BEDD; --ink-faint:#7F96BA;
+  --c1:#5C82DC; --c2:#12A899; --c3:#D0762A; --c4:#9C6FD8; --c-mute:#3C5580;
+  --grid:#173359; --axis:#5A7399; --num1:#8FB0EE; --pos:#3ED0BF;
+}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04102A}
+html[data-theme-mode="dark"] body{background:#030D22}
+body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ---------- 1 · PALCO ---------- */
+#shell{position:fixed;inset:0;overflow:hidden}
+.deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  background:var(--field);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:var(--field-a,1);transition:opacity .8s ease}
+.slide{position:absolute;inset:0;padding:70px 92px 70px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px);
+  transition:opacity .5s cubic-bezier(.22,.7,.2,1),transform .58s cubic-bezier(.22,.7,.2,1),filter .45s ease,visibility .58s;
+  will-change:transform,opacity;pointer-events:none}
+body.back .slide{transform:translate3d(-46px,0,0) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;z-index:10}
+.slide[data-theme="dark"]{color:#fff;background:transparent}
+.slide[data-theme="dark"]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,#00122F 0%,rgba(0,20,52,.94) 30%,rgba(0,26,64,.66) 54%,rgba(0,34,78,.28) 76%,rgba(0,40,88,.08) 100%)}
+.slide[data-theme="dark"]>*{position:relative;z-index:2}
+.slide[data-theme="light"]{background:var(--paper);color:var(--ink)}
+.slide[data-theme="light"]::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(58% 80% at 100% 0%,rgba(195,215,238,.34) 0%,rgba(195,215,238,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(195,215,238,.24) 0%,rgba(195,215,238,0) 60%)}
+html[data-theme-mode="dark"] .slide[data-theme="light"]::before{
+  background:radial-gradient(58% 80% at 100% 0%,rgba(92,130,220,.16) 0%,rgba(92,130,220,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(18,168,153,.10) 0%,rgba(18,168,153,0) 60%)}
+.slide[data-theme="light"]>*{position:relative;z-index:2}
+
+/* entrada escalonada: estado de repouso é VISÍVEL; o oculto vive só nos keyframes */
+.slide.active .rv{animation:rvIn .5s cubic-bezier(.22,.7,.2,1) both}
+.slide.active .rv:nth-child(1){animation-delay:.05s}.slide.active .rv:nth-child(2){animation-delay:.12s}
+.slide.active .rv:nth-child(3){animation-delay:.19s}.slide.active .rv:nth-child(4){animation-delay:.26s}
+.slide.active .rv:nth-child(5){animation-delay:.33s}.slide.active .rv:nth-child(6){animation-delay:.40s}
+@keyframes rvIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .fan>*{animation:fanIn .42s cubic-bezier(.22,.7,.2,1) both}
+@keyframes fanIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.slide.active .fan>*:nth-child(1){animation-delay:.14s}.slide.active .fan>*:nth-child(2){animation-delay:.18s}
+.slide.active .fan>*:nth-child(3){animation-delay:.22s}.slide.active .fan>*:nth-child(4){animation-delay:.26s}
+.slide.active .fan>*:nth-child(5){animation-delay:.30s}.slide.active .fan>*:nth-child(6){animation-delay:.34s}
+.slide.active .fan>*:nth-child(7){animation-delay:.38s}.slide.active .fan>*:nth-child(8){animation-delay:.42s}
+.slide.active .fan>*:nth-child(n+9){animation-delay:.46s}
+body.no-motion .slide.active .rv,body.no-motion .slide.active .fan>*{animation:none}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+/* ---------- 2 · CROMO: marca, navegação, progresso, rodapé ---------- */
+.brand{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
+  font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(195,215,238,.72);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent5);display:block}
+.brand.on-light{color:#46526E}
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:62;display:flex;align-items:center;gap:13px;
+  padding:7px 15px;border-radius:999px;background:rgba(4,16,42,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(195,215,238,.2);color:#DCE7F7;font-family:var(--font-body);font-size:11px;letter-spacing:.06em;
+  opacity:.55;transition:opacity .3s ease}
+.nav:hover,.nav:focus-within{opacity:1}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(195,215,238,.34);
+  transition:transform .25s ease,background .25s ease}
+.dot:hover{background:var(--accent3);transform:scale(1.35)}
+.dot.sec{background:rgba(67,170,160,.6)}
+.dot.on{background:var(--accent5);transform:scale(1.5)}
+.nbtn{background:transparent;border:1px solid rgba(195,215,238,.45);color:inherit;border-radius:999px;min-width:30px;height:24px;
+  padding:0 8px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font-body);opacity:.85;transition:opacity .2s,background .2s}
+.nbtn:hover{opacity:1;background:rgba(195,215,238,.16)}
+.nbtn:focus-visible,.dot:focus-visible{outline:2px solid var(--hlink);outline-offset:2px}
+.count{font-variant-numeric:tabular-nums;min-width:58px;text-align:center;opacity:.85;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(195,215,238,.24)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:64;background:rgba(195,215,238,.16)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent6),var(--accent5));transition:width .5s cubic-bezier(.22,.7,.2,1)}
+.sfoot{position:absolute;left:92px;right:92px;top:852px;height:16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);z-index:6;pointer-events:none}
+.slide[data-theme="dark"]>.sfoot,.slide[data-theme="light"]>.sfoot{position:absolute;z-index:6}
+.slide[data-theme="dark"] .sfoot{color:rgba(195,215,238,.52)}
+.sfoot b{font-weight:600;color:var(--accent5)}
+
+/* ---------- 3 · TIPOGRAFIA ---------- */
+h1,h2,h3,h4{font-family:var(--font-heading);margin:0;font-weight:700;letter-spacing:-.012em}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent5);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent5);flex:0 0 auto}
+.slide[data-theme="dark"] .eyebrow{color:var(--accent6)}
+.slide[data-theme="dark"] .eyebrow::before{background:var(--accent6)}
+h2.sh{font-size:40px;line-height:1.12;margin:12px 0 0;max-width:1300px;text-wrap:balance}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:1240px;margin-top:10px}
+.slide[data-theme="dark"] .lede{color:rgba(219,231,247,.86)}
+.takeaway{margin-top:auto;padding-top:12px;border-top:1px solid var(--rule);font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.takeaway b{color:var(--accent5);font-weight:700}
+.slide[data-theme="dark"] .takeaway{border-top-color:rgba(195,215,238,.2);color:rgba(219,231,247,.84)}
+.num{font-family:var(--font-heading);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:.92}
+.unit{font-size:.52em;font-weight:700;letter-spacing:0;margin-left:2px;opacity:.72}
+.src{font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em}
+
+/* ---------- 4 · CAPA ---------- */
+.t-cover{justify-content:flex-end;padding:74px 92px 100px}
+.t-cover .kicker{font-size:12.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--accent6);margin-bottom:26px}
+.t-cover h1{text-wrap:balance;font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.028em;max-width:960px;position:relative;width:fit-content}
+.t-cover h1 .l2{display:block;color:var(--accent3)}
+.t-cover .csub{font-size:18px;line-height:1.55;color:rgba(219,231,247,.9);max-width:900px;margin-top:26px}
+.t-cover .cmeta{margin-top:32px;display:flex;align-items:stretch;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(195,215,238,.78)}
+.t-cover .cmeta>span{padding:0 22px;border-left:1px solid rgba(195,215,238,.3)}
+.t-cover .cmeta>span:first-child{padding-left:0;border-left:0}
+.rule{width:88px;height:4px;background:var(--accent5);margin:28px 0 0}
+.slide.active .rule{animation:ruleGrow .8s cubic-bezier(.22,.7,.2,1) .55s both}
+@keyframes ruleGrow{from{width:0}to{width:88px}}
+.t-cover.active h1::after{content:"";position:absolute;inset:-7% -5%;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.15) 48%,transparent 66%);background-size:260% 100%;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);
+  animation:sheen 7.5s ease-in-out 1.6s infinite backwards}
+@keyframes sheen{0%{background-position:150% 0}55%,100%{background-position:-90% 0}}
+.slide.t-cover>.cover-score{position:absolute;right:92px;top:120px;width:380px;z-index:3;display:flex;flex-direction:column;gap:12px}
+.cs-row{background:rgba(6,30,72,.66);border:1px solid rgba(195,215,238,.22);border-radius:12px;padding:16px 18px;backdrop-filter:blur(6px)}
+.cs-row .who{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(195,215,238,.8);font-weight:700}
+.cs-row .val{font-family:var(--font-heading);font-size:46px;font-weight:800;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
+.cs-row .bar{height:6px;border-radius:0 3px 3px 0;margin-top:10px;background:rgba(195,215,238,.12);overflow:hidden}
+.cs-row .bar i{display:block;height:100%;border-radius:0 3px 3px 0;transform-origin:0 50%}
+.slide.active .cs-row .bar i{animation:kvhIn 1.1s cubic-bezier(.22,.7,.2,1) .5s both}
+.cs-row .note{font-size:12px;color:rgba(219,231,247,.72);margin-top:8px}
+
+/* ---------- 5 · DIVISÓRIA ---------- */
+.t-div{justify-content:center;overflow:hidden}
+.t-div .dnum{font-family:var(--font-heading);font-size:132px;font-weight:800;line-height:.92;color:rgba(195,215,238,.16);letter-spacing:-.04em;margin-bottom:8px}
+.t-div.active .dnum{animation:dnumIn 1.1s cubic-bezier(.22,.7,.2,1) both}
+@keyframes dnumIn{from{opacity:0;transform:translateY(26px) scale(1.14);letter-spacing:.06em}to{opacity:1;transform:none;letter-spacing:-.04em}}
+.t-div .eyebrow{margin-bottom:16px}
+.t-div h1{font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.026em;max-width:980px}
+.t-div .dsub{margin-top:22px;font-size:18px;line-height:1.6;color:rgba(219,231,247,.86);max-width:860px}
+.t-div.active::after{content:"";position:absolute;top:-30%;bottom:-30%;width:36%;left:-40%;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(126,160,235,.16) 42%,rgba(191,210,242,.24) 52%,rgba(126,160,235,.14) 62%,transparent);
+  filter:blur(14px);animation:beam 3.4s cubic-bezier(.3,.6,.25,1) .25s both}
+@keyframes beam{from{left:-45%;opacity:0}25%{opacity:1}to{left:118%;opacity:0}}
+.dchips{margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;padding:7px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.34);color:rgba(219,231,247,.9)}
+.chip.on{background:rgba(67,170,160,.18);border-color:rgba(67,170,160,.6);color:#BFF3EC}
+.lchip{display:inline-flex;font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px;
+  background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+
+/* ---------- 6 · KPIs ---------- */
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kgrid.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 14px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:118px;position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent1)}
+html[data-theme-mode="dark"] .kcard::before{background:var(--c1)}
+.kcard.acc::before{background:var(--accent5)}
+.kcard.pos::before{background:var(--accent6)}
+.kcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.kcard .num{font-size:52px;color:var(--num1);white-space:nowrap}
+.kcard.acc .num{color:var(--accent5)}
+.kcard.pos .num{color:var(--pos)}
+.kcard .klab{font-size:15px;font-weight:600;line-height:1.3;margin-top:10px;color:var(--ink)}
+.kcard .ksub{font-size:13px;line-height:1.35;color:var(--ink-faint);margin-top:4px}
+.kgrid.tight .kcard{min-height:0;padding:12px 15px 11px}
+.kgrid.tight .kcard .num{font-size:38px}
+.kgrid.tight .kcard .klab{font-size:14px;margin-top:8px}
+
+/* ---------- 7 · CARDS / COLUNAS ---------- */
+.cards{display:grid;gap:14px;margin-top:20px}
+.cards.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 15px;display:flex;flex-direction:column;
+  transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.card .ctag{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.card .ctag em{font-style:normal;color:var(--ink-faint);letter-spacing:.08em}
+.card h3{font-size:20px;line-height:1.22;margin-bottom:9px}
+.card p,.card li{font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.card ul{margin:0;padding-left:19px}
+.card li+li{margin-top:6px}
+.card li b,.card p b{color:var(--ink);font-weight:600}
+.card .cnum{font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1;color:var(--num1);letter-spacing:-.02em;margin:2px 0 7px;font-variant-numeric:tabular-nums}
+.card.sig{background:linear-gradient(150deg,rgba(67,170,160,.14),rgba(67,170,160,.05));border-color:rgba(67,170,160,.42)}
+.card.sig .ctag{color:var(--pos)}
+.card.flag{background:linear-gradient(150deg,rgba(211,93,0,.11),rgba(211,93,0,.04));border-color:rgba(211,93,0,.4)}
+.card.dk{background:linear-gradient(150deg,#062A5C,#041B3F);border-color:rgba(195,215,238,.24);color:#fff}
+.card.dk h3{color:#fff}.card.dk p,.card.dk li{color:rgba(219,231,247,.86)}.card.dk li b,.card.dk p b{color:#fff}
+.card.dk .ctag{color:var(--accent6)}
+.quote{font-family:var(--font-heading);font-size:18px;line-height:1.38;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.quote::before{content:"“";color:var(--accent5);font-size:30px;line-height:0;vertical-align:-10px;margin-right:3px}
+.qby{font-size:13px;color:var(--ink-faint);margin-top:8px;letter-spacing:.04em}
+.card.dk .quote{color:#fff}.card.dk .qby{color:rgba(195,215,238,.7)}
+.lr{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;flex:1;min-height:0}
+.lr>*{min-height:0;display:flex;flex-direction:column}
+.lr.w58{grid-template-columns:1.32fr 1fr}
+.lr.n58{grid-template-columns:1fr 1.32fr}
+.lr.w64{grid-template-columns:1.6fr 1fr}
+.colh{font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.colh.a{color:var(--accent5);border-bottom-color:rgba(211,93,0,.42)}
+.colh.b{color:var(--pos);border-bottom-color:rgba(67,170,160,.45)}
+.steps{display:grid;gap:9px}
+.steps.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--mist);border:1px solid var(--rule);border-radius:9px;padding:15px 17px}
+.step .sn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent1);color:#fff;font-family:var(--font-heading);
+  font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+html[data-theme-mode="dark"] .step .sn{background:var(--c1)}
+.step.o .sn{background:var(--accent5)}
+.step.g .sn{background:var(--accent6)}
+.step h4{font-size:17px;line-height:1.25;margin-bottom:4px}
+.step p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13.5px;padding:6px 11px;border-radius:8px;background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+.pill b{color:var(--ink)}
+
+.fill{flex:1;min-height:0;grid-auto-rows:1fr}
+.big .card{padding:20px 22px 18px}
+.big .card p,.big .card li{font-size:16.5px;line-height:1.5}
+.big .card h3{font-size:22px}
+.big .card .ctag{font-size:12px}
+.big .quote{font-size:19px}
+.steps.fill .step{align-items:center}
+.big .step h4{font-size:18px}.big .step p{font-size:15.5px}
+.kgrid.tall .kcard{min-height:150px}
+.kgrid.tall .kcard .num{font-size:58px}
+/* tabela compacta */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:left;font-weight:700;padding:0 8px 7px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;color:var(--ink);font-family:var(--font-heading);font-size:13.5px;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl th.n{text-align:right}
+.tbl tr:hover td{background:rgba(42,84,181,.05)}
+
+/* ---------- 8 · GRÁFICOS ---------- */
+.chart{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px;position:relative;display:flex;flex-direction:column}
+.chart .hbars{flex:1;justify-content:space-evenly}
+.chart h4{font-size:17px;margin-bottom:4px}
+.chart .csub{font-size:13px;color:var(--ink-faint);margin-bottom:12px}
+.hbars{display:flex;flex-direction:column;gap:12px}
+.hb{display:grid;grid-template-columns:var(--lw,170px) 1fr 76px;align-items:center;gap:10px;cursor:default;border-radius:6px;padding:1px 0}
+.hb .hl{font-size:14.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:24px;position:relative}
+.hb .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.hb .ht i.c2{background:var(--c2)}.hb .ht i.c3{background:var(--c3)}.hb .ht i.c4{background:var(--c4)}.hb .ht i.cm{background:var(--c-mute)}
+.slide.active .hb .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+@keyframes kvhIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hb b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;font-weight:700}
+.hb:hover{background:rgba(42,84,181,.06)}
+.hb .ht .ref{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1.5px dashed var(--axis);left:var(--x)}
+.hbars.thin .hb .ht{height:18px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:10px;border-radius:2px;display:inline-block}
+.legend i.dash{height:0;border-top:1.5px dashed var(--axis);width:16px;border-radius:0}
+.dumb{display:flex;flex-direction:column;gap:16px;margin-top:6px}
+.db{display:grid;grid-template-columns:140px 1fr 100px;gap:10px;align-items:center;font-size:14.5px}
+.db .dt{position:relative;height:20px}
+.db .dt::before{content:"";position:absolute;left:0;right:0;top:9px;height:2px;background:var(--grid)}
+.db .seg{position:absolute;top:8px;height:4px;background:var(--c-mute);left:var(--a);width:calc(var(--b) - var(--a));border-radius:2px}
+.db .p{position:absolute;top:3px;width:14px;height:14px;border-radius:50%;margin-left:-7px;border:2px solid var(--paper);box-shadow:0 0 0 1px var(--rule)}
+.db .p.a{left:var(--a);background:var(--c-mute)}.db .p.b{left:var(--b);background:var(--c1)}
+.slide.active .db .p.b{animation:kvdIn .5s cubic-bezier(.3,1.55,.5,1) both;animation-delay:var(--d,.5s)}
+@keyframes kvdIn{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.db b{text-align:right;font-variant-numeric:tabular-nums}
+svg.line{display:block;width:100%;height:auto;overflow:visible}
+svg.line .gl{stroke:var(--grid);stroke-width:1}
+svg.line .ax{fill:var(--ink-faint);font-size:12.5px;font-family:var(--font-body)}
+svg.line .ln{fill:none;stroke:var(--c1);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.slide.active svg.line .ln{stroke-dasharray:900;animation:draw 1.4s cubic-bezier(.25,.75,.2,1) .3s both}
+@keyframes draw{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+svg.line .mk{fill:var(--c1);stroke:var(--mist);stroke-width:2}
+svg.line .mk.last{fill:var(--accent5)}
+svg.line .ref{stroke:var(--axis);stroke-width:1.5;stroke-dasharray:5 4}
+svg.line .lbl{fill:var(--ink);font-size:13px;font-weight:700;font-family:var(--font-body)}
+svg.line .hit{fill:transparent;cursor:crosshair}
+svg.line .xh{stroke:var(--axis);stroke-width:1;opacity:0}
+.stack{display:flex;height:30px;border-radius:6px;overflow:hidden;gap:2px;margin-top:6px}
+.stack i{display:block;height:100%;background:var(--c1)}
+.stack i.c2{background:var(--c2)}.stack i.c3{background:var(--c3)}
+#tip{position:fixed;z-index:300;pointer-events:none;background:#0A1C3F;color:#EAF1FB;font-size:12px;line-height:1.4;
+  padding:8px 11px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.3);border:1px solid rgba(195,215,238,.25);
+  opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;max-width:280px}
+#tip.on{opacity:1;transform:none}
+#tip b{color:#fff}
+
+/* ---------- 9 · VISÃO GERAL / DICA ---------- */
+#ov{position:fixed;inset:0;z-index:180;background:rgba(2,8,22,.95);display:none;padding:52px 46px 40px;overflow:auto}
+#ov.on{display:block}
+#ov h3{color:#fff;font-size:19px;margin-bottom:5px}
+#ov .ovh{color:rgba(195,215,238,.6);font-size:12px;letter-spacing:.1em;margin-bottom:22px}
+#ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:13px}
+.ovc{background:rgba(195,215,238,.07);border:1px solid rgba(195,215,238,.2);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.ovc:hover{background:rgba(67,170,160,.16);border-color:rgba(67,170,160,.5);transform:translateY(-2px)}
+.ovc.on{border-color:var(--accent5);background:rgba(211,93,0,.16)}
+.ovc .on2{font-family:var(--font-heading);font-size:11px;font-weight:700;color:var(--accent6);letter-spacing:.1em;display:block;margin-bottom:5px}
+.ovc .ot{color:#EAF1FB;font-size:12.5px;line-height:1.35;font-weight:500;display:block}
+#hint{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:70;background:rgba(4,16,42,.86);color:#DCE7F7;font-size:12px;
+  padding:8px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.2);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}
+#hint.on{opacity:1}
+
+/* ---------- 10 · LEITURA EM TELA ESTREITA (celular) E IMPRESSÃO ---------- */
+html.mobile,html.mobile body{height:auto;overflow:auto;background:var(--paper)}
+html.mobile #shell{position:static}
+html.mobile .deck{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none!important;box-shadow:none;background:var(--paper)}
+html.mobile #field,html.mobile .nav,html.mobile .brand,html.mobile .progress,html.mobile #hint{display:none}
+html.mobile .slide{position:relative;inset:auto;opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;padding:36px 16px 44px;min-height:0}
+html.mobile .slide[data-theme="dark"]{background:linear-gradient(160deg,#00122F,#062A5C)}
+html.mobile .slide .rv,html.mobile .slide .fan>*{animation:none!important}
+html.mobile .sfoot{position:static!important;margin-top:18px;letter-spacing:.08em;font-size:10px;flex-wrap:wrap;gap:6px}
+html.mobile h2.sh{font-size:26px}
+html.mobile .t-cover h1{font-size:38px}
+html.mobile .t-div h1{font-size:36px}
+html.mobile .t-div .dnum{font-size:72px}
+html.mobile .t-cover{padding-top:48px}
+html.mobile .slide.t-cover>.cover-score{position:static;width:100%;margin-top:26px}
+html.mobile .t-cover .cmeta{flex-wrap:wrap;gap:8px 0}
+html.mobile .kgrid,html.mobile .kgrid.k3,html.mobile .cards.c3,html.mobile .cards.c2,html.mobile .lr,html.mobile .lr.w58,html.mobile .lr.n58,html.mobile .lr.w64,html.mobile .vs,html.mobile .steps.s2{grid-template-columns:1fr}
+html.mobile .kgrid{grid-template-columns:1fr 1fr}
+html.mobile .kcard .num,html.mobile .kgrid.tall .kcard .num,html.mobile .kgrid.tight .kcard .num{font-size:26px;white-space:normal}
+html.mobile .kgrid.tall .kcard{min-height:0}
+html.mobile .fill{grid-auto-rows:auto;flex:none}
+html.mobile .big .card p,html.mobile .big .card li{font-size:15px}
+html.mobile .hb{--lw:108px!important;grid-template-columns:var(--lw) 1fr 52px}
+html.mobile .db{grid-template-columns:70px 1fr 74px}
+html.mobile .tbl{font-size:11.5px}
+html.mobile .tbl td:first-child{white-space:normal}
+html.mobile .takeaway{margin-top:18px}
+html.mobile .lr{margin-top:14px}
+
+/* ---------- 11 · HIERARQUIA DE DESTAQUES ---------- */
+.tierpill{position:absolute;top:64px;right:92px;z-index:6;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;border:1px solid;display:flex;align-items:center;gap:8px}
+.slide>.tierpill{position:absolute}
+.tierpill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:block}
+.tierpill.t1{color:var(--c4);border-color:rgba(142,91,199,.45);background:rgba(142,91,199,.08)}
+.tierpill.t2{color:var(--c1);border-color:rgba(42,84,181,.4);background:rgba(42,84,181,.07)}
+.tierpill.t3{color:var(--ink-faint);border-color:var(--rule);background:var(--mist)}
+.sfoot{text-transform:none;letter-spacing:.04em;font-size:12px}
+.sfoot b{color:var(--accent5);font-weight:700}
+.tiers{display:flex;flex-direction:column;gap:14px;margin-top:20px;flex:1;min-height:0}
+.trow{display:grid;grid-template-columns:200px repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.tlab{display:flex;flex-direction:column;justify-content:center;padding-left:16px;border-left:4px solid var(--rule);
+  font-family:var(--font-heading);font-size:17px;font-weight:700;line-height:1.2;color:var(--ink)}
+.tlab b{display:block;font-family:var(--font-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.trow.t1 .tlab{border-color:var(--c4)}.trow.t1 .tlab b{color:var(--c4)}
+.trow.t2 .tlab{border-color:var(--c1)}.trow.t2 .tlab b{color:var(--c1)}
+.trow.t3 .tlab{border-color:var(--c-mute)}.trow.t3 .tlab b{color:var(--ink-faint)}
+.trow .kcard{min-height:0;padding:14px 16px 12px;justify-content:center}
+.trow .kcard .num{font-size:38px}
+.trow .kcard .klab{font-size:14px;margin-top:8px}
+.trow .kcard .ksub{font-size:12px}
+.trow.t1 .kcard{background:linear-gradient(150deg,rgba(142,91,199,.10),rgba(142,91,199,.03));border-color:rgba(142,91,199,.3)}
+.kcard.t1::before{background:var(--c4)!important}
+.kcard.t1 .num{color:var(--c4)}
+.trow.t3 .kcard::before{background:var(--c-mute)}
+.trow.t3 .kcard .num{color:var(--ink-soft)}
+.slide.t-cover>.cover-score{width:440px;top:110px}
+.ord-h{font-size:11.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(195,215,238,.7);margin-bottom:2px}
+.cs-row{border-left-width:4px!important}
+.cs-row.t1{border-left-color:#9C6FD8!important}.cs-row.t2{border-left-color:#5C82DC!important}.cs-row.t3{border-left-color:rgba(195,215,238,.5)!important}
+.cs-row.t1 .who{color:#C9AEF2}.cs-row.t2 .who{color:#A9C2F2}
+.cs-row .ttl{font-family:var(--font-heading);font-size:18px;font-weight:700;line-height:1.28;margin-top:8px;color:#fff}
+.t-cover h1{max-width:930px}
+.gbars{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:space-evenly;margin-top:6px}
+.gb{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;align-items:center}
+.gb .gl{grid-row:span 2;font-size:14.5px;font-weight:600;color:var(--ink)}
+.gt{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center}
+.gt b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.gt .ht{height:22px;position:relative;display:block}
+.gt .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.gt .ht i.c2{background:var(--c2)}
+.slide.active .gt .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+.card.t1c .ctag{color:#C9AEF2}.card.t2c .ctag{color:#A9C2F2}.card.t3c .ctag{color:rgba(195,215,238,.8)}
+.card.t1c{border-left:4px solid #9C6FD8}.card.t2c{border-left:4px solid #5C82DC}.card.t3c{border-left:4px solid rgba(195,215,238,.45)}
+.dot.t1{box-shadow:0 0 0 1px #9C6FD8}.dot.t2{box-shadow:0 0 0 1px #5C82DC}
+body.idle .nav{opacity:0;pointer-events:none}
+html.mobile .trow{grid-template-columns:1fr 1fr}
+html.mobile .tlab{grid-column:1/-1}
+html.mobile .slide>.tierpill{position:static;align-self:flex-start;margin-bottom:12px}
+html.mobile .slide.t-cover>.cover-score{width:100%}
+html.mobile .gb{grid-template-columns:90px 1fr}
+
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  #shell{position:static}.deck{position:relative;left:0;top:0;transform:none!important;box-shadow:none}
+  .nav,.progress,#hint,#field{display:none}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;filter:none;page-break-after:always;height:900px}
+  .slide .rv,.slide .fan>*{animation:none!important}
+  @page{size:1600px 900px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+
+/* ---------- Speech AI: modos compactos aplicados quando o conteúdo não cabe no slide ---------- */
+.slide.dense .lede{font-size:16px;line-height:1.45}
+.slide.dense .card p,.slide.dense .card li{font-size:13.5px;line-height:1.42}
+.slide.dense .card{padding-top:12px;padding-bottom:12px}
+.slide.dense .kcard .num{font-size:44px}
+.slide.dense .kcard .klab{font-size:13.5px}
+.slide.dense .kcard .ksub{font-size:12px}
+.slide.dense .step p{font-size:13px}
+.slide.dense .step h4{font-size:15.5px}
+.slide.dense .takeaway{font-size:14.5px}
+.slide.dense .sh{font-size:36px}
+.slide.dense2 .lede{display:none}
+.slide.dense2 .card p,.slide.dense2 .card li{font-size:12.5px;line-height:1.38}
+.slide.dense2 .card .quote{font-size:13.5px}
+.slide.dense2 .kgrid{margin-top:12px}
+.slide.dense2 .cards{margin-top:12px}
+.slide.dense2 .sh{font-size:32px}
+.kcard .num .unit.word{font-size:.42em;margin-left:6px;letter-spacing:0}
+</style>
+</head>
+<body>
+<div class="progress"><i id="pbar"></i></div>
+<div id="shell">
+<main class="deck" id="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="brand" id="brand"><i></i>Documentação da solução · Speech AI</div>
+<!-- ============================ CAPA ============================ -->
+<section class="slide t-cover active" data-theme="dark" data-title="Capa">
+  <div class="cover-score rv" aria-label="Ordem de leitura">
+    <p class="ord-h">Ordem de leitura</p>
+    <div class="cs-row t1"><p class="who">01 · Parte 1 · Visão geral</p><p class="ttl">De uma skill de 20 minutos para um processo de até 5 minutos, com a IA só no trabalho editorial</p><p class="note">Arquitetura · componentes · antes e depois</p></div>
+    <div class="cs-row t2"><p class="who">02 · Parte 2 · Entrada e saída</p><p class="ttl">Do PDF e do .txt até o HTML, o roteiro e o MP3: cada etapa, pasta e arquivo</p><p class="note">input\ → newsroom\ → output\</p></div>
+    <div class="cs-row t3"><p class="who">03 · Parte 3 · Operação</p><p class="ttl">Frontend, comandos, configuração, resiliência, custos e próximos passos</p><p class="note">start.bat · main.py · settings.json</p></div>
+  </div>
+  <p class="kicker rv">Documentação da solução · Speech AI</p>
+  <h1 class="rv">Jornais e roteiros viram áudio<span class="l2">em minutos, com qualidade de editor</span></h1>
+  <p class="csub rv">O Speech AI recebe os PDFs do Valor Econômico e do Estadão e roteiros em texto, gera um resumo executivo em HTML, um roteiro para voz e o áudio narrado em português. Este documento descreve a solução, o caminho de cada arquivo de entrada até a saída e a operação do dia a dia.</p>
+  <div class="cmeta rv"><span>Versão de 6 de outubro de 2026</span><span>Python 3.12 · Claude Code · Edge TTS</span><span>Projeto speech-ai</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Documento: <b>Capa</b> · Speech AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ EM UMA PÁGINA ============================ -->
+<section class="slide" data-theme="light" data-title="A solução em uma página">
+  <p class="eyebrow rv">Em uma página</p>
+  <h2 class="sh rv">Doze números para entender a solução</h2>
+  <div class="tiers fan">
+    <div class="trow t1"><p class="tlab"><b>Parte 1</b>Visão geral</p>
+      <div class="kcard t1"><div class="num">2</div><p class="klab">Fluxos de entrada: jornais em PDF e roteiros .txt</p><p class="ksub">Um único ponto de entrada: main.py</p></div>
+      <div class="kcard t1"><div class="num">3</div><p class="klab">Formas de acionar: frontend, main.py e skill direta</p><p class="ksub">start.bat · --txt · --jornais · --skill</p></div>
+      <div class="kcard t1"><div class="num">5</div><p class="klab">Chamadas de IA em paralelo por jornal</p><p class="ksub">Mais 1 chamada curta para a capa</p></div>
+      <div class="kcard t1"><div class="num">6</div><p class="klab">Módulos: app, newsroom, skill_bridge, web, pipeline e services</p><p class="ksub">Configuração em config/settings.json</p></div>
+    </div>
+    <div class="trow t2"><p class="tlab"><b>Parte 2</b>Entrada e saída</p>
+      <div class="kcard pos"><div class="num">2:21</div><p class="klab">Minutos do PDF ao MP3 no Valor de 06/10</p><p class="ksub">Antes: 15 a 20 minutos</p></div>
+      <div class="kcard pos"><div class="num">US$ 1,02</div><p class="klab">Custo de IA do Valor de 06/10</p><p class="ksub">Antes: US$ 5,60 a 6,50</p></div>
+      <div class="kcard"><div class="num">166<span class="unit word">/166</span></div><p class="klab">Números dos slides conferidos no texto do jornal</p><p class="ksub">Teste de fidelidade da versão final</p></div>
+      <div class="kcard"><div class="num">964</div><p class="klab">Palavras do roteiro de áudio</p><p class="ksub">Meta da skill: 700 a 1.100</p></div>
+    </div>
+    <div class="trow t3"><p class="tlab"><b>Parte 3</b>Operação</p>
+      <div class="kcard"><div class="num">1</div><p class="klab">Rotina por vez no frontend, com cancelamento</p><p class="ksub">Log ao vivo na página</p></div>
+      <div class="kcard"><div class="num">0</div><p class="klab">Arquivos perdidos em falha: o item volta para a fila</p><p class="ksub">Processados são arquivados por data</p></div>
+      <div class="kcard"><div class="num">20<span class="unit word">/20</span></div><p class="klab">Verificações do teste automatizado do frontend</p><p class="ksub">Ambiente isolado, sem custo de IA</p></div>
+      <div class="kcard"><div class="num">~11</div><p class="klab">Segundos da chamada de capa (Sonnet 5.5)</p><p class="ksub">Título, data e abertura do áudio</p></div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · Valor 06/10 · <b>test_web</b> · Frontend</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVISÓRIA 01 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="1" data-title="01 · Visão geral (Parte 1)">
+  <p class="dnum rv">01</p>
+  <p class="eyebrow rv">Parte 1 · Visão geral</p>
+  <h1 class="rv">Visão geral e arquitetura</h1>
+  <p class="dsub rv">O que a solução faz, o que mudou em relação à skill original e como as peças se encaixam: entrada, orquestração, o processo rápido de jornais, o pipeline de voz e a saída.</p>
+  <div class="dchips rv"><span class="chip on">Antes e depois</span><span class="chip">Arquitetura em camadas</span><span class="chip">Componentes do código</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Parte 1 · Visão geral</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ANTES E DEPOIS ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Antes e depois">
+  <p class="eyebrow rv">Visão geral · Desempenho</p>
+  <h2 class="sh rv">A IA deixou de operar o processo e passou a fazer só o trabalho editorial</h2>
+  <p class="lede rv">Na skill original, o Claude extraía o PDF, lia em pedaços, copiava o visual, escrevia e revisava o HTML em 100 a 126 rodadas. Hoje o Python faz extração, montagem e verificação, e a IA escreve o conteúdo em chamadas únicas e paralelas.</p>
+  <div class="lr rv">
+    <div>
+      <div class="chart">
+        <h4>Tempo do PDF ao MP3, por jornal</h4>
+        <p class="csub">Minutos · medições reais de 05 e 06/10/2026</p>
+        <div class="hbars" style="--lw:190px">
+          <div class="hb" data-tip="&lt;b&gt;Skill completa&lt;/b&gt;&lt;br&gt;Valor 05/10: 21,5 min de IA + áudio"><span class="hl">Antes · skill completa</span><span class="ht"><i class="cm" style="--w:100%;--d:.2s"></i></span><b>~20 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Estadão 05/10, estimado com o áudio"><span class="hl">Agora · Estadão</span><span class="ht"><i style="--w:17.5%;--d:.3s"></i></span><b>~3,5 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Valor 06/10, do PDF ao MP3"><span class="hl">Agora · Valor</span><span class="ht"><i style="--w:11.8%;--d:.4s"></i></span><b>2,35 min</b></div>
+        </div>
+        <p class="src">Meta definida: no máximo 5 minutos por jornal, sem perder qualidade.</p>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">−84<span class="unit">%</span></div><p class="klab">Custo de IA do Valor: de US$ 6,55 para US$ 1,02</p><p class="ksub">Cache compartilhado entre chamadas</p></div>
+        <div class="kcard pos"><div class="num">−88<span class="unit">%</span></div><p class="klab">Tempo do Valor: de ~20 min para 2 min 21 s</p><p class="ksub">Do PDF ao MP3</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Onde ia o tempo antes <em>logs</em></p><p>39% verificação visual e ajustes, 19% leitura em pedaços, 15% escrita do HTML e 14% cópia da base visual. A extração do PDF pesava só 3%.</p></div>
+        <div class="card"><p class="ctag">Qualidade mantida <em>teste</em></p><p>Mesmo visual de deck, mesma hierarquia editorial e 166 de 166 números conferidos no texto do jornal, com citações literais.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> o ganho veio de tirar da IA o que é mecânico. O raciocínio continua com o modelo; extração, layout e validação ficaram com o Python.</p>
+  <div class="sfoot"><span>Fontes: <b>logs/skills</b> · execuções antigas · <b>relatorio.json</b> · execução final</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ARQUITETURA ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Arquitetura em camadas">
+  <p class="eyebrow rv">Visão geral · Arquitetura</p>
+  <h2 class="sh rv">Cinco camadas: entrada, orquestração, processo de jornais, voz e saída</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">O caminho de um arquivo</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Entrada</h4><p>Frontend web ou cópia manual: .txt em input\ e PDFs em input\Jornais\.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Orquestração · main.py</h4><p>ScriptInbox (roteiros), NewspaperInbox (identifica o jornal) e SkillPipeline (jornais). Sem IA.</p></div></div>
+        <div class="step o"><span class="sn">3</span><div><h4>Processo rápido · newsroom</h4><p>Extração em Python, IA editorial em 5 chamadas paralelas, capa, roteiro e HTML no modelo fixo.</p></div></div>
+        <div class="step"><span class="sn">4</span><div><h4>Pipeline de voz</h4><p>Text Analyzer, Speech Intelligence (idioma e voz), Narration e TTS Edge. Roda em paralelo com o HTML.</p></div></div>
+        <div class="step"><span class="sn">5</span><div><h4>Saída e arquivamento</h4><p>MP3 em output\, resumo em output\Jornais\ e entradas movidas para processados\.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard t1"><div class="num">0</div><p class="klab">Uso de IA nos roteiros .txt</p><p class="ksub">Só texto para fala</p></div>
+        <div class="kcard t1"><div class="num">6</div><p class="klab">Chamadas de IA por jornal</p><p class="ksub">5 conteúdos + 1 capa</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Dois motores <em>engine</em></p><p><b>fast</b> (padrão): o processo rápido do newsroom. <b>agent</b>: a skill completa, em que o Claude Code executa o SKILL.md inteiro. A troca é feita em config/settings.json.</p></div>
+        <div class="card"><p class="ctag">Ordem do processamento <em>main.py</em></p><p>Sem parâmetros, os .txt são processados antes dos jornais. Cada item é independente: uma falha não interrompe os demais.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>main.py</b> · <b>skill_bridge/skill_pipeline.py</b> · <b>newsroom/pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ COMPONENTES ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Componentes do código">
+  <p class="eyebrow rv">Visão geral · Código</p>
+  <h2 class="sh rv">Onde fica cada responsabilidade no projeto</h2>
+  <div class="cards c3 big fill fan rv" style="margin-top:10px">
+    <div class="card"><p class="ctag">Entrada <em>raiz</em></p><p><b>main.py</b>: parâmetros --txt, --jornais, --skill, --pdf e --list-skills. <b>start.bat</b> e <b>start.sh</b>: sobem o frontend.</p></div>
+    <div class="card"><p class="ctag">Aplicação <em>app/</em></p><p><b>SpeechAIApp</b>: pipeline de voz e nome do MP3 com data e hora. <b>ScriptInbox</b>: processa e arquiva os .txt de input\.</p></div>
+    <div class="card"><p class="ctag">Ponte com as skills <em>skill_bridge/</em></p><p><b>NewspaperInbox</b> (identifica e arquiva PDFs), <b>SkillCatalog</b>, <b>SkillPipeline</b> (escolhe o motor) e <b>SkillRunner</b> (skill completa).</p></div>
+    <div class="card"><p class="ctag">Processo rápido <em>newsroom/</em></p><p><b>extractor</b>, <b>profiles</b> (regras de cada jornal), <b>editor</b> (IA), <b>renderer</b> (HTML), <b>script_writer</b> (roteiro) e <b>pipeline</b>. Modelos em templates/.</p></div>
+    <div class="card"><p class="ctag">Frontend <em>web/</em></p><p><b>server.py</b> (API FastAPI), <b>job_runner.py</b> (executa o main.py em segundo plano) e static/ (página, estilos e scripts).</p></div>
+    <div class="card"><p class="ctag">Voz e configuração <em>pipeline/ · services/ · config/</em></p><p>Análise de texto, inteligência de fala e TTS existentes. <b>settings.json</b> e <b>voices.json</b> concentram pastas, vozes, motor e modelos.</p></div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> as skills continuam em Skill\ como fonte das regras editoriais; o newsroom reaproveita essas regras e o mesmo visual, sem duplicar a lógica de voz.</p>
+  <div class="sfoot"><span>Fonte: <b>estrutura do projeto</b> · speech-ai</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVISÓRIA 02 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="2" data-title="02 · Entrada e saída (Parte 2)">
+  <p class="dnum rv">02</p>
+  <p class="eyebrow rv">Parte 2 · Entrada e saída</p>
+  <h1 class="rv">O processo dos arquivos, da entrada à saída</h1>
+  <p class="dsub rv">Cada etapa em detalhe: as regras das pastas de entrada, a extração do PDF, a IA editorial, a capa, o roteiro, o HTML, o áudio e o arquivamento, com os tempos medidos no Valor de 06/10.</p>
+  <div class="dchips rv"><span class="chip on">Entradas</span><span class="chip">Extração</span><span class="chip">IA editorial</span><span class="chip">Roteiro</span><span class="chip">HTML</span><span class="chip">Saídas</span><span class="chip">Roteiros .txt</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Parte 2 · Entrada e saída</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ENTRADAS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Pastas e regras de entrada">
+  <p class="eyebrow rv">Entrada · input\</p>
+  <h2 class="sh rv">Duas pastas de entrada, cada uma com suas regras de aceitação</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Roteiros · input\*.txt</p>
+      <div class="cards big fill fan" style="margin-top:8px;gap:12px">
+        <div class="card"><p class="ctag">Formato</p><ul><li>Texto pronto para narração, um arquivo por áudio.</li><li>UTF-8. Pelo frontend, arquivos em ANSI (Bloco de Notas) são convertidos para UTF-8.</li><li>Arquivo vazio ou com codificação ilegível é recusado ou fica na fila com erro.</li></ul></div>
+        <div class="card"><p class="ctag">Destino após o processamento</p><p>input\processados\AAAA-MM-DD\. Se já houver um arquivo com o mesmo nome no dia, ganha a hora no nome.</p></div>
+      </div>
+    </div>
+    <div>
+      <p class="colh b">Jornais · input\Jornais\*.pdf</p>
+      <div class="cards big fill fan" style="margin-top:8px;gap:12px">
+        <div class="card"><p class="ctag">Identificação do jornal</p><ul><li>1º pelo nome do arquivo: "valor", "estadão", "estado de s. paulo", com ou sem acento.</li><li>2º pela capa do PDF, quando o nome não ajuda.</li><li>Não identificado: ignorado e avisado no resumo da execução.</li></ul></div>
+        <div class="card"><p class="ctag">Recomendação</p><p>Manter "Valor" ou "Estadão" no nome do PDF: a capa do Valor tem o nome do jornal em imagem, não em texto.</p><div class="mini"><span class="pill">Destino: <b>input\Jornais\processados\AAAA-MM-DD\</b></span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>app/script_inbox.py</b> · <b>skill_bridge/newspaper_inbox.py</b> · <b>web/server.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ EXTRAÇÃO ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Etapa 1 · Extração do PDF">
+  <p class="eyebrow rv">Etapa 1 · newsroom/extractor.py</p>
+  <h2 class="sh rv">Extração em Python: o texto do jornal em segundos, já com página e seção</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">1,6<span class="unit">s</span></div><p class="klab">Tempo de extração do Valor de 06/10</p><p class="ksub">pdftotext página a página</p></div>
+    <div class="kcard"><div class="num">35</div><p class="klab">Páginas editoriais aproveitadas no Valor</p><p class="ksub">Estadão 05/10: 52 páginas</p></div>
+    <div class="kcard"><div class="num">~176<span class="unit word">mil</span></div><p class="klab">Tokens de texto enviados à IA (Valor)</p><p class="ksub">Lidos uma vez e reaproveitados via cache</p></div>
+    <div class="kcard acc"><div class="num">A1–E4</div><p class="klab">Código de página detectado no cabeçalho</p><p class="ksub">Página sem cabeçalho é inferida pela vizinha</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">1 · Leitura</p><p>O PDF é copiado para um nome simples antes da extração: o pdftotext do Git não abre caminhos com acento no Windows. Cada página vira um bloco de texto.</p></div>
+    <div class="card"><p class="ctag">2 · Filtros</p><ul><li>Descarta páginas com fonte corrompida e anúncios sem texto.</li><li>Remove linhas de editais, balanços e tabelas numéricas.</li><li>Junta palavras hifenizadas e limpa marcas do PDF.</li></ul></div>
+    <div class="card"><p class="ctag">3 · Marcadores</p><p>Cada página recebe "=== [B7 · Empresas] ===". É assim que a IA cita a página e a seção no rodapé de cada slide.</p></div>
+  </div>
+  <div class="sfoot"><span>Fonte: <b>newsroom/extractor.py</b> · NewspaperExtractor</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ IA EDITORIAL ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Etapa 2 · IA editorial">
+  <p class="eyebrow rv">Etapa 2 · newsroom/editor.py</p>
+  <h2 class="sh rv">Cinco chamadas em paralelo escrevem o conteúdo; o jornal é lido do cache</h2>
+  <div class="lr rv">
+    <div>
+      <div class="chart">
+        <h4>Duração de cada chamada · Valor 06/10</h4>
+        <p class="csub">Segundos · Claude Opus 5.5, esforço low, saída em JSON</p>
+        <div class="hbars" style="--lw:200px">
+          <div class="hb" data-tip="&lt;b&gt;Política e eleições&lt;/b&gt;&lt;br&gt;75,5 s · 8.135 tokens"><span class="hl">3º · Política e eleições</span><span class="ht"><i style="--w:100%;--d:.2s"></i></span><b>75,5</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Empresas e setores&lt;/b&gt;&lt;br&gt;66,0 s · 7.913 tokens"><span class="hl">2º · Empresas e setores</span><span class="ht"><i class="cm" style="--w:87.4%;--d:.3s"></i></span><b>66,0</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Tecnologia e IA&lt;/b&gt;&lt;br&gt;53,2 s · 5.731 tokens"><span class="hl">1º · Tecnologia e IA</span><span class="ht"><i class="cm" style="--w:70.5%;--d:.4s"></i></span><b>53,2</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Mercados e macroeconomia&lt;/b&gt;&lt;br&gt;46,4 s · 4.590 tokens"><span class="hl">2º · Mercados e macro</span><span class="ht"><i class="cm" style="--w:61.5%;--d:.5s"></i></span><b>46,4</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Demais temas&lt;/b&gt;&lt;br&gt;39,8 s · 3.952 tokens"><span class="hl">3º · Demais temas</span><span class="ht"><i class="cm" style="--w:52.7%;--d:.6s"></i></span><b>39,8</b></div>
+        </div>
+        <p class="src">Em paralelo, o tempo da etapa é o da chamada mais longa: 85,5 s com o disparo escalonado.</p>
+      </div>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">Cache compartilhado</p><p>Regras e jornal vão num system prompt idêntico para todas as chamadas. Tecnologia parte primeiro e grava o cache; as outras partem cerca de 10 s depois e leem o texto a uma fração do custo (US$ 0,05 contra US$ 1,64).</p></div>
+        <div class="card"><p class="ctag">Saída garantida em JSON</p><p>Cada chamada usa claude -p sem ferramentas, com --json-schema: slides, layout, KPIs, cards, citações, fontes e o parágrafo do áudio de cada slide.</p></div>
+        <div class="card"><p class="ctag">Qualidade com esforço baixo</p><p>A regra de densidade (4 números por slide e citação literal com autor) deu mais números conferidos que o esforço médio: 166 contra 158, com 30% menos tempo.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>newsroom/editor.py</b> · AIEditor · <b>relatorio.json</b> · Valor 06/10</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ HIERARQUIA E PARTES ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Regras editoriais e partes">
+  <p class="eyebrow rv">Etapa 2 · newsroom/profiles.py</p>
+  <h2 class="sh rv">As regras das skills viraram perfis: hierarquia, caça à tecnologia e divisão em partes</h2>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>Destaque</th><th>Chamada(s) de IA</th><th>O que entra</th><th class="n">Slides</th></tr>
+    <tr><td>1º Tecnologia e IA</td><td>Uma chamada; grava o cache</td><td>IA, chips, big techs, startups, regulação de IA, ciência, cibersegurança, IA aplicada. Caça o tema em todos os cadernos.</td><td class="n">2 a 4</td></tr>
+    <tr><td>2º Economia</td><td>Mercados e macroeconomia</td><td>Bolsa, câmbio, juros e BC, inflação, fiscal e dívida, bancos e crédito.</td><td class="n">2 a 3</td></tr>
+    <tr><td></td><td>Empresas e setores</td><td>Empresas, varejo, indústria, petróleo e energia, agro, consumo, regulação setorial.</td><td class="n">2 a 3</td></tr>
+    <tr><td>3º Demais temas</td><td>Política e eleições</td><td>Eleições, partidos, Congresso, governo, Estados, Judiciário e STF.</td><td class="n">2 a 4</td></tr>
+    <tr><td></td><td>Demais temas</td><td>Internacional, editoriais e opinião, legislação, sociedade, saúde, esportes e cultura.</td><td class="n">2 a 3</td></tr>
+  </table>
+  <div class="cards c3 big fill fan" style="margin-top:14px">
+    <div class="card"><p class="ctag">Precisão</p><p>Só números, nomes e citações do texto; opinião atribuída ao autor ou ao jornal; "Leitura do editor" factual e sem viés partidário.</p></div>
+    <div class="card"><p class="ctag">Valor × Estadão</p><p>Cada perfil traz o mapa de cadernos e onde caçar tecnologia; no Estadão, "Notas e Informações" é sempre editorial do jornal.</p></div>
+    <div class="card"><p class="ctag">Junção</p><p>As partes de um destaque são unidas na ordem: slides, chips, números de "Em uma página" e itens da agenda.</p></div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>newsroom/profiles.py</b> · <b>Skill/*/SKILL.md</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ CAPA E ROTEIRO ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Etapas 3 e 4 · Capa e roteiro">
+  <p class="eyebrow rv">Etapas 3 e 4 · editor.py · script_writer.py</p>
+  <h2 class="sh rv">A capa sai de uma chamada curta; o roteiro é montado e validado em Python</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">Ordem do script.txt (mesma da skill)</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Título falado e abertura</h4><p>"Resumo do jornal Valor Econômico. Edição de…" e o parágrafo de abertura escrito na chamada de capa.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Três destaques, na ordem</h4><p>"Primeiro destaque: tecnologia…", seguido de um parágrafo por slide (35 a 55 palavras).</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>O que acompanhar e encerramento</h4><p>Uma frase por destaque e "Este foi o resumo do… Até a próxima edição."</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">11,1<span class="unit">s</span></div><p class="klab">Chamada de capa com Claude Sonnet 5.5</p><p class="ksub">Título, data, abertura e descrição</p></div>
+        <div class="kcard"><div class="num">964</div><p class="klab">Palavras do roteiro do Valor de 06/10</p><p class="ksub">Validação sem pendências</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Conversão para a fala</p><ul><li>"R$ 33 bi" → "33 bilhões de reais"</li><li>"US$ 1,4 tri" → "1,4 trilhão de dólares"</li><li>"9,95%" → "9,95 por cento"; "×" → "contra"</li></ul></div>
+        <div class="card"><p class="ctag">Validação</p><p>Confere 700 a 1.100 palavras, símbolos proibidos e a ordem dos destaques. Siglas como "PP" (partido) não são confundidas com "pp".</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>newsroom/script_writer.py</b> · ScriptWriter · <b>editor.py</b> · capa</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ HTML ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Etapa 5 · HTML e áudio">
+  <p class="eyebrow rv">Etapa 5 · newsroom/renderer.py</p>
+  <h2 class="sh rv">O HTML é montado num modelo fixo e verificado no navegador, enquanto o áudio é gerado</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">15,2<span class="unit">s</span></div><p class="klab">HTML e verificação de layout (Valor 06/10)</p><p class="ksub">Em paralelo com o áudio</p></div>
+    <div class="kcard"><div class="num">21</div><p class="klab">Slides do deck do Valor de 06/10</p><p class="ksub">15 de conteúdo e 6 de estrutura</p></div>
+    <div class="kcard"><div class="num">4</div><p class="klab">Layouts de conteúdo que a IA escolhe</p><p class="ksub">KPIs e cards, linha do tempo, gráfico, mosaico</p></div>
+    <div class="kcard acc"><div class="num">3</div><p class="klab">Níveis de ajuste automático de layout</p><p class="ksub">dense → dense2 → enxugar</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">Modelo fixo <em>templates/</em></p><p>deck_head (estilos), slides.html.j2 (capa, "Em uma página", divisórias, conteúdo, agenda) e deck_tail (navegação, modo escuro, tela cheia, celular). Mesmo visual dos resumos anteriores.</p></div>
+    <div class="card"><p class="ctag">Verificação <em>Playwright</em></p><p>Cada slide é medido como na apresentação. Se o texto não cabe, o slide recebe o modo compacto; em último caso perde o último card ou a linha fina.</p></div>
+    <div class="card"><p class="ctag">Paralelismo <em>pipeline.py</em></p><p>O roteiro fica pronto antes do HTML. O áudio começa na hora, e o HTML termina numa thread; o jornal só é dado como concluído quando os dois acabam.</p></div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>newsroom/renderer.py</b> · <b>newsroom/templates/</b> · <b>newsroom/pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ SAÍDAS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Saídas e arquivamento">
+  <p class="eyebrow rv">Saída · output\</p>
+  <h2 class="sh rv">O que cada execução grava, onde e com qual nome</h2>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>Arquivo</th><th>Local</th><th>Conteúdo</th></tr>
+    <tr><td>Áudio MP3</td><td>output\&lt;nome do arquivo processado&gt;_AAAA-MM-DD_HH-MM-SS.mp3</td><td>Narração em pt-BR (voz Francisca). Nome do .txt ou do PDF, mais data e hora.</td></tr>
+    <tr><td>Resumo HTML</td><td>output\Jornais\&lt;Jornal&gt; - DD-MM-AAAA\&lt;Jornal&gt; - DD-MM-AAAA.html</td><td>Deck navegável, arquivo único. Pasta repetida no dia ganha sufixo " (2)".</td></tr>
+    <tr><td>script.txt</td><td>mesma pasta do HTML</td><td>Roteiro para voz, lido direto dali pelo pipeline de áudio.</td></tr>
+    <tr><td>editorial.json</td><td>mesma pasta do HTML</td><td>Conteúdo escrito pela IA, para auditoria e reprocessamento.</td></tr>
+    <tr><td>relatorio.json</td><td>mesma pasta do HTML</td><td>Tempos por etapa, custo e tokens de cada chamada, ajustes de layout e validação do roteiro.</td></tr>
+    <tr><td>Entradas</td><td>input\processados\ · input\Jornais\processados\</td><td>Arquivos processados com sucesso, por data. Os com erro ficam na entrada.</td></tr>
+    <tr><td>Logs</td><td>logs\app.log · logs\web_jobs\ · logs\skills\</td><td>Aplicação, rotinas iniciadas pelo frontend e execuções da skill completa.</td></tr>
+  </table>
+  <p class="takeaway rv"><b>Leitura do editor:</b> o roteiro não é copiado para input\, para não ser reprocessado como .txt; o áudio lê o script.txt direto da pasta do jornal.</p>
+  <div class="sfoot"><span>Fontes: <b>newsroom/pipeline.py</b> · <b>app/speech_ai_app.py</b> · <b>skill_bridge/skill_pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ROTEIROS TXT ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Fluxo dos roteiros .txt">
+  <p class="eyebrow rv">Fluxo · Roteiros .txt</p>
+  <h2 class="sh rv">Roteiros .txt viram áudio direto, sem IA e sem custo</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">Passo a passo</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Fila</h4><p>Cada .txt em input\ é lido em ordem alfabética (python main.py --txt, ou o botão "Processar textos").</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Análise e voz</h4><p>Text Analyzer estrutura o texto; Speech Intelligence detecta o idioma e escolhe a voz e o ritmo.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>Áudio</h4><p>O TTS Edge gera output\&lt;nome&gt;_AAAA-MM-DD_HH-MM-SS.mp3.</p></div></div>
+        <div class="step"><span class="sn">4</span><div><h4>Arquivamento</h4><p>O .txt vai para input\processados\AAAA-MM-DD\; em caso de erro, continua na fila.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">US$ 0</div><p class="klab">Custo de IA por roteiro</p><p class="ksub">Só texto para fala</p></div>
+        <div class="kcard"><div class="num">pt · en</div><p class="klab">Idioma detectado, voz escolhida sozinha</p><p class="ksub">Francisca (pt-BR) ou Guy (en-US)</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Exemplo de nomes</p><p>aviso.txt → output\aviso_2026-10-06_09-15-02.mp3, e o original vai para input\processados\2026-10-06\aviso.txt.</p></div>
+        <div class="card"><p class="ctag">Ordem no dia a dia</p><p>Rodando python main.py sem parâmetros, os .txt são processados antes dos jornais.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>app/script_inbox.py</b> · <b>app/speech_ai_app.py</b> · <b>config/voices.json</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVISÓRIA 03 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="3" data-title="03 · Operação (Parte 3)">
+  <p class="dnum rv">03</p>
+  <p class="eyebrow rv">Parte 3 · Operação</p>
+  <h1 class="rv">Operação, configuração e custos</h1>
+  <p class="dsub rv">Como usar o frontend, quais comandos existem, o que pode ser ajustado em settings.json, como a solução se comporta em falhas e quanto custa por dia.</p>
+  <div class="dchips rv"><span class="chip on">Frontend</span><span class="chip">Comandos</span><span class="chip">Configuração</span><span class="chip">Resiliência e custos</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Parte 3 · Operação</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ FRONTEND ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Frontend web">
+  <p class="eyebrow rv">Operação · web\</p>
+  <h2 class="sh rv">Central de Processamento: enviar, processar e acompanhar pelo navegador</h2>
+  <div class="lr rv">
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">O que a página faz <em>127.0.0.1:8000</em></p><ul><li>Upload de .txt e de PDFs, com o jornal identificado na hora.</li><li>Botões "Processar textos" (--txt) e "Processar jornais" (--jornais), com confirmação de custo.</li><li>Log ao vivo, etapas, tempo decorrido e cancelamento.</li><li>Áudios com player e download; resumos com link para o HTML e o roteiro.</li></ul></div>
+        <div class="card"><p class="ctag">Como iniciar</p><p>Duplo clique em start.bat (Windows) ou ./start.sh (Git Bash). O navegador abre sozinho; Ctrl+C encerra.</p></div>
+      </div>
+    </div>
+    <div>
+      <table class="tbl">
+        <tr><th>Rota</th><th>Função</th></tr>
+        <tr><td>POST /api/upload/txt</td><td>Grava em input\ (UTF-8)</td></tr>
+        <tr><td>POST /api/upload/jornais</td><td>Grava em input\Jornais\</td></tr>
+        <tr><td>POST /api/run/txt</td><td>python main.py --txt</td></tr>
+        <tr><td>POST /api/run/jornais</td><td>python main.py --jornais</td></tr>
+        <tr><td>GET /api/job</td><td>Status e log da rotina</td></tr>
+        <tr><td>POST /api/job/cancel</td><td>Encerra a rotina e o Claude</td></tr>
+        <tr><td>GET /api/files</td><td>Filas, áudios e resumos</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> o servidor só aceita conexões do próprio computador e roda uma rotina por vez; durante a execução, remover arquivos da fila fica bloqueado.</p>
+  <div class="sfoot"><span>Fontes: <b>web/server.py</b> · <b>web/job_runner.py</b> · <b>web/static/</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ COMANDOS E CONFIGURAÇÃO ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Comandos e configuração">
+  <p class="eyebrow rv">Operação · main.py · settings.json</p>
+  <h2 class="sh rv">Comandos do dia a dia e os ajustes disponíveis em settings.json</h2>
+  <div class="lr rv">
+    <div>
+      <table class="tbl">
+        <tr><th>Comando</th><th>O que faz</th></tr>
+        <tr><td>python main.py</td><td>.txt primeiro, depois os jornais</td></tr>
+        <tr><td>python main.py --txt</td><td>Somente roteiros .txt</td></tr>
+        <tr><td>python main.py --jornais</td><td>Somente PDFs de input\Jornais</td></tr>
+        <tr><td>--skill valor --pdf X.pdf</td><td>Um PDF específico</td></tr>
+        <tr><td>--skill estadao</td><td>Áudio do último script.txt do jornal</td></tr>
+        <tr><td>--list-skills</td><td>Lista skills e apelidos</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="tbl">
+        <tr><th>Chave (skills)</th><th>Valor atual</th></tr>
+        <tr><td>engine</td><td>fast (ou agent)</td></tr>
+        <tr><td>fast_model</td><td>claude-opus-5-5</td></tr>
+        <tr><td>fast_cover_model</td><td>claude-sonnet-5-5</td></tr>
+        <tr><td>fast_effort</td><td>low</td></tr>
+        <tr><td>fast_cache_warmup_seconds</td><td>10</td></tr>
+        <tr><td>fast_timeout_minutes · retries</td><td>8 · 1</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> pastas de entrada e saída, catálogo dos jornais e apelidos também ficam em settings.json; nenhuma mudança de rotina exige alterar código.</p>
+  <div class="sfoot"><span>Fontes: <b>main.py</b> · <b>config/settings.json</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ RESILIÊNCIA E CUSTOS ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Resiliência e custos">
+  <p class="eyebrow rv">Operação · Falhas e custos</p>
+  <h2 class="sh rv">Falhas não perdem arquivos, e o custo diário caiu para cerca de US$ 3,60</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">US$ 1,02</div><p class="klab">Valor de 06/10, do PDF ao MP3</p><p class="ksub">6 chamadas de IA</p></div>
+    <div class="kcard"><div class="num">US$ 2,57</div><p class="klab">Estadão de 05/10</p><p class="ksub">Tecnologia espalhada em mais cadernos</p></div>
+    <div class="kcard pos"><div class="num">~US$ 3,60</div><p class="klab">Por dia com os dois jornais</p><p class="ksub">Antes: cerca de US$ 11</p></div>
+    <div class="kcard acc"><div class="num">US$ 0</div><p class="klab">Roteiros .txt</p><p class="ksub">Sem uso de IA</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">Falhas</p><ul><li>Um item com erro não interrompe os demais.</li><li>O arquivo com erro fica na entrada para a próxima execução.</li><li>Chamada de IA com falha é repetida uma vez.</li></ul></div>
+    <div class="card"><p class="ctag">Limite de uso da IA</p><p>Se o limite da conta acabar no meio, o jornal afetado volta para a fila e é refeito depois, sem perda de arquivos.</p></div>
+    <div class="card"><p class="ctag">Plano B</p><p>Com "engine": "agent", o processamento volta à skill completa (mais lenta, ~20 min); o log de cada execução fica em logs\skills\.</p></div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · execuções de 05 e 06/10 · <b>skill_bridge/skill_pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ PRÓXIMOS PASSOS ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-title="Próximos passos">
+  <p class="eyebrow rv">Agenda · na ordem de prioridade</p>
+  <h1 class="rv" style="font-size:58px;max-width:1400px">Próximos passos</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    <div class="card dk t1c"><p class="ctag">Parte 1 · Validação</p><p><b>Estadão de ponta a ponta:</b> rodar a próxima edição pelo fluxo diário, com o áudio, e conferir o tempo total.</p></div>
+    <div class="card dk t1c"><p class="ctag">Parte 1 · Qualidade</p><p><b>Revisão editorial:</b> ouvir os áudios e revisar os HTMLs das primeiras semanas antes de distribuir.</p></div>
+    <div class="card dk t2c"><p class="ctag">Parte 2 · Skill direta</p><p><b>Atualizar a skill:</b> a skill acionada direto no Claude/Cowork ainda usa o processo completo de ~20 minutos.</p></div>
+    <div class="card dk t2c"><p class="ctag">Parte 2 · Entrada</p><p><b>Nomes dos PDFs:</b> manter "Valor" ou "Estadão" no nome, já que a capa do Valor não traz o nome em texto.</p></div>
+    <div class="card dk t3c"><p class="ctag">Parte 3 · Operação</p><p><b>Agendamento:</b> executar python main.py automaticamente todas as manhãs, depois da chegada dos PDFs.</p></div>
+    <div class="card dk t3c"><p class="ctag">Parte 3 · Versionamento</p><p><b>Commit no Git:</b> nenhuma das mudanças foi commitada; revisar e versionar newsroom\, web\ e a configuração.</p></div>
+  </div>
+  <div class="sfoot"><span>Fonte: Speech AI · documentação de 6 de outubro de 2026</span><span class="pg"></span></div>
+</section>
+
+</main>
+</div>
+
+<nav class="nav" aria-label="Controles da apresentação">
+  <button class="nbtn" id="btnPrev" aria-label="Slide anterior">&lsaquo;</button>
+  <span class="count" id="counter">1</span>
+  <button class="nbtn" id="btnNext" aria-label="Próximo slide">&rsaquo;</button>
+  <span class="sep"></span>
+  <div class="dots" id="dots"></div>
+  <span class="sep"></span>
+  <button class="nbtn" id="btnOv" aria-label="Visão geral dos slides" title="Visão geral (O)">&#9783;</button>
+  <button class="nbtn" id="btnTheme" aria-label="Alternar modo escuro" title="Modo escuro (D)">&#9788;</button>
+  <button class="nbtn" id="btnFs" aria-label="Tela cheia" title="Tela cheia (F)">&#9974;</button>
+</nav>
+<div id="ov" role="dialog" aria-modal="true" aria-label="Todos os slides"><h3>Todos os slides</h3><p class="ovh">Clique para ir ao slide · O ou Esc para fechar</p><div id="ovg"></div></div>
+<div id="hint">← → navegam · O visão geral · D modo escuro · F tela cheia</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, deck=document.getElementById('deck');
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var TOTAL=slides.length, idx=0;
+var counter=document.getElementById('counter'), pbar=document.getElementById('pbar'), brand=document.getElementById('brand');
+
+/* ---------- palco: escala fixa 1600x900, ou leitura vertical em telas estreitas ---------- */
+function isMobile(){ return window.innerWidth < 820 || (window.innerWidth < 1000 && window.innerHeight > window.innerWidth); }
+function fitStage(){
+  if (isMobile()){ root.classList.add('mobile'); deck.style.transform='none'; return; }
+  root.classList.remove('mobile');
+  var pad = 22;
+  var k = Math.min((window.innerWidth-pad)/1600,(window.innerHeight-pad)/900);
+  deck.style.transform='translate(-50%,-50%) scale('+k+')';
+}
+window.addEventListener('resize',fitStage);
+
+/* ---------- navegação ---------- */
+var dotsBox=document.getElementById('dots'), ovg=document.getElementById('ovg');
+slides.forEach(function(s,i){
+  var d=document.createElement('button'); d.className='dot'+(s.dataset.divider?' sec':''); d.setAttribute('aria-label','Ir ao slide '+(i+1));
+  d.title=s.dataset.title||''; d.addEventListener('click',function(){goTo(i,i<idx);}); dotsBox.appendChild(d);
+  var c=document.createElement('button'); c.className='ovc';
+  c.innerHTML='<span class="on2">'+(i+1<10?'0':'')+(i+1)+'</span><span class="ot"></span>';
+  c.querySelector('.ot').textContent=s.dataset.title||'';
+  c.addEventListener('click',function(){toggleOv(false);goTo(i,i<idx);}); ovg.appendChild(c);
+});
+function update(){
+  counter.textContent=(idx+1)+' / '+TOTAL;
+  pbar.style.width=(idx/(TOTAL-1)*100)+'%';
+  [].forEach.call(dotsBox.children,function(d,i){d.classList.toggle('on',i===idx);});
+  [].forEach.call(ovg.children,function(c,i){c.classList.toggle('on',i===idx);});
+  var s=slides[idx];
+  var onLight=s.dataset.theme==='light' && root.dataset.themeMode!=='dark';
+  brand.classList.toggle('on-light',onLight);
+  if (FIELD) FIELD.setMode(s.dataset.theme==='dark' || root.dataset.themeMode==='dark', !!s.dataset.divider || s.classList.contains('t-cover'));
+  deck.style.setProperty('--field-a', s.dataset.divider ? .9 : 1);
+}
+function goTo(n,back){
+  n=Math.max(0,Math.min(TOTAL-1,n));
+  if (n===idx) return;
+  document.body.classList.toggle('back',!!back);
+  slides[idx].classList.remove('active'); idx=n; slides[idx].classList.add('active');
+  update(); hideTip();
+  setTimeout(function(){document.body.classList.remove('back');},620);
+}
+function next(){goTo(idx+1,false);} function prev(){goTo(idx-1,true);}
+document.getElementById('btnNext').addEventListener('click',next);
+document.getElementById('btnPrev').addEventListener('click',prev);
+var ov=document.getElementById('ov');
+function toggleOv(on){ ov.classList.toggle('on', on===undefined ? !ov.classList.contains('on') : on); }
+document.getElementById('btnOv').addEventListener('click',function(){toggleOv();});
+function toggleTheme(){ root.dataset.themeMode = root.dataset.themeMode==='dark' ? 'light' : 'dark'; update(); }
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+function toggleFs(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.getElementById('btnFs').addEventListener('click',toggleFs);
+document.addEventListener('keydown',function(e){
+  if (e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if (root.classList.contains('mobile')) return;
+  var k=e.key;
+  if (k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if (k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if (k==='Home'){goTo(0,true);} else if (k==='End'){goTo(TOTAL-1,false);}
+  else if (k==='o'||k==='O'){toggleOv();} else if (k==='Escape'){toggleOv(false);}
+  else if (k==='d'||k==='D'){toggleTheme();} else if (k==='f'||k==='F'){toggleFs();}
+});
+var tx=null;
+deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+deck.addEventListener('touchend',function(e){ if(tx===null||root.classList.contains('mobile'))return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?next():prev();} tx=null; });
+
+/* ---------- tooltip de hover (barras, pontos, segmentos) ---------- */
+var tip=document.getElementById('tip');
+function showTip(html,x,y){ tip.innerHTML=html; tip.classList.add('on');
+  var w=tip.offsetWidth,h=tip.offsetHeight; var px=x+14, py=y-h-12;
+  if (px+w>window.innerWidth-8) px=x-w-14; if (py<8) py=y+16; tip.style.left=px+'px'; tip.style.top=py+'px'; }
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mousemove',function(e){
+  var t=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if (t) showTip(t.getAttribute('data-tip'),e.clientX,e.clientY); else if (!e.target.closest('svg.line')) hideTip();
+});
+
+/* ---------- gráfico de linha: abstenção ---------- */
+function lineChart(svg,data,opt){
+  var W=640,H=420,L=48,R=24,T=20,B=36, NS='http://www.w3.org/2000/svg';
+  var x=function(i){return L+i*(W-L-R)/(data.length-1);}, y=function(v){return T+(opt.max-v)/(opt.max-opt.min)*(H-T-B);};
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+  opt.ticks.forEach(function(t){ el('line',{x1:L,x2:W-R,y1:y(t),y2:y(t),'class':'gl'}); var tx=el('text',{x:L-8,y:y(t)+4,'text-anchor':'end','class':'ax'}); tx.textContent=t.toString().replace('.',',')+'%'; });
+  if (opt.ref){ el('line',{x1:L,x2:W-R,y1:y(opt.ref.v),y2:y(opt.ref.v),'class':'ref'}); var rt=el('text',{x:W-R,y:y(opt.ref.v)-6,'text-anchor':'end','class':'ax'}); rt.textContent=opt.ref.label; }
+  data.forEach(function(d,i){ var t=el('text',{x:x(i),y:H-10,'text-anchor':'middle','class':'ax'}); t.textContent=d.k; });
+  el('path',{d:data.map(function(d,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(d.v).toFixed(1);}).join(' '),'class':'ln'});
+  var xh=el('line',{y1:T,y2:H-B,'class':'xh'});
+  data.forEach(function(d,i){ el('circle',{cx:x(i),cy:y(d.v),r:i===data.length-1?6:4.5,'class':'mk'+(i===data.length-1?' last':'')}); });
+  var lb=el('text',{x:x(data.length-1)-10,y:y(data[data.length-1].v)+22,'text-anchor':'end','class':'lbl'}); lb.textContent='21,08% em 2026';
+  var lb2=el('text',{x:x(1),y:y(data[1].v)+22,'text-anchor':'middle','class':'lbl'}); lb2.textContent='16,75%';
+  var hit=el('rect',{x:L,y:T,width:W-L-R,height:H-T-B,'class':'hit'});
+  hit.addEventListener('mousemove',function(e){
+    var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)/r.width*W;
+    var i=Math.round((px-L)/((W-L-R)/(data.length-1))); i=Math.max(0,Math.min(data.length-1,i));
+    xh.setAttribute('x1',x(i)); xh.setAttribute('x2',x(i)); xh.style.opacity=1;
+    showTip('<b>'+data[i].k+'</b><br>Abstenção: '+data[i].v.toFixed(2).replace('.',',')+'%',e.clientX,e.clientY);
+  });
+  hit.addEventListener('mouseleave',function(){xh.style.opacity=0;hideTip();});
+}
+
+/* ---------- campo animado (pontos à deriva) atrás dos slides escuros ---------- */
+var FIELD=(function(){
+  var cv=document.getElementById('field'); if(!cv||!cv.getContext) return null;
+  var ctx=cv.getContext('2d'), DPR=Math.min(window.devicePixelRatio||1,1.6), W=1600,H=900;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  var N=900, pts=[], running=false, show=true, ring=true, t0=0;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (var i=0;i<N;i++){
+    var z=Math.random()*.8+.2, a=Math.random()*Math.PI*2, rr=i%3===0?230:(i%3===1?150:320);
+    pts.push({x:Math.random()*W,y:Math.random()*H,z:z,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.22,
+      ring:i<N*.42, tx:1230+Math.cos(a)*rr*(0.96+Math.random()*.08), ty:440+Math.sin(a)*rr*(0.96+Math.random()*.08), ph:Math.random()*6.28});
+  }
+  function frame(ts){
+    if (!running) return;
+    var t=ts/1000; ctx.clearRect(0,0,W,H);
+    for (var i=0;i<N;i++){
+      var p=pts[i];
+      if (ring && p.ring){
+        var ang=t*.05*(p.z>.6?1:-1), cx=1230, cy=440, dx=p.tx-cx, dy=p.ty-cy;
+        var gx=cx+dx*Math.cos(ang)-dy*Math.sin(ang), gy=cy+dx*Math.sin(ang)+dy*Math.cos(ang);
+        p.x+=(gx-p.x)*.03; p.y+=(gy-p.y)*.03;
+      } else {
+        p.x+=p.vx*p.z*1.4; p.y+=p.vy*p.z*1.4;
+        if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10; if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+      }
+      var al=(.18+.55*p.z)*(.75+.25*Math.sin(t*1.3+p.ph));
+      ctx.fillStyle=p.ring&&ring ? 'rgba(143,180,236,'+al+')' : 'rgba(195,215,238,'+(al*.8)+')';
+      ctx.beginPath(); ctx.arc(p.x,p.y,.6+1.5*p.z,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(!running && show && !reduce && !document.hidden && !root.classList.contains('mobile')){ running=true; requestAnimationFrame(frame);} }
+  function stop(){ running=false; }
+  document.addEventListener('visibilitychange',function(){ document.hidden?stop():start(); });
+  if (reduce){ /* um quadro estático */ ctx.fillStyle='rgba(195,215,238,.4)'; pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1,0,6.283);ctx.fill();}); }
+  return { setMode:function(dark,r){ show=dark; ring=r; if(show) start(); else { stop(); ctx.clearRect(0,0,W,H);} } };
+})();
+
+
+/* ---------- selo de destaque + navegação que se recolhe ---------- */
+var TIERN={'1':'Parte 1 · Visão geral','2':'Parte 2 · Entrada e saída','3':'Parte 3 · Operação'};
+slides.forEach(function(s,i){
+  var t=s.dataset.tier; if(!t) return;
+  if (s.dataset.theme==='light'){ var p=document.createElement('div'); p.className='tierpill t'+t; p.innerHTML='<i></i>'+TIERN[t]; s.insertBefore(p,s.firstChild); }
+  if (dotsBox.children[i]) dotsBox.children[i].classList.add('t'+t);
+});
+var idleT=null;
+function wake(){ document.body.classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(function(){ if(!document.querySelector('.nav:hover')) document.body.classList.add('idle'); },2600); }
+['mousemove','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev,wake,{passive:true}); });
+wake();
+
+fitStage(); update();
+var hint=document.getElementById('hint');
+if (!root.classList.contains('mobile')){ setTimeout(function(){hint.classList.add('on');},900); setTimeout(function(){hint.classList.remove('on');},5200); }
+})();
+</script>
+</body>
+</html>
