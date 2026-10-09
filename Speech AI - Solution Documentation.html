@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en" data-theme-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speech AI — Solution Documentation</title>
+<meta name="description" content="Speech AI documentation: fast pipeline for newspapers (Valor Econômico and Estadão) and .txt scripts with local AI (Ollama), from input to HTML, script and MP3; frontend, configuration, resilience and costs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   NEWSPAPER SUMMARY · single-file HTML deck
+   Visual language inherited from the "Walk Challenge 2026" model:
+   scalable 1600x900 stage, dark cover/dividers with animated
+   field, light slides with KPIs, cards, bars and timeline.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --dk1:#282B34; --dk2:#002855; --lt2:#C3D7EE;
+  --accent1:#243782; --accent3:#C3D7EE; --accent5:#D35D00; --accent6:#43AAA0; --hlink:#0082FB;
+  --font-heading:'Encode Sans Expanded','Encode Sans',Arial,sans-serif;
+  --font-body:'Encode Sans',Arial,sans-serif;
+  --field:#00163C; --paper:#FFFFFF; --mist:#F3F6FB; --mist-2:#E8EEF8; --rule:#D8E1EF;
+  --ink:#010834; --ink-soft:#4E5A75; --ink-faint:#7D879B;
+  /* validated categorical palette (light background) */
+  --c1:#2A54B5; --c2:#00968C; --c3:#D35D00; --c4:#8E5BC7; --c-mute:#AFBBD1;
+  --grid:#E4EAF4; --axis:#9AA6BC; --num1:#243782; --pos:#0A7F76;
+}
+/* dark mode: its own steps, not an inversion */
+html[data-theme-mode="dark"]{
+  --paper:#061B3E; --mist:#0C2650; --mist-2:#123061; --rule:#1E3D70;
+  --ink:#EAF1FB; --ink-soft:#A9BEDD; --ink-faint:#7F96BA;
+  --c1:#5C82DC; --c2:#12A899; --c3:#D0762A; --c4:#9C6FD8; --c-mute:#3C5580;
+  --grid:#173359; --axis:#5A7399; --num1:#8FB0EE; --pos:#3ED0BF;
+}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04102A}
+html[data-theme-mode="dark"] body{background:#030D22}
+body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ---------- 1 · STAGE ---------- */
+#shell{position:fixed;inset:0;overflow:hidden}
+.deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  background:var(--field);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:var(--field-a,1);transition:opacity .8s ease}
+.slide{position:absolute;inset:0;padding:70px 92px 70px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px);
+  transition:opacity .5s cubic-bezier(.22,.7,.2,1),transform .58s cubic-bezier(.22,.7,.2,1),filter .45s ease,visibility .58s;
+  will-change:transform,opacity;pointer-events:none}
+body.back .slide{transform:translate3d(-46px,0,0) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;z-index:10}
+.slide[data-theme="dark"]{color:#fff;background:transparent}
+.slide[data-theme="dark"]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,#00122F 0%,rgba(0,20,52,.94) 30%,rgba(0,26,64,.66) 54%,rgba(0,34,78,.28) 76%,rgba(0,40,88,.08) 100%)}
+.slide[data-theme="dark"]>*{position:relative;z-index:2}
+.slide[data-theme="light"]{background:var(--paper);color:var(--ink)}
+.slide[data-theme="light"]::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(58% 80% at 100% 0%,rgba(195,215,238,.34) 0%,rgba(195,215,238,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(195,215,238,.24) 0%,rgba(195,215,238,0) 60%)}
+html[data-theme-mode="dark"] .slide[data-theme="light"]::before{
+  background:radial-gradient(58% 80% at 100% 0%,rgba(92,130,220,.16) 0%,rgba(92,130,220,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(18,168,153,.10) 0%,rgba(18,168,153,0) 60%)}
+.slide[data-theme="light"]>*{position:relative;z-index:2}
+
+/* staggered entrance: resting state is VISIBLE; hidden state lives only in keyframes */
+.slide.active .rv{animation:rvIn .5s cubic-bezier(.22,.7,.2,1) both}
+.slide.active .rv:nth-child(1){animation-delay:.05s}.slide.active .rv:nth-child(2){animation-delay:.12s}
+.slide.active .rv:nth-child(3){animation-delay:.19s}.slide.active .rv:nth-child(4){animation-delay:.26s}
+.slide.active .rv:nth-child(5){animation-delay:.33s}.slide.active .rv:nth-child(6){animation-delay:.40s}
+@keyframes rvIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .fan>*{animation:fanIn .42s cubic-bezier(.22,.7,.2,1) both}
+@keyframes fanIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.slide.active .fan>*:nth-child(1){animation-delay:.14s}.slide.active .fan>*:nth-child(2){animation-delay:.18s}
+.slide.active .fan>*:nth-child(3){animation-delay:.22s}.slide.active .fan>*:nth-child(4){animation-delay:.26s}
+.slide.active .fan>*:nth-child(5){animation-delay:.30s}.slide.active .fan>*:nth-child(6){animation-delay:.34s}
+.slide.active .fan>*:nth-child(7){animation-delay:.38s}.slide.active .fan>*:nth-child(8){animation-delay:.42s}
+.slide.active .fan>*:nth-child(n+9){animation-delay:.46s}
+body.no-motion .slide.active .rv,body.no-motion .slide.active .fan>*{animation:none}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+/* ---------- 2 · CHROME: brand, nav, progress, footer ---------- */
+.brand{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
+  font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(195,215,238,.72);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent5);display:block}
+.brand.on-light{color:#46526E}
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:62;display:flex;align-items:center;gap:13px;
+  padding:7px 15px;border-radius:999px;background:rgba(4,16,42,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(195,215,238,.2);color:#DCE7F7;font-family:var(--font-body);font-size:11px;letter-spacing:.06em;
+  opacity:.55;transition:opacity .3s ease}
+.nav:hover,.nav:focus-within{opacity:1}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(195,215,238,.34);
+  transition:transform .25s ease,background .25s ease}
+.dot:hover{background:var(--accent3);transform:scale(1.35)}
+.dot.sec{background:rgba(67,170,160,.6)}
+.dot.on{background:var(--accent5);transform:scale(1.5)}
+.nbtn{background:transparent;border:1px solid rgba(195,215,238,.45);color:inherit;border-radius:999px;min-width:30px;height:24px;
+  padding:0 8px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font-body);opacity:.85;transition:opacity .2s,background .2s}
+.nbtn:hover{opacity:1;background:rgba(195,215,238,.16)}
+.nbtn:focus-visible,.dot:focus-visible{outline:2px solid var(--hlink);outline-offset:2px}
+.count{font-variant-numeric:tabular-nums;min-width:58px;text-align:center;opacity:.85;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(195,215,238,.24)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:64;background:rgba(195,215,238,.16)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent6),var(--accent5));transition:width .5s cubic-bezier(.22,.7,.2,1)}
+.sfoot{position:absolute;left:92px;right:92px;top:852px;height:16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);z-index:6;pointer-events:none}
+.slide[data-theme="dark"]>.sfoot,.slide[data-theme="light"]>.sfoot{position:absolute;z-index:6}
+.slide[data-theme="dark"] .sfoot{color:rgba(195,215,238,.52)}
+.sfoot b{font-weight:600;color:var(--accent5)}
+
+/* ---------- 3 · TYPOGRAPHY ---------- */
+h1,h2,h3,h4{font-family:var(--font-heading);margin:0;font-weight:700;letter-spacing:-.012em}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent5);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent5);flex:0 0 auto}
+.slide[data-theme="dark"] .eyebrow{color:var(--accent6)}
+.slide[data-theme="dark"] .eyebrow::before{background:var(--accent6)}
+h2.sh{font-size:40px;line-height:1.12;margin:12px 0 0;max-width:1300px;text-wrap:balance}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:1240px;margin-top:10px}
+.slide[data-theme="dark"] .lede{color:rgba(219,231,247,.86)}
+.takeaway{margin-top:auto;padding-top:12px;border-top:1px solid var(--rule);font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.takeaway b{color:var(--accent5);font-weight:700}
+.slide[data-theme="dark"] .takeaway{border-top-color:rgba(195,215,238,.2);color:rgba(219,231,247,.84)}
+.num{font-family:var(--font-heading);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:.92}
+.unit{font-size:.52em;font-weight:700;letter-spacing:0;margin-left:2px;opacity:.72}
+.src{font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em}
+
+/* ---------- 4 · COVER ---------- */
+.t-cover{justify-content:flex-end;padding:74px 92px 100px}
+.t-cover .kicker{font-size:12.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--accent6);margin-bottom:26px}
+.t-cover h1{text-wrap:balance;font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.028em;max-width:960px;position:relative;width:fit-content}
+.t-cover h1 .l2{display:block;color:var(--accent3)}
+.t-cover .csub{font-size:18px;line-height:1.55;color:rgba(219,231,247,.9);max-width:900px;margin-top:26px}
+.t-cover .cmeta{margin-top:32px;display:flex;align-items:stretch;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(195,215,238,.78)}
+.t-cover .cmeta>span{padding:0 22px;border-left:1px solid rgba(195,215,238,.3)}
+.t-cover .cmeta>span:first-child{padding-left:0;border-left:0}
+.rule{width:88px;height:4px;background:var(--accent5);margin:28px 0 0}
+.slide.active .rule{animation:ruleGrow .8s cubic-bezier(.22,.7,.2,1) .55s both}
+@keyframes ruleGrow{from{width:0}to{width:88px}}
+.t-cover.active h1::after{content:"";position:absolute;inset:-7% -5%;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.15) 48%,transparent 66%);background-size:260% 100%;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(to right,transparent,#000 15%,#000 85%,transparent);
+  animation:sheen 7.5s ease-in-out 1.6s infinite backwards}
+@keyframes sheen{0%{background-position:150% 0}55%,100%{background-position:-90% 0}}
+.slide.t-cover>.cover-score{position:absolute;right:92px;top:120px;width:380px;z-index:3;display:flex;flex-direction:column;gap:12px}
+.cs-row{background:rgba(6,30,72,.66);border:1px solid rgba(195,215,238,.22);border-radius:12px;padding:16px 18px;backdrop-filter:blur(6px)}
+.cs-row .who{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(195,215,238,.8);font-weight:700}
+.cs-row .val{font-family:var(--font-heading);font-size:46px;font-weight:800;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
+.cs-row .bar{height:6px;border-radius:0 3px 3px 0;margin-top:10px;background:rgba(195,215,238,.12);overflow:hidden}
+.cs-row .bar i{display:block;height:100%;border-radius:0 3px 3px 0;transform-origin:0 50%}
+.slide.active .cs-row .bar i{animation:kvhIn 1.1s cubic-bezier(.22,.7,.2,1) .5s both}
+.cs-row .note{font-size:12px;color:rgba(219,231,247,.72);margin-top:8px}
+
+/* ---------- 5 · DIVIDER ---------- */
+.t-div{justify-content:center;overflow:hidden}
+.t-div .dnum{font-family:var(--font-heading);font-size:132px;font-weight:800;line-height:.92;color:rgba(195,215,238,.16);letter-spacing:-.04em;margin-bottom:8px}
+.t-div.active .dnum{animation:dnumIn 1.1s cubic-bezier(.22,.7,.2,1) both}
+@keyframes dnumIn{from{opacity:0;transform:translateY(26px) scale(1.14);letter-spacing:.06em}to{opacity:1;transform:none;letter-spacing:-.04em}}
+.t-div .eyebrow{margin-bottom:16px}
+.t-div h1{font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.026em;max-width:980px}
+.t-div .dsub{margin-top:22px;font-size:18px;line-height:1.6;color:rgba(219,231,247,.86);max-width:860px}
+.t-div.active::after{content:"";position:absolute;top:-30%;bottom:-30%;width:36%;left:-40%;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(126,160,235,.16) 42%,rgba(191,210,242,.24) 52%,rgba(126,160,235,.14) 62%,transparent);
+  filter:blur(14px);animation:beam 3.4s cubic-bezier(.3,.6,.25,1) .25s both}
+@keyframes beam{from{left:-45%;opacity:0}25%{opacity:1}to{left:118%;opacity:0}}
+.dchips{margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;padding:7px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.34);color:rgba(219,231,247,.9)}
+.chip.on{background:rgba(67,170,160,.18);border-color:rgba(67,170,160,.6);color:#BFF3EC}
+.lchip{display:inline-flex;font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px;
+  background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+
+/* ---------- 6 · KPIs ---------- */
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kgrid.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 14px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:118px;position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent1)}
+html[data-theme-mode="dark"] .kcard::before{background:var(--c1)}
+.kcard.acc::before{background:var(--accent5)}
+.kcard.pos::before{background:var(--accent6)}
+.kcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.kcard .num{font-size:52px;color:var(--num1);white-space:nowrap}
+.kcard.acc .num{color:var(--accent5)}
+.kcard.pos .num{color:var(--pos)}
+.kcard .klab{font-size:15px;font-weight:600;line-height:1.3;margin-top:10px;color:var(--ink)}
+.kcard .ksub{font-size:13px;line-height:1.35;color:var(--ink-faint);margin-top:4px}
+.kgrid.tight .kcard{min-height:0;padding:12px 15px 11px}
+.kgrid.tight .kcard .num{font-size:38px}
+.kgrid.tight .kcard .klab{font-size:14px;margin-top:8px}
+
+/* ---------- 7 · CARDS / COLUMNS ---------- */
+.cards{display:grid;gap:14px;margin-top:20px}
+.cards.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 15px;display:flex;flex-direction:column;
+  transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.card .ctag{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.card .ctag em{font-style:normal;color:var(--ink-faint);letter-spacing:.08em}
+.card h3{font-size:20px;line-height:1.22;margin-bottom:9px}
+.card p,.card li{font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.card ul{margin:0;padding-left:19px}
+.card li+li{margin-top:6px}
+.card li b,.card p b{color:var(--ink);font-weight:600}
+.card .cnum{font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1;color:var(--num1);letter-spacing:-.02em;margin:2px 0 7px;font-variant-numeric:tabular-nums}
+.card.sig{background:linear-gradient(150deg,rgba(67,170,160,.14),rgba(67,170,160,.05));border-color:rgba(67,170,160,.42)}
+.card.sig .ctag{color:var(--pos)}
+.card.flag{background:linear-gradient(150deg,rgba(211,93,0,.11),rgba(211,93,0,.04));border-color:rgba(211,93,0,.4)}
+.card.dk{background:linear-gradient(150deg,#062A5C,#041B3F);border-color:rgba(195,215,238,.24);color:#fff}
+.card.dk h3{color:#fff}.card.dk p,.card.dk li{color:rgba(219,231,247,.86)}.card.dk li b,.card.dk p b{color:#fff}
+.card.dk .ctag{color:var(--accent6)}
+.quote{font-family:var(--font-heading);font-size:18px;line-height:1.38;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.quote::before{content:"“";color:var(--accent5);font-size:30px;line-height:0;vertical-align:-10px;margin-right:3px}
+.qby{font-size:13px;color:var(--ink-faint);margin-top:8px;letter-spacing:.04em}
+.card.dk .quote{color:#fff}.card.dk .qby{color:rgba(195,215,238,.7)}
+.lr{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;flex:1;min-height:0}
+.lr>*{min-height:0;display:flex;flex-direction:column}
+.lr.w58{grid-template-columns:1.32fr 1fr}
+.lr.n58{grid-template-columns:1fr 1.32fr}
+.lr.w64{grid-template-columns:1.6fr 1fr}
+.colh{font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.colh.a{color:var(--accent5);border-bottom-color:rgba(211,93,0,.42)}
+.colh.b{color:var(--pos);border-bottom-color:rgba(67,170,160,.45)}
+.steps{display:grid;gap:9px}
+.steps.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--mist);border:1px solid var(--rule);border-radius:9px;padding:15px 17px}
+.step .sn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent1);color:#fff;font-family:var(--font-heading);
+  font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+html[data-theme-mode="dark"] .step .sn{background:var(--c1)}
+.step.o .sn{background:var(--accent5)}
+.step.g .sn{background:var(--accent6)}
+.step h4{font-size:17px;line-height:1.25;margin-bottom:4px}
+.step p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13.5px;padding:6px 11px;border-radius:8px;background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+.pill b{color:var(--ink)}
+
+.fill{flex:1;min-height:0;grid-auto-rows:1fr}
+.big .card{padding:20px 22px 18px}
+.big .card p,.big .card li{font-size:16.5px;line-height:1.5}
+.big .card h3{font-size:22px}
+.big .card .ctag{font-size:12px}
+.big .quote{font-size:19px}
+.steps.fill .step{align-items:center}
+.big .step h4{font-size:18px}.big .step p{font-size:15.5px}
+.kgrid.tall .kcard{min-height:150px}
+.kgrid.tall .kcard .num{font-size:58px}
+/* compact table */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:left;font-weight:700;padding:0 8px 7px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;color:var(--ink);font-family:var(--font-heading);font-size:13.5px;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl th.n{text-align:right}
+.tbl tr:hover td{background:rgba(42,84,181,.05)}
+
+/* ---------- 8 · CHARTS ---------- */
+.chart{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px;position:relative;display:flex;flex-direction:column}
+.chart .hbars{flex:1;justify-content:space-evenly}
+.chart h4{font-size:17px;margin-bottom:4px}
+.chart .csub{font-size:13px;color:var(--ink-faint);margin-bottom:12px}
+.hbars{display:flex;flex-direction:column;gap:12px}
+.hb{display:grid;grid-template-columns:var(--lw,170px) 1fr 76px;align-items:center;gap:10px;cursor:default;border-radius:6px;padding:1px 0}
+.hb .hl{font-size:14.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:24px;position:relative}
+.hb .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.hb .ht i.c2{background:var(--c2)}.hb .ht i.c3{background:var(--c3)}.hb .ht i.c4{background:var(--c4)}.hb .ht i.cm{background:var(--c-mute)}
+.slide.active .hb .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+@keyframes kvhIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hb b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;font-weight:700}
+.hb:hover{background:rgba(42,84,181,.06)}
+.hb .ht .ref{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1.5px dashed var(--axis);left:var(--x)}
+.hbars.thin .hb .ht{height:18px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:10px;border-radius:2px;display:inline-block}
+.legend i.dash{height:0;border-top:1.5px dashed var(--axis);width:16px;border-radius:0}
+.dumb{display:flex;flex-direction:column;gap:16px;margin-top:6px}
+.db{display:grid;grid-template-columns:140px 1fr 100px;gap:10px;align-items:center;font-size:14.5px}
+.db .dt{position:relative;height:20px}
+.db .dt::before{content:"";position:absolute;left:0;right:0;top:9px;height:2px;background:var(--grid)}
+.db .seg{position:absolute;top:8px;height:4px;background:var(--c-mute);left:var(--a);width:calc(var(--b) - var(--a));border-radius:2px}
+.db .p{position:absolute;top:3px;width:14px;height:14px;border-radius:50%;margin-left:-7px;border:2px solid var(--paper);box-shadow:0 0 0 1px var(--rule)}
+.db .p.a{left:var(--a);background:var(--c-mute)}.db .p.b{left:var(--b);background:var(--c1)}
+.slide.active .db .p.b{animation:kvdIn .5s cubic-bezier(.3,1.55,.5,1) both;animation-delay:var(--d,.5s)}
+@keyframes kvdIn{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.db b{text-align:right;font-variant-numeric:tabular-nums}
+svg.line{display:block;width:100%;height:auto;overflow:visible}
+svg.line .gl{stroke:var(--grid);stroke-width:1}
+svg.line .ax{fill:var(--ink-faint);font-size:12.5px;font-family:var(--font-body)}
+svg.line .ln{fill:none;stroke:var(--c1);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.slide.active svg.line .ln{stroke-dasharray:900;animation:draw 1.4s cubic-bezier(.25,.75,.2,1) .3s both}
+@keyframes draw{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+svg.line .mk{fill:var(--c1);stroke:var(--mist);stroke-width:2}
+svg.line .mk.last{fill:var(--accent5)}
+svg.line .ref{stroke:var(--axis);stroke-width:1.5;stroke-dasharray:5 4}
+svg.line .lbl{fill:var(--ink);font-size:13px;font-weight:700;font-family:var(--font-body)}
+svg.line .hit{fill:transparent;cursor:crosshair}
+svg.line .xh{stroke:var(--axis);stroke-width:1;opacity:0}
+.stack{display:flex;height:30px;border-radius:6px;overflow:hidden;gap:2px;margin-top:6px}
+.stack i{display:block;height:100%;background:var(--c1)}
+.stack i.c2{background:var(--c2)}.stack i.c3{background:var(--c3)}
+#tip{position:fixed;z-index:300;pointer-events:none;background:#0A1C3F;color:#EAF1FB;font-size:12px;line-height:1.4;
+  padding:8px 11px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.3);border:1px solid rgba(195,215,238,.25);
+  opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;max-width:280px}
+#tip.on{opacity:1;transform:none}
+#tip b{color:#fff}
+
+/* ---------- 9 · OVERVIEW / HINT ---------- */
+#ov{position:fixed;inset:0;z-index:180;background:rgba(2,8,22,.95);display:none;padding:52px 46px 40px;overflow:auto}
+#ov.on{display:block}
+#ov h3{color:#fff;font-size:19px;margin-bottom:5px}
+#ov .ovh{color:rgba(195,215,238,.6);font-size:12px;letter-spacing:.1em;margin-bottom:22px}
+#ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:13px}
+.ovc{background:rgba(195,215,238,.07);border:1px solid rgba(195,215,238,.2);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.ovc:hover{background:rgba(67,170,160,.16);border-color:rgba(67,170,160,.5);transform:translateY(-2px)}
+.ovc.on{border-color:var(--accent5);background:rgba(211,93,0,.16)}
+.ovc .on2{font-family:var(--font-heading);font-size:11px;font-weight:700;color:var(--accent6);letter-spacing:.1em;display:block;margin-bottom:5px}
+.ovc .ot{color:#EAF1FB;font-size:12.5px;line-height:1.35;font-weight:500;display:block}
+#hint{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:70;background:rgba(4,16,42,.86);color:#DCE7F7;font-size:12px;
+  padding:8px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.2);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}
+#hint.on{opacity:1}
+
+/* ---------- 10 · NARROW SCREEN (mobile) READING AND PRINT ---------- */
+html.mobile,html.mobile body{height:auto;overflow:auto;background:var(--paper)}
+html.mobile #shell{position:static}
+html.mobile .deck{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none!important;box-shadow:none;background:var(--paper)}
+html.mobile #field,html.mobile .nav,html.mobile .brand,html.mobile .progress,html.mobile #hint{display:none}
+html.mobile .slide{position:relative;inset:auto;opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;padding:36px 16px 44px;min-height:0}
+html.mobile .slide[data-theme="dark"]{background:linear-gradient(160deg,#00122F,#062A5C)}
+html.mobile .slide .rv,html.mobile .slide .fan>*{animation:none!important}
+html.mobile .sfoot{position:static!important;margin-top:18px;letter-spacing:.08em;font-size:10px;flex-wrap:wrap;gap:6px}
+html.mobile h2.sh{font-size:26px}
+html.mobile .t-cover h1{font-size:38px}
+html.mobile .t-div h1{font-size:36px}
+html.mobile .t-div .dnum{font-size:72px}
+html.mobile .t-cover{padding-top:48px}
+html.mobile .slide.t-cover>.cover-score{position:static;width:100%;margin-top:26px}
+html.mobile .t-cover .cmeta{flex-wrap:wrap;gap:8px 0}
+html.mobile .kgrid,html.mobile .kgrid.k3,html.mobile .cards.c3,html.mobile .cards.c2,html.mobile .lr,html.mobile .lr.w58,html.mobile .lr.n58,html.mobile .lr.w64,html.mobile .vs,html.mobile .steps.s2{grid-template-columns:1fr}
+html.mobile .kgrid{grid-template-columns:1fr 1fr}
+html.mobile .kcard .num,html.mobile .kgrid.tall .kcard .num,html.mobile .kgrid.tight .kcard .num{font-size:26px;white-space:normal}
+html.mobile .kgrid.tall .kcard{min-height:0}
+html.mobile .fill{grid-auto-rows:auto;flex:none}
+html.mobile .big .card p,html.mobile .big .card li{font-size:15px}
+html.mobile .hb{--lw:108px!important;grid-template-columns:var(--lw) 1fr 52px}
+html.mobile .db{grid-template-columns:70px 1fr 74px}
+html.mobile .tbl{font-size:11.5px}
+html.mobile .tbl td:first-child{white-space:normal}
+html.mobile .takeaway{margin-top:18px}
+html.mobile .lr{margin-top:14px}
+
+/* ---------- 11 · HIGHLIGHT HIERARCHY ---------- */
+.tierpill{position:absolute;top:64px;right:92px;z-index:6;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;border:1px solid;display:flex;align-items:center;gap:8px}
+.slide>.tierpill{position:absolute}
+.tierpill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:block}
+.tierpill.t1{color:var(--c4);border-color:rgba(142,91,199,.45);background:rgba(142,91,199,.08)}
+.tierpill.t2{color:var(--c1);border-color:rgba(42,84,181,.4);background:rgba(42,84,181,.07)}
+.tierpill.t3{color:var(--ink-faint);border-color:var(--rule);background:var(--mist)}
+.sfoot{text-transform:none;letter-spacing:.04em;font-size:12px}
+.sfoot b{color:var(--accent5);font-weight:700}
+.tiers{display:flex;flex-direction:column;gap:14px;margin-top:20px;flex:1;min-height:0}
+.trow{display:grid;grid-template-columns:200px repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.tlab{display:flex;flex-direction:column;justify-content:center;padding-left:16px;border-left:4px solid var(--rule);
+  font-family:var(--font-heading);font-size:17px;font-weight:700;line-height:1.2;color:var(--ink)}
+.tlab b{display:block;font-family:var(--font-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.trow.t1 .tlab{border-color:var(--c4)}.trow.t1 .tlab b{color:var(--c4)}
+.trow.t2 .tlab{border-color:var(--c1)}.trow.t2 .tlab b{color:var(--c1)}
+.trow.t3 .tlab{border-color:var(--c-mute)}.trow.t3 .tlab b{color:var(--ink-faint)}
+.trow .kcard{min-height:0;padding:14px 16px 12px;justify-content:center}
+.trow .kcard .num{font-size:38px}
+.trow .kcard .klab{font-size:14px;margin-top:8px}
+.trow .kcard .ksub{font-size:12px}
+.trow.t1 .kcard{background:linear-gradient(150deg,rgba(142,91,199,.10),rgba(142,91,199,.03));border-color:rgba(142,91,199,.3)}
+.kcard.t1::before{background:var(--c4)!important}
+.kcard.t1 .num{color:var(--c4)}
+.trow.t3 .kcard::before{background:var(--c-mute)}
+.trow.t3 .kcard .num{color:var(--ink-soft)}
+.slide.t-cover>.cover-score{width:440px;top:110px}
+.ord-h{font-size:11.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(195,215,238,.7);margin-bottom:2px}
+.cs-row{border-left-width:4px!important}
+.cs-row.t1{border-left-color:#9C6FD8!important}.cs-row.t2{border-left-color:#5C82DC!important}.cs-row.t3{border-left-color:rgba(195,215,238,.5)!important}
+.cs-row.t1 .who{color:#C9AEF2}.cs-row.t2 .who{color:#A9C2F2}
+.cs-row .ttl{font-family:var(--font-heading);font-size:18px;font-weight:700;line-height:1.28;margin-top:8px;color:#fff}
+.t-cover h1{max-width:930px}
+.gbars{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:space-evenly;margin-top:6px}
+.gb{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;align-items:center}
+.gb .gl{grid-row:span 2;font-size:14.5px;font-weight:600;color:var(--ink)}
+.gt{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center}
+.gt b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.gt .ht{height:22px;position:relative;display:block}
+.gt .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.gt .ht i.c2{background:var(--c2)}
+.slide.active .gt .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+.card.t1c .ctag{color:#C9AEF2}.card.t2c .ctag{color:#A9C2F2}.card.t3c .ctag{color:rgba(195,215,238,.8)}
+.card.t1c{border-left:4px solid #9C6FD8}.card.t2c{border-left:4px solid #5C82DC}.card.t3c{border-left:4px solid rgba(195,215,238,.45)}
+.dot.t1{box-shadow:0 0 0 1px #9C6FD8}.dot.t2{box-shadow:0 0 0 1px #5C82DC}
+body.idle .nav{opacity:0;pointer-events:none}
+html.mobile .trow{grid-template-columns:1fr 1fr}
+html.mobile .tlab{grid-column:1/-1}
+html.mobile .slide>.tierpill{position:static;align-self:flex-start;margin-bottom:12px}
+html.mobile .slide.t-cover>.cover-score{width:100%}
+html.mobile .gb{grid-template-columns:90px 1fr}
+
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  #shell{position:static}.deck{position:relative;left:0;top:0;transform:none!important;box-shadow:none}
+  .nav,.progress,#hint,#field{display:none}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;filter:none;page-break-after:always;height:900px}
+  .slide .rv,.slide .fan>*{animation:none!important}
+  @page{size:1600px 900px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+
+/* ---------- Speech AI: compact modes applied when content doesn't fit the slide ---------- */
+.slide.dense .lede{font-size:16px;line-height:1.45}
+.slide.dense .card p,.slide.dense .card li{font-size:13.5px;line-height:1.42}
+.slide.dense .card{padding-top:12px;padding-bottom:12px}
+.slide.dense .kcard .num{font-size:44px}
+.slide.dense .kcard .klab{font-size:13.5px}
+.slide.dense .kcard .ksub{font-size:12px}
+.slide.dense .step p{font-size:13px}
+.slide.dense .step h4{font-size:15.5px}
+.slide.dense .takeaway{font-size:14.5px}
+.slide.dense .sh{font-size:36px}
+.slide.dense2 .lede{display:none}
+.slide.dense2 .card p,.slide.dense2 .card li{font-size:12.5px;line-height:1.38}
+.slide.dense2 .card .quote{font-size:13.5px}
+.slide.dense2 .kgrid{margin-top:12px}
+.slide.dense2 .cards{margin-top:12px}
+.slide.dense2 .sh{font-size:32px}
+.kcard .num .unit.word{font-size:.42em;margin-left:6px;letter-spacing:0}
+</style>
+</head>
+<body>
+<div class="progress"><i id="pbar"></i></div>
+<div id="shell">
+<main class="deck" id="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="brand" id="brand"><i></i>Solution Documentation · Speech AI</div>
+<!-- ============================ COVER ============================ -->
+<section class="slide t-cover active" data-theme="dark" data-title="Cover">
+  <div class="cover-score rv" aria-label="Reading order">
+    <p class="ord-h">Reading order</p>
+    <div class="cs-row t1"><p class="who">01 · Part 1 · Overview</p><p class="ttl">From a 20-minute skill to a process with local AI and zero AI cost</p><p class="note">Architecture · components · the 3-stage evolution</p></div>
+    <div class="cs-row t2"><p class="who">02 · Part 2 · Input &amp; Output</p><p class="ttl">From PDF and .txt to HTML, script and MP3: every step, folder and file</p><p class="note">input\ → newsroom\ → output\</p></div>
+    <div class="cs-row t3"><p class="who">03 · Part 3 · Operations</p><p class="ttl">Frontend, commands, configuration, resilience, costs and next steps</p><p class="note">start.bat · main.py · settings.json</p></div>
+  </div>
+  <p class="kicker rv">Solution Documentation · Speech AI</p>
+  <h1 class="rv">Newspapers and scripts become audio<span class="l2">with local AI, zero cost per newspaper</span></h1>
+  <p class="csub rv">Speech AI takes the Valor Econômico and Estadão PDFs plus text scripts and produces an executive HTML summary, a voice script and audio narrated in Portuguese. Since Sprint 13, the editorial content is written by a local AI model (Ollama, on this machine's GPU) instead of Anthropic's paid API — this document describes the solution, the path of each input file to output, and day-to-day operations.</p>
+  <div class="cmeta rv"><span>Version of October 8, 2026</span><span>Python 3.12 · Ollama (gemma3:4b) · Edge TTS</span><span>speech-ai project</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Document: <b>Cover</b> · Speech AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ AT A GLANCE ============================ -->
+<section class="slide" data-theme="light" data-title="The solution at a glance">
+  <p class="eyebrow rv">At a glance</p>
+  <h2 class="sh rv">Twelve numbers to understand the solution</h2>
+  <div class="tiers fan">
+    <div class="trow t1"><p class="tlab"><b>Part 1</b>Overview</p>
+      <div class="kcard t1"><div class="num">2</div><p class="klab">Input flows: newspaper PDFs and .txt scripts</p><p class="ksub">A single entry point: main.py</p></div>
+      <div class="kcard t1"><div class="num">3</div><p class="klab">Ways to trigger it: frontend, main.py and direct skill</p><p class="ksub">start.bat · --txt · --jornais · --skill</p></div>
+      <div class="kcard t1"><div class="num">5</div><p class="klab">Parallel AI calls per newspaper</p><p class="ksub">Plus 1 short call for the cover</p></div>
+      <div class="kcard t1"><div class="num">6</div><p class="klab">Modules: app, newsroom, skill_bridge, web, pipeline and services</p><p class="ksub">Configuration in config/settings.json</p></div>
+    </div>
+    <div class="trow t2"><p class="tlab"><b>Part 2</b>Input &amp; Output</p>
+      <div class="kcard pos"><div class="num">R$ 0</div><p class="klab">AI cost per newspaper, with local Ollama</p><p class="ksub">Before (Claude, fast engine): US$ 1.02</p></div>
+      <div class="kcard"><div class="num">25–43</div><p class="klab">Minutes from PDF to MP3, local AI</p><p class="ksub">Before (Claude, fast engine): ~2.3 min</p></div>
+      <div class="kcard"><div class="num">166<span class="unit word">/166</span></div><p class="klab">Numbers verified in the fidelity test (Claude)</p><p class="ksub">Paid-AI quality reference</p></div>
+      <div class="kcard"><div class="num">6<span class="unit word">/6</span></div><p class="klab">Calls correct on the 1st try (Ollama, after fixes)</p><p class="ksub">Valor 10/08, verification run</p></div>
+    </div>
+    <div class="trow t3"><p class="tlab"><b>Part 3</b>Operations</p>
+      <div class="kcard"><div class="num">1</div><p class="klab">One routine at a time in the frontend, with cancellation</p><p class="ksub">Live log on the page</p></div>
+      <div class="kcard"><div class="num">0</div><p class="klab">Files lost on failure: the item returns to the queue</p><p class="ksub">Processed items are archived by date</p></div>
+      <div class="kcard"><div class="num">R$0.02</div><p class="klab">GPU energy per newspaper (Contagem, Brazil)</p><p class="ksub">17.8 Wh measured · CEMIG tariff</p></div>
+      <div class="kcard"><div class="num">6<span class="unit word">GB</span></div><p class="klab">Local GPU VRAM (RTX A3000 Laptop)</p><p class="ksub">Determines the model: gemma3:4b</p></div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · real 10/08 runs · energy measurement (nvidia-smi)</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 01 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="1" data-title="01 · Overview (Part 1)">
+  <p class="dnum rv">01</p>
+  <p class="eyebrow rv">Part 1 · Overview</p>
+  <h1 class="rv">Overview and architecture</h1>
+  <p class="dsub rv">What the solution does, the three stages on the way to local AI, and how the pieces fit together: input, orchestration, the fast newspaper pipeline, the voice pipeline and output.</p>
+  <div class="dchips rv"><span class="chip on">3 stages to local AI</span><span class="chip">Layered architecture</span><span class="chip">Code components</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Part 1 · Overview</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ BEFORE & AFTER ============================ -->
+<section class="slide dense" data-theme="light" data-tier="1" data-title="The 3-stage evolution">
+  <p class="eyebrow rv">Overview · Performance</p>
+  <h2 class="sh rv">From the 20-minute skill to local AI: three architectures, the same output</h2>
+  <p class="lede rv">1) The original skill: Claude did everything — extraction, reading, writing and revising the HTML in 100 to 126 rounds. 2) The fast pipeline (Sprint 12): Python takes over extraction/assembly/verification; paid AI (Claude) only writes the content, in single-shot calls. 3) Local AI (Sprint 13): the same fast-pipeline architecture, but paid AI becomes Ollama running on this machine's GPU — AI cost drops to zero, time goes up.</p>
+  <div class="lr rv">
+    <div>
+      <div class="chart">
+        <h4>Time from PDF to MP3, per newspaper</h4>
+        <p class="csub">Minutes · real measurements</p>
+        <div class="hbars" style="--lw:190px">
+          <div class="hb" data-tip="&lt;b&gt;Full skill&lt;/b&gt;&lt;br&gt;Valor 10/05: 21.5 min of AI + audio"><span class="hl">1 · Full skill (Claude)</span><span class="ht"><i class="cm" style="--w:46.5%;--d:.2s"></i></span><b>~20 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Fast pipeline&lt;/b&gt;&lt;br&gt;Valor 10/06, PDF to MP3"><span class="hl">2 · Fast + paid AI (Claude)</span><span class="ht"><i style="--w:5.5%;--d:.3s"></i></span><b>2.35 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Fast pipeline&lt;/b&gt;&lt;br&gt;Valor 10/08, PDF to MP3, local AI"><span class="hl">3 · Fast + local AI (Ollama)</span><span class="ht"><i class="c3" style="--w:100%;--d:.4s"></i></span><b>~25–43 min</b></div>
+        </div>
+        <p class="src">Stage 3 is slower than stage 2, but still faster than the original full skill — and with zero AI cost.</p>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">R$ 0</div><p class="klab">AI cost per newspaper (stage 3)</p><p class="ksub">Before (stage 2): US$ 1.02 · R$ 5.11</p></div>
+        <div class="kcard acc"><div class="num">11–18×</div><p class="klab">Slower than paid AI (stage 2)</p><p class="ksub">Still faster than the full skill</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Why it got slower <em>GPU</em></p><p>Paid AI processes the whole newspaper through a shared cache in the cloud; the local GPU (6 GB) has no room for that, so Speech AI now trims the text down to only the pages relevant to each topic — and even so, each call takes minutes, not seconds.</p></div>
+        <div class="card"><p class="ctag">Quality: still behind Claude <em>test</em></p><p>The 166/166 figure is from the Claude version. With the local model, real bugs were found and fixed (dates, currency conversion, non-literal quotes) — see Resilience and Costs, Part 3.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Editor's note:</b> stage 2 took the mechanical work away from the AI; stage 3 takes away the cost, at the price of time and some quality — a deliberate trade-off, not a hidden limitation.</p>
+  <div class="sfoot"><span>Sources: <b>logs/skills</b> · <b>relatorio.json</b> · 10/05, 10/06 and 10/08 runs</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ARCHITECTURE ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Layered architecture">
+  <p class="eyebrow rv">Overview · Architecture</p>
+  <h2 class="sh rv">Five layers: input, orchestration, newspaper pipeline, voice and output</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">The path of a file</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Input</h4><p>Web frontend or manual copy: .txt in input\ and PDFs in input\Jornais\.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Orchestration · main.py</h4><p>ScriptInbox (scripts), NewspaperInbox (identifies the newspaper) and SkillPipeline (newspapers). No AI.</p></div></div>
+        <div class="step o"><span class="sn">3</span><div><h4>Fast pipeline · newsroom</h4><p>Python extraction, local editorial AI (Ollama) in 5 parallel calls, cover, script and HTML on a fixed template.</p></div></div>
+        <div class="step"><span class="sn">4</span><div><h4>Voice pipeline</h4><p>Text Analyzer, Speech Intelligence (language and voice), Narration and TTS Edge. Runs in parallel with the HTML.</p></div></div>
+        <div class="step"><span class="sn">5</span><div><h4>Output and archiving</h4><p>MP3 in output\, summary in output\Jornais\, and inputs moved to processados\.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard t1"><div class="num">0</div><p class="klab">AI use for .txt scripts</p><p class="ksub">Text-to-speech only</p></div>
+        <div class="kcard t1"><div class="num">6</div><p class="klab">AI calls per newspaper</p><p class="ksub">5 content + 1 cover</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Two engines <em>engine</em></p><p><b>fast</b> (default): newsroom's fast pipeline, with local AI (Ollama) — zero cost. <b>agent</b>: the full skill, where Claude Code runs the entire SKILL.md — still paid. Switched in config/settings.json.</p></div>
+        <div class="card"><p class="ctag">Processing order <em>main.py</em></p><p>With no parameters, .txt files are processed before newspapers. Each item is independent: one failure doesn't stop the others.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>main.py</b> · <b>skill_bridge/skill_pipeline.py</b> · <b>newsroom/pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ COMPONENTS ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Code components">
+  <p class="eyebrow rv">Overview · Code</p>
+  <h2 class="sh rv">Where each responsibility lives in the project</h2>
+  <div class="cards c3 big fill fan rv" style="margin-top:10px">
+    <div class="card"><p class="ctag">Entry point <em>root</em></p><p><b>main.py</b>: --txt, --jornais, --skill, --pdf and --list-skills parameters. <b>start.bat</b> and <b>start.sh</b>: launch the frontend.</p></div>
+    <div class="card"><p class="ctag">Application <em>app/</em></p><p><b>SpeechAIApp</b>: voice pipeline and MP3 filename with date and time. <b>ScriptInbox</b>: processes and archives .txt files from input\.</p></div>
+    <div class="card"><p class="ctag">Bridge to the skills <em>skill_bridge/</em></p><p><b>NewspaperInbox</b> (identifies and archives PDFs), <b>SkillCatalog</b>, <b>SkillPipeline</b> (picks the engine) and <b>SkillRunner</b> (full skill).</p></div>
+    <div class="card"><p class="ctag">Fast pipeline <em>newsroom/</em></p><p><b>extractor</b>, <b>profiles</b> (rules and keywords for each topic), <b>editor</b> (calls the AI and filters the newspaper excerpt), <b>ollama_client</b> (talks to local Ollama), <b>renderer</b> (HTML), <b>script_writer</b> (script) and <b>pipeline</b>.</p></div>
+    <div class="card"><p class="ctag">Frontend <em>web/</em></p><p><b>server.py</b> (FastAPI API), <b>job_runner.py</b> (runs main.py in the background) and static/ (page, styles and scripts).</p></div>
+    <div class="card"><p class="ctag">Voice &amp; configuration <em>pipeline/ · services/ · config/</em></p><p>Existing text analysis, speech intelligence and TTS. <b>settings.json</b> and <b>voices.json</b> hold folders, voices, engine and models.</p></div>
+  </div>
+  <p class="takeaway rv"><b>Editor's note:</b> the skills still live in Skill\ as the source of editorial rules; newsroom reuses those rules and the same visual style, without duplicating the voice logic.</p>
+  <div class="sfoot"><span>Source: <b>project structure</b> · speech-ai</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 02 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="2" data-title="02 · Input & Output (Part 2)">
+  <p class="dnum rv">02</p>
+  <p class="eyebrow rv">Part 2 · Input &amp; Output</p>
+  <h1 class="rv">The file pipeline, from input to output</h1>
+  <p class="dsub rv">Every step in detail: input folder rules, PDF extraction, editorial AI, the cover, the script, the HTML, the audio and archiving, with times measured on Valor 10/06.</p>
+  <div class="dchips rv"><span class="chip on">Inputs</span><span class="chip">Extraction</span><span class="chip">Editorial AI</span><span class="chip">Script</span><span class="chip">HTML</span><span class="chip">Outputs</span><span class="chip">.txt scripts</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Part 2 · Input &amp; Output</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ INPUTS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Input folders and rules">
+  <p class="eyebrow rv">Input · input\</p>
+  <h2 class="sh rv">Two input folders, each with its own acceptance rules</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Scripts · input\*.txt</p>
+      <div class="cards big fill fan" style="margin-top:8px;gap:12px">
+        <div class="card"><p class="ctag">Format</p><ul><li>Text ready for narration, one file per audio.</li><li>UTF-8. Through the frontend, ANSI files (Notepad) are converted to UTF-8.</li><li>An empty or unreadable file is rejected or stays queued with an error.</li></ul></div>
+        <div class="card"><p class="ctag">Destination after processing</p><p>input\processados\YYYY-MM-DD\. If a same-named file already exists that day, the time is appended to the name.</p></div>
+      </div>
+    </div>
+    <div>
+      <p class="colh b">Newspapers · input\Jornais\*.pdf</p>
+      <div class="cards big fill fan" style="margin-top:8px;gap:12px">
+        <div class="card"><p class="ctag">Newspaper identification</p><ul><li>1st by filename: "valor", "estadão", "estado de s. paulo", with or without accents.</li><li>2nd by the PDF's front page, when the name doesn't help.</li><li>Not identified: skipped, with a warning in the run summary.</li></ul></div>
+        <div class="card"><p class="ctag">Recommendation</p><p>Keep "Valor" or "Estadão" in the PDF filename: Valor's front page has the newspaper name as an image, not as text.</p><div class="mini"><span class="pill">Destination: <b>input\Jornais\processados\YYYY-MM-DD\</b></span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>app/script_inbox.py</b> · <b>skill_bridge/newspaper_inbox.py</b> · <b>web/server.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ EXTRACTION ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Step 1 · PDF extraction">
+  <p class="eyebrow rv">Step 1 · newsroom/extractor.py</p>
+  <h2 class="sh rv">Extraction in Python: the newspaper's text in seconds, already with page and section</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">1.6<span class="unit">s</span></div><p class="klab">Extraction time for Valor 10/06</p><p class="ksub">pdftotext, page by page</p></div>
+    <div class="kcard"><div class="num">35</div><p class="klab">Editorial pages kept from Valor</p><p class="ksub">Estadão 10/05: 52 pages</p></div>
+    <div class="kcard"><div class="num">~176<span class="unit word">k</span></div><p class="klab">Text tokens sent to the AI (Valor)</p><p class="ksub">Read once and reused via cache</p></div>
+    <div class="kcard acc"><div class="num">A1–E4</div><p class="klab">Page code detected in the header</p><p class="ksub">A page with no header is inferred from its neighbor</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">1 · Reading</p><p>The PDF is copied to a plain filename before extraction: Git's pdftotext can't open accented paths on Windows. Each page becomes a text block.</p></div>
+    <div class="card"><p class="ctag">2 · Filters</p><ul><li>Discards pages with corrupted fonts and text-free ads.</li><li>Removes legal-notice lines, balance sheets and numeric tables.</li><li>Joins hyphenated words and cleans up PDF artifacts.</li></ul></div>
+    <div class="card"><p class="ctag">3 · Markers</p><p>Each page gets "=== [B7 · Companies] ===". That's how the AI cites the page and section in each slide's footer.</p></div>
+  </div>
+  <div class="sfoot"><span>Source: <b>newsroom/extractor.py</b> · NewspaperExtractor</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ EDITORIAL AI ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Step 2 · Editorial AI">
+  <p class="eyebrow rv">Step 2 · newsroom/editor.py · ollama_client.py</p>
+  <h2 class="sh rv">Five parallel calls, one single GPU: the bottleneck became the longest call</h2>
+  <div class="lr rv">
+    <div>
+      <div class="chart">
+        <h4>Duration of each call · Valor 10/08 (local AI)</h4>
+        <p class="csub">Seconds · gemma3:4b via Ollama, 32,768-token context</p>
+        <div class="hbars" style="--lw:200px">
+          <div class="hb" data-tip="&lt;b&gt;Markets and macro&lt;/b&gt;&lt;br&gt;1,440.3 s · 2nd attempt"><span class="hl">2nd · Markets &amp; macro</span><span class="ht"><i style="--w:100%;--d:.2s"></i></span><b>1,440</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Politics and elections&lt;/b&gt;&lt;br&gt;945.8 s · 1st attempt"><span class="hl">3rd · Politics &amp; elections</span><span class="ht"><i class="cm" style="--w:65.7%;--d:.3s"></i></span><b>946</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Companies and sectors&lt;/b&gt;&lt;br&gt;695.0 s · 1st attempt"><span class="hl">2nd · Companies &amp; sectors</span><span class="ht"><i class="cm" style="--w:48.3%;--d:.4s"></i></span><b>695</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Other topics&lt;/b&gt;&lt;br&gt;475.5 s · 1st attempt"><span class="hl">3rd · Other topics</span><span class="ht"><i class="cm" style="--w:33.0%;--d:.5s"></i></span><b>476</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Technology and AI&lt;/b&gt;&lt;br&gt;210.6 s · 1st attempt"><span class="hl">1st · Technology &amp; AI</span><span class="ht"><i class="cm" style="--w:14.6%;--d:.6s"></i></span><b>211</b></div>
+        </div>
+        <p class="src">Running in parallel, the step's duration is the longest call: 1,446.7 s in this run (24.1 min).</p>
+      </div>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">No cache, no full newspaper</p><p>Local AI doesn't have Anthropic's cloud context cache. Instead of the whole newspaper, each call gets only the pages most relevant to that topic (up to 5,000 words), chosen in Python by keyword — see next slide.</p></div>
+        <div class="card"><p class="ctag">Guaranteed JSON output</p><p>Each call uses Ollama's local API with <code>format</code> = the JSON schema: slides, layout, KPIs, cards, quotes, sources and the audio paragraph for each slide — the same format used with Claude.</p></div>
+        <div class="card flag"><p class="ctag">Lower reliability</p><p>With the local model, some calls only produce correct JSON on the 2nd try (up to 2 retries configured). Paid AI always closed on the 1st try, in the historical runs.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>newsroom/editor.py</b> · AIEditor · <b>relatorio.json</b> · Valor 10/08</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ HIERARCHY & PARTS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Editorial rules and parts">
+  <p class="eyebrow rv">Step 2 · newsroom/profiles.py</p>
+  <h2 class="sh rv">The skills' rules became profiles: hierarchy, keywords and split parts</h2>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>Topic</th><th>AI call(s)</th><th>What's included</th><th class="n">Slides</th></tr>
+    <tr><td>1st Technology &amp; AI</td><td>One call</td><td>AI, chips, big tech, startups, AI regulation, science, cybersecurity, applied AI. Filtered by ~40 technology keywords.</td><td class="n">2 to 4</td></tr>
+    <tr><td>2nd Economy</td><td>Markets and macro</td><td>Stock market, forex, interest rates and central bank, inflation, fiscal and debt, banks and credit.</td><td class="n">2 to 3</td></tr>
+    <tr><td></td><td>Companies and sectors</td><td>Companies, retail, industry, oil and energy, agribusiness, consumer, sector regulation.</td><td class="n">2 to 3</td></tr>
+    <tr><td>3rd Other topics</td><td>Politics and elections</td><td>Elections, parties, Congress, government, states, judiciary and Supreme Court.</td><td class="n">2 to 4</td></tr>
+    <tr><td></td><td>Other topics</td><td>International, editorials and opinion, legislation, society, health, sports and culture.</td><td class="n">2 to 3</td></tr>
+  </table>
+  <div class="cards c3 big fill fan" style="margin-top:14px">
+    <div class="card"><p class="ctag">Accuracy</p><p>Only numbers, names and quotes from the text; opinions attributed to the author or the newspaper; the "Editor's note" is factual, with no partisan bias. Quotes are checked in Python against the sent excerpt — anything that doesn't match doesn't appear.</p></div>
+    <div class="card"><p class="ctag">Keyword filtering <em>local AI</em></p><p>Each topic (and each part) has its own list of terms in <b>newsroom/profiles.py</b>; pages with the most term hits go in first, up to the 5,000-word budget. That's how the 6 GB GPU gets only the essentials.</p></div>
+    <div class="card"><p class="ctag">Merging</p><p>The parts of a topic are joined in order: slides, chips, "At a glance" numbers and agenda items.</p></div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>newsroom/profiles.py</b> · <b>Skill/*/SKILL.md</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ COVER & SCRIPT ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Steps 3 & 4 · Cover and script">
+  <p class="eyebrow rv">Steps 3 &amp; 4 · editor.py · script_writer.py</p>
+  <h2 class="sh rv">The date comes from the PDF, not the AI; the script is built and validated in Python</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">script.txt order (same as the skill)</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Spoken title and opening</h4><p>"Summary of Valor Econômico. Edition of…" and the opening paragraph written in the cover call.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Three topics, in order</h4><p>"First topic: technology…", followed by one paragraph per slide (45 to 65 words).</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>What to watch and closing</h4><p>One sentence per topic and "This was the summary of… See you next edition."</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">35<span class="unit">s</span></div><p class="klab">Cover call with gemma3:4b (local AI)</p><p class="ksub">Title, opening and description — not the date</p></div>
+        <div class="kcard"><div class="num">956</div><p class="klab">Script word count, Valor 10/03–05</p><p class="ksub">Validated with no issues</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card flag"><p class="ctag">Bug fixed: edition date</p><p>With the local model, the AI sometimes wrote the wrong date (copying the schema's example, e.g. "October 3, 4 and 5" on a different day's edition). The date is now <b>read directly from the PDF's front page</b> in Python — the AI no longer takes part in that step.</p></div>
+        <div class="card"><p class="ctag">Conversion for speech</p><ul><li>"R$ 33 bi" or "R$ 33 bilhões" → "33 billion reais"</li><li>"US$ 1.4 tri" → "1.4 trillion dollars"</li><li>"9.95%" → "9.95 percent"; "×" → "versus"</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>newsroom/script_writer.py</b> · ScriptWriter · <b>editor.py</b> · cover</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ HTML ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Step 5 · HTML and audio">
+  <p class="eyebrow rv">Step 5 · newsroom/renderer.py</p>
+  <h2 class="sh rv">The HTML is built on a fixed template and verified in the browser, while audio is generated</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">9.6<span class="unit">s</span></div><p class="klab">HTML and layout check (Valor 10/08, local AI)</p><p class="ksub">In parallel with the audio</p></div>
+    <div class="kcard"><div class="num">15</div><p class="klab">Deck slides for Valor 10/08</p><p class="ksub">9 content, 6 structural</p></div>
+    <div class="kcard"><div class="num">4</div><p class="klab">Content layouts the AI can choose</p><p class="ksub">KPIs &amp; cards, timeline, chart, mosaic</p></div>
+    <div class="kcard acc"><div class="num">3</div><p class="klab">Automatic layout-compaction levels</p><p class="ksub">dense → dense2 → trim</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">Fixed template <em>templates/</em></p><p>deck_head (styles), slides.html.j2 (cover, "At a glance", dividers, content, agenda) and deck_tail (navigation, dark mode, fullscreen, mobile). Same look as previous summaries.</p></div>
+    <div class="card"><p class="ctag">Verification <em>Playwright</em></p><p>Each slide is measured exactly as it would appear on screen. If text doesn't fit, the slide switches to compact mode; as a last resort it drops the last card or the lede line.</p></div>
+    <div class="card"><p class="ctag">Parallelism <em>pipeline.py</em></p><p>The script is ready before the HTML. Audio starts right away, and the HTML finishes on a separate thread; the newspaper is only marked complete once both are done.</p></div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>newsroom/renderer.py</b> · <b>newsroom/templates/</b> · <b>newsroom/pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ OUTPUTS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Outputs and archiving">
+  <p class="eyebrow rv">Output · output\</p>
+  <h2 class="sh rv">What each run writes, where, and with what name</h2>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>File</th><th>Location</th><th>Content</th></tr>
+    <tr><td>MP3 audio (.txt scripts)</td><td>output\&lt;.txt name&gt;_YYYY-MM-DD_HH-MM-SS.mp3</td><td>pt-BR narration (Francisca voice). Stays at the root of output\.</td></tr>
+    <tr><td>MP3 audio (newspapers)</td><td>output\Jornais\&lt;Newspaper&gt; - DD-MM-YYYY\&lt;PDF name&gt;_YYYY-MM-DD_HH-MM-SS.mp3</td><td>Same folder as the HTML and script.txt — no longer at the root of output\.</td></tr>
+    <tr><td>HTML summary</td><td>output\Jornais\&lt;Newspaper&gt; - DD-MM-YYYY\&lt;Newspaper&gt; - DD-MM-YYYY.html</td><td>Navigable deck, single file. A folder repeated the same day gets a " (2)" suffix.</td></tr>
+    <tr><td>script.txt</td><td>same folder as the HTML</td><td>Voice script, read directly from there by the audio pipeline.</td></tr>
+    <tr><td>editorial.json</td><td>same folder as the HTML</td><td>Content written by the AI, for auditing and reprocessing.</td></tr>
+    <tr><td>relatorio.json</td><td>same folder as the HTML</td><td>Per-step timings, cost and tokens for each call, layout adjustments and script validation.</td></tr>
+    <tr><td>Inputs</td><td>input\processados\ · input\Jornais\processados\</td><td>Successfully processed files, by date. Files with errors stay in the input folder.</td></tr>
+    <tr><td>Logs</td><td>logs\app.log · logs\web_jobs\ · logs\skills\</td><td>Application, routines started from the frontend, and full-skill runs.</td></tr>
+  </table>
+  <p class="takeaway rv"><b>Editor's note:</b> the script is not copied into input\, to avoid being reprocessed as a .txt; audio reads script.txt directly from the newspaper's folder.</p>
+  <div class="sfoot"><span>Sources: <b>newsroom/pipeline.py</b> · <b>app/speech_ai_app.py</b> · <b>skill_bridge/skill_pipeline.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ TXT SCRIPTS ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title=".txt script flow">
+  <p class="eyebrow rv">Flow · .txt scripts</p>
+  <h2 class="sh rv">.txt scripts become audio directly, with no AI and no cost</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">Step by step</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Queue</h4><p>Each .txt in input\ is read in alphabetical order (python main.py --txt, or the "Process texts" button).</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Analysis and voice</h4><p>Text Analyzer structures the text; Speech Intelligence detects the language and picks the voice and pace.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>Audio</h4><p>TTS Edge generates output\&lt;name&gt;_YYYY-MM-DD_HH-MM-SS.mp3.</p></div></div>
+        <div class="step"><span class="sn">4</span><div><h4>Archiving</h4><p>The .txt moves to input\processados\YYYY-MM-DD\; on error, it stays in the queue.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">US$ 0</div><p class="klab">AI cost per script</p><p class="ksub">Text-to-speech only</p></div>
+        <div class="kcard"><div class="num">pt · en</div><p class="klab">Language auto-detected, voice chosen automatically</p><p class="ksub">Francisca (pt-BR) or Guy (en-US)</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Naming example</p><p>notice.txt → output\notice_2026-10-06_09-15-02.mp3, and the original moves to input\processados\2026-10-06\notice.txt.</p></div>
+        <div class="card"><p class="ctag">Day-to-day order</p><p>Running python main.py with no parameters, .txt files are processed before newspapers.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>app/script_inbox.py</b> · <b>app/speech_ai_app.py</b> · <b>config/voices.json</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 03 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="3" data-title="03 · Operations (Part 3)">
+  <p class="dnum rv">03</p>
+  <p class="eyebrow rv">Part 3 · Operations</p>
+  <h1 class="rv">Operations, configuration and costs</h1>
+  <p class="dsub rv">How to use the frontend, what commands exist, what can be tuned in settings.json, how the solution behaves on failures, and what it costs today (almost nothing: energy, no longer AI).</p>
+  <div class="dchips rv"><span class="chip on">Frontend</span><span class="chip">Commands</span><span class="chip">Configuration</span><span class="chip">Resilience &amp; costs</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Part 3 · Operations</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ FRONTEND ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Web frontend">
+  <p class="eyebrow rv">Operations · web\</p>
+  <h2 class="sh rv">Processing Hub: upload, process and track from the browser</h2>
+  <div class="lr rv">
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">What the page does <em>127.0.0.1:8000</em></p><ul><li>Upload .txt and PDF files, with the newspaper identified instantly.</li><li>"Process texts" (--txt) and "Process newspapers" (--jornais) buttons, with an estimated-time confirmation (no AI cost).</li><li>Live log, steps, elapsed time and cancellation.</li><li>Audio files with a player and download; summaries with links to the HTML and the script.</li></ul></div>
+        <div class="card"><p class="ctag">How to start</p><p>Double-click start.bat (Windows) or ./start.sh (Git Bash). The browser opens on its own; Ctrl+C stops it.</p></div>
+      </div>
+    </div>
+    <div>
+      <table class="tbl">
+        <tr><th>Route</th><th>Function</th></tr>
+        <tr><td>POST /api/upload/txt</td><td>Writes to input\ (UTF-8)</td></tr>
+        <tr><td>POST /api/upload/jornais</td><td>Writes to input\Jornais\</td></tr>
+        <tr><td>POST /api/run/txt</td><td>python main.py --txt</td></tr>
+        <tr><td>POST /api/run/jornais</td><td>python main.py --jornais</td></tr>
+        <tr><td>GET /api/job</td><td>Routine status and log</td></tr>
+        <tr><td>POST /api/job/cancel</td><td>Stops the running routine</td></tr>
+        <tr><td>GET /api/files</td><td>Queues, audio and summaries</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Editor's note:</b> the server only accepts connections from the local machine and runs one routine at a time; while a run is in progress, removing files from the queue is blocked.</p>
+  <div class="sfoot"><span>Sources: <b>web/server.py</b> · <b>web/job_runner.py</b> · <b>web/static/</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ COMMANDS & CONFIGURATION ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Commands and configuration">
+  <p class="eyebrow rv">Operations · main.py · settings.json</p>
+  <h2 class="sh rv">Everyday commands and the settings available in settings.json</h2>
+  <div class="lr rv">
+    <div>
+      <table class="tbl">
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td>python main.py</td><td>.txt first, then newspapers</td></tr>
+        <tr><td>python main.py --txt</td><td>.txt scripts only</td></tr>
+        <tr><td>python main.py --jornais</td><td>PDFs from input\Jornais only</td></tr>
+        <tr><td>--skill valor --pdf X.pdf</td><td>One specific PDF</td></tr>
+        <tr><td>--skill estadao</td><td>Audio from the newspaper's latest script.txt</td></tr>
+        <tr><td>--list-skills</td><td>Lists skills and aliases</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="tbl">
+        <tr><th>Key (skills)</th><th>Current value</th></tr>
+        <tr><td>engine</td><td>fast (or agent, still paid)</td></tr>
+        <tr><td>ollama_host</td><td>http://localhost:11434</td></tr>
+        <tr><td>ollama_model · cover_model</td><td>gemma3:4b</td></tr>
+        <tr><td>ollama_num_ctx</td><td>32,768 tokens</td></tr>
+        <tr><td>ollama_timeout_minutes · retries</td><td>25 · 2</td></tr>
+        <tr><td>fast_max_input_words</td><td>5,000 (per-topic excerpt)</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Editor's note:</b> input/output folders, the newspaper catalog and aliases also live in settings.json; no routine change requires touching code.</p>
+  <div class="sfoot"><span>Sources: <b>main.py</b> · <b>config/settings.json</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ RESILIENCE & COSTS ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Resilience and costs">
+  <p class="eyebrow rv">Operations · Failures, cost and energy</p>
+  <h2 class="sh rv">AI cost dropped to zero; what's left is energy — and it's negligible</h2>
+  <div class="kgrid fan">
+    <div class="kcard pos"><div class="num">US$ 0</div><p class="klab">AI cost per newspaper, since Sprint 13</p><p class="ksub">Before (Claude, fast engine): US$ 1.02 to 2.51</p></div>
+    <div class="kcard pos"><div class="num">R$ 0.02</div><p class="klab">GPU energy per newspaper</p><p class="ksub">17.8 Wh measured · CEMIG tariff, Contagem, Brazil</p></div>
+    <div class="kcard acc"><div class="num">6<span class="unit">GB</span></div><p class="klab">Local GPU VRAM (RTX A3000 Laptop)</p><p class="ksub">~46 newspapers/day is the cap for 1 GPU</p></div>
+    <div class="kcard"><div class="num">US$ 0</div><p class="klab">.txt scripts</p><p class="ksub">No AI use, as before</p></div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card"><p class="ctag">Failures</p><ul><li>An item with an error doesn't stop the others.</li><li>A failed file stays in the input folder for the next run.</li><li>A failed AI call is retried (up to 2 times) — more common with the local model than with paid AI.</li></ul></div>
+    <div class="card"><p class="ctag">No account limit</p><p>With no per-token billing, there's no usage cap to hit: the factor limiting scale is now GPU time, not AI budget.</p></div>
+    <div class="card"><p class="ctag">Plan B</p><p>With "engine": "agent", processing falls back to the full skill — still via Claude Code, still paid (~20 min); each run's log lands in logs\skills\.</p></div>
+  </div>
+  <p class="takeaway rv"><b>Editor's note:</b> processing both newspapers every business day of the year, paid AI would cost ~R$ 4,500/year; local AI's energy stays below R$ 12/year. See <i>Paid AI vs Local AI.html</i> for the full analysis, including the at-scale scenario (100 newspapers/day).</p>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · 10/05, 10/06 and 10/08 runs · energy measurement (nvidia-smi) · CEMIG tariff</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ NEXT STEPS ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-title="Next steps">
+  <p class="eyebrow rv">Roadmap · in priority order</p>
+  <h1 class="rv" style="font-size:58px;max-width:1400px">Next steps</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    <div class="card dk t1c"><p class="ctag">Part 1 · Capacity</p><p><b>More GPU:</b> one 6 GB GPU sustains ~46 newspapers/day. Set a hardware budget before promising higher volume (see <i>Paid AI vs Local AI.html</i>).</p></div>
+    <div class="card dk t1c"><p class="ctag">Part 1 · Quality</p><p><b>Editorial review:</b> listen to the audio and review the HTML output from the first weeks — the local model still trails Claude in density and precision.</p></div>
+    <div class="card dk t2c"><p class="ctag">Part 2 · Model</p><p><b>Re-evaluate the local model:</b> if gemma3:4b's quality isn't enough, try qwen2.5:7b-instruct (a middle ground that still runs on the GPU).</p></div>
+    <div class="card dk t2c"><p class="ctag">Part 2 · Input</p><p><b>PDF filenames:</b> keep "Valor" or "Estadão" in the name, since Valor's front page doesn't carry the name as text.</p></div>
+    <div class="card dk t3c"><p class="ctag">Part 3 · Operations</p><p><b>Scheduling:</b> run python main.py automatically (or via .bat + Task Scheduler) every morning, after the PDFs arrive.</p></div>
+    <div class="card dk t3c"><p class="ctag">Part 3 · Version control</p><p><b>Commit to Git:</b> none of these changes have been committed yet; review and version newsroom\, web\ and the configuration.</p></div>
+  </div>
+  <div class="sfoot"><span>Source: Speech AI · documentation dated October 8, 2026</span><span class="pg"></span></div>
+</section>
+
+</main>
+</div>
+
+<nav class="nav" aria-label="Presentation controls">
+  <button class="nbtn" id="btnPrev" aria-label="Previous slide">&lsaquo;</button>
+  <span class="count" id="counter">1</span>
+  <button class="nbtn" id="btnNext" aria-label="Next slide">&rsaquo;</button>
+  <span class="sep"></span>
+  <div class="dots" id="dots"></div>
+  <span class="sep"></span>
+  <button class="nbtn" id="btnOv" aria-label="Slide overview" title="Overview (O)">&#9783;</button>
+  <button class="nbtn" id="btnTheme" aria-label="Toggle dark mode" title="Dark mode (D)">&#9788;</button>
+  <button class="nbtn" id="btnFs" aria-label="Fullscreen" title="Fullscreen (F)">&#9974;</button>
+</nav>
+<div id="ov" role="dialog" aria-modal="true" aria-label="All slides"><h3>All slides</h3><p class="ovh">Click to jump to a slide · O or Esc to close</p><div id="ovg"></div></div>
+<div id="hint">← → navigate · O overview · D dark mode · F fullscreen</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, deck=document.getElementById('deck');
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var TOTAL=slides.length, idx=0;
+var counter=document.getElementById('counter'), pbar=document.getElementById('pbar'), brand=document.getElementById('brand');
+
+/* ---------- stage: fixed 1600x900 scale, or vertical reading on narrow screens ---------- */
+function isMobile(){ return window.innerWidth < 820 || (window.innerWidth < 1000 && window.innerHeight > window.innerWidth); }
+function fitStage(){
+  if (isMobile()){ root.classList.add('mobile'); deck.style.transform='none'; return; }
+  root.classList.remove('mobile');
+  var pad = 22;
+  var k = Math.min((window.innerWidth-pad)/1600,(window.innerHeight-pad)/900);
+  deck.style.transform='translate(-50%,-50%) scale('+k+')';
+}
+window.addEventListener('resize',fitStage);
+
+/* ---------- navigation ---------- */
+var dotsBox=document.getElementById('dots'), ovg=document.getElementById('ovg');
+slides.forEach(function(s,i){
+  var d=document.createElement('button'); d.className='dot'+(s.dataset.divider?' sec':''); d.setAttribute('aria-label','Go to slide '+(i+1));
+  d.title=s.dataset.title||''; d.addEventListener('click',function(){goTo(i,i<idx);}); dotsBox.appendChild(d);
+  var c=document.createElement('button'); c.className='ovc';
+  c.innerHTML='<span class="on2">'+(i+1<10?'0':'')+(i+1)+'</span><span class="ot"></span>';
+  c.querySelector('.ot').textContent=s.dataset.title||'';
+  c.addEventListener('click',function(){toggleOv(false);goTo(i,i<idx);}); ovg.appendChild(c);
+});
+function update(){
+  counter.textContent=(idx+1)+' / '+TOTAL;
+  pbar.style.width=(idx/(TOTAL-1)*100)+'%';
+  [].forEach.call(dotsBox.children,function(d,i){d.classList.toggle('on',i===idx);});
+  [].forEach.call(ovg.children,function(c,i){c.classList.toggle('on',i===idx);});
+  var s=slides[idx];
+  var onLight=s.dataset.theme==='light' && root.dataset.themeMode!=='dark';
+  brand.classList.toggle('on-light',onLight);
+  if (FIELD) FIELD.setMode(s.dataset.theme==='dark' || root.dataset.themeMode==='dark', !!s.dataset.divider || s.classList.contains('t-cover'));
+  deck.style.setProperty('--field-a', s.dataset.divider ? .9 : 1);
+}
+function goTo(n,back){
+  n=Math.max(0,Math.min(TOTAL-1,n));
+  if (n===idx) return;
+  document.body.classList.toggle('back',!!back);
+  slides[idx].classList.remove('active'); idx=n; slides[idx].classList.add('active');
+  update(); hideTip();
+  setTimeout(function(){document.body.classList.remove('back');},620);
+}
+function next(){goTo(idx+1,false);} function prev(){goTo(idx-1,true);}
+document.getElementById('btnNext').addEventListener('click',next);
+document.getElementById('btnPrev').addEventListener('click',prev);
+var ov=document.getElementById('ov');
+function toggleOv(on){ ov.classList.toggle('on', on===undefined ? !ov.classList.contains('on') : on); }
+document.getElementById('btnOv').addEventListener('click',function(){toggleOv();});
+function toggleTheme(){ root.dataset.themeMode = root.dataset.themeMode==='dark' ? 'light' : 'dark'; update(); }
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+function toggleFs(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.getElementById('btnFs').addEventListener('click',toggleFs);
+document.addEventListener('keydown',function(e){
+  if (e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if (root.classList.contains('mobile')) return;
+  var k=e.key;
+  if (k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if (k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if (k==='Home'){goTo(0,true);} else if (k==='End'){goTo(TOTAL-1,false);}
+  else if (k==='o'||k==='O'){toggleOv();} else if (k==='Escape'){toggleOv(false);}
+  else if (k==='d'||k==='D'){toggleTheme();} else if (k==='f'||k==='F'){toggleFs();}
+});
+var tx=null;
+deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+deck.addEventListener('touchend',function(e){ if(tx===null||root.classList.contains('mobile'))return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?next():prev();} tx=null; });
+
+/* ---------- hover tooltip (bars, points, segments) ---------- */
+var tip=document.getElementById('tip');
+function showTip(html,x,y){ tip.innerHTML=html; tip.classList.add('on');
+  var w=tip.offsetWidth,h=tip.offsetHeight; var px=x+14, py=y-h-12;
+  if (px+w>window.innerWidth-8) px=x-w-14; if (py<8) py=y+16; tip.style.left=px+'px'; tip.style.top=py+'px'; }
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mousemove',function(e){
+  var t=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if (t) showTip(t.getAttribute('data-tip'),e.clientX,e.clientY); else if (!e.target.closest('svg.line')) hideTip();
+});
+
+/* ---------- line chart (unused in this document, kept for template parity) ---------- */
+function lineChart(svg,data,opt){
+  var W=640,H=420,L=48,R=24,T=20,B=36, NS='http://www.w3.org/2000/svg';
+  var x=function(i){return L+i*(W-L-R)/(data.length-1);}, y=function(v){return T+(opt.max-v)/(opt.max-opt.min)*(H-T-B);};
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;}
+  opt.ticks.forEach(function(t){ el('line',{x1:L,x2:W-R,y1:y(t),y2:y(t),'class':'gl'}); var tx=el('text',{x:L-8,y:y(t)+4,'text-anchor':'end','class':'ax'}); tx.textContent=t.toString()+'%'; });
+  if (opt.ref){ el('line',{x1:L,x2:W-R,y1:y(opt.ref.v),y2:y(opt.ref.v),'class':'ref'}); var rt=el('text',{x:W-R,y:y(opt.ref.v)-6,'text-anchor':'end','class':'ax'}); rt.textContent=opt.ref.label; }
+  data.forEach(function(d,i){ var t=el('text',{x:x(i),y:H-10,'text-anchor':'middle','class':'ax'}); t.textContent=d.k; });
+  el('path',{d:data.map(function(d,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(d.v).toFixed(1);}).join(' '),'class':'ln'});
+  var xh=el('line',{y1:T,y2:H-B,'class':'xh'});
+  data.forEach(function(d,i){ el('circle',{cx:x(i),cy:y(d.v),r:i===data.length-1?6:4.5,'class':'mk'+(i===data.length-1?' last':'')}); });
+  var hit=el('rect',{x:L,y:T,width:W-L-R,height:H-T-B,'class':'hit'});
+  hit.addEventListener('mousemove',function(e){
+    var r=svg.getBoundingClientRect(), px=(e.clientX-r.left)/r.width*W;
+    var i=Math.round((px-L)/((W-L-R)/(data.length-1))); i=Math.max(0,Math.min(data.length-1,i));
+    xh.setAttribute('x1',x(i)); xh.setAttribute('x2',x(i)); xh.style.opacity=1;
+    showTip('<b>'+data[i].k+'</b><br>Value: '+data[i].v.toFixed(2)+'%',e.clientX,e.clientY);
+  });
+  hit.addEventListener('mouseleave',function(){xh.style.opacity=0;hideTip();});
+}
+
+/* ---------- animated field (drifting dots) behind dark slides ---------- */
+var FIELD=(function(){
+  var cv=document.getElementById('field'); if(!cv||!cv.getContext) return null;
+  var ctx=cv.getContext('2d'), DPR=Math.min(window.devicePixelRatio||1,1.6), W=1600,H=900;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  var N=900, pts=[], running=false, show=true, ring=true, t0=0;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (var i=0;i<N;i++){
+    var z=Math.random()*.8+.2, a=Math.random()*Math.PI*2, rr=i%3===0?230:(i%3===1?150:320);
+    pts.push({x:Math.random()*W,y:Math.random()*H,z:z,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.22,
+      ring:i<N*.42, tx:1230+Math.cos(a)*rr*(0.96+Math.random()*.08), ty:440+Math.sin(a)*rr*(0.96+Math.random()*.08), ph:Math.random()*6.28});
+  }
+  function frame(ts){
+    if (!running) return;
+    var t=ts/1000; ctx.clearRect(0,0,W,H);
+    for (var i=0;i<N;i++){
+      var p=pts[i];
+      if (ring && p.ring){
+        var ang=t*.05*(p.z>.6?1:-1), cx=1230, cy=440, dx=p.tx-cx, dy=p.ty-cy;
+        var gx=cx+dx*Math.cos(ang)-dy*Math.sin(ang), gy=cy+dx*Math.sin(ang)+dy*Math.cos(ang);
+        p.x+=(gx-p.x)*.03; p.y+=(gy-p.y)*.03;
+      } else {
+        p.x+=p.vx*p.z*1.4; p.y+=p.vy*p.z*1.4;
+        if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10; if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+      }
+      var al=(.18+.55*p.z)*(.75+.25*Math.sin(t*1.3+p.ph));
+      ctx.fillStyle=p.ring&&ring ? 'rgba(143,180,236,'+al+')' : 'rgba(195,215,238,'+(al*.8)+')';
+      ctx.beginPath(); ctx.arc(p.x,p.y,.6+1.5*p.z,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(!running && show && !reduce && !document.hidden && !root.classList.contains('mobile')){ running=true; requestAnimationFrame(frame);} }
+  function stop(){ running=false; }
+  document.addEventListener('visibilitychange',function(){ document.hidden?stop():start(); });
+  if (reduce){ ctx.fillStyle='rgba(195,215,238,.4)'; pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1,0,6.283);ctx.fill();}); }
+  return { setMode:function(dark,r){ show=dark; ring=r; if(show) start(); else { stop(); ctx.clearRect(0,0,W,H);} } };
+})();
+
+
+/* ---------- highlight badge + nav that collapses ---------- */
+var TIERN={'1':'Part 1 · Overview','2':'Part 2 · Input & Output','3':'Part 3 · Operations'};
+slides.forEach(function(s,i){
+  var t=s.dataset.tier; if(!t) return;
+  if (s.dataset.theme==='light'){ var p=document.createElement('div'); p.className='tierpill t'+t; p.innerHTML='<i></i>'+TIERN[t]; s.insertBefore(p,s.firstChild); }
+  if (dotsBox.children[i]) dotsBox.children[i].classList.add('t'+t);
+});
+var idleT=null;
+function wake(){ document.body.classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(function(){ if(!document.querySelector('.nav:hover')) document.body.classList.add('idle'); },2600); }
+['mousemove','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev,wake,{passive:true}); });
+wake();
+
+fitStage(); update();
+var hint=document.getElementById('hint');
+if (!root.classList.contains('mobile')){ setTimeout(function(){hint.classList.add('on');},900); setTimeout(function(){hint.classList.remove('on');},5200); }
+})();
+</script>
+</body>
+</html>

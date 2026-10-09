@@ -1,0 +1,48 @@
+PROMPT PARA GERAR A APRESENTAÇÃO (Google Slides com Gemini)
+Fonte a carregar/colar: solucao.md
+Imagens de fundo a anexar:
+  - Images/Speech-AI Fundo Apresentacao 1 - Jornal vira Audio.png
+  - Images/Speech-AI Fundo Apresentacao 2 - IA Local na GPU.png
+Uso: gerar uma apresentação (deck de slides) executiva sobre o Speech AI que USA as duas imagens como plano de fundo.
+
+---
+
+POR QUE ESTE PROMPT É SEPARADO DO VÍDEO DO NOTEBOOKLM
+
+O Vídeo Overview do NotebookLM não aceita imagens próprias como fundo — por isso as duas imagens que geramos ficam sem uso ali. Elas servem para esta apresentação, feita em Google Slides com a ajuda do Gemini (painel "Gemini" dentro do Slides, ou gemini.google.com pedindo para criar/estruturar os slides). Use este prompt nessa ferramenta, não no NotebookLM.
+
+---
+
+COMO USAR
+
+1. Abra um Google Slides novo (ou peça ao Gemini, em gemini.google.com, para criar um) e abra o painel lateral do Gemini.
+2. Cole o texto abaixo no Gemini, anexando solucao.md como contexto (upload do arquivo ou colar o conteúdo).
+3. Depois que o Gemini gerar a estrutura/conteúdo dos slides, insira manualmente as duas imagens como plano de fundo dos slides indicados (Inserir → Imagem → Definir como plano de fundo, no Google Slides) — o Gemini ainda não aplica imagem de fundo sozinho a partir de arquivo anexado; ele gera o texto e a estrutura, e você (ou um segundo passo pedindo "aplique esta imagem como fundo do slide X") faz o encaixe visual.
+
+---
+
+TEXTO A COLAR NO GEMINI
+
+Crie uma apresentação executiva em Google Slides sobre o projeto Speech AI, com no máximo 10 a 12 slides, para um público de liderança técnica e de negócios (CTO, gestores de produto, stakeholders que decidem investimento em infraestrutura de IA).
+
+TOM:
+- EXECUTIVO: cada slide conecta a decisão técnica a um resultado de negócio (tempo, custo, risco, capacidade). Pouco texto por slide — frases curtas, números em destaque, nada de parágrafos longos.
+- FORMAL: português do Brasil, profissional, sem gírias. Explique siglas técnicas (GPU, VRAM, Ollama) na primeira vez que aparecem.
+- COLABORATIVO: apresente os trade-offs com honestidade (IA local é gratuita, mas mais lenta, com limite real de capacidade) — não é só propaganda do projeto.
+
+ESTRUTURA PEDIDA (1 ideia central por slide):
+1. Capa — título e subtítulo de efeito sobre a solução.
+2. O que é o Speech AI e o problema que resolve (1 frase + 1 imagem/ícone do fluxo PDF → HTML + áudio).
+3. A evolução em 3 etapas, com os 3 tempos e os 3 custos lado a lado (skill manual → fast + IA paga → fast + IA local).
+4. Por que a troca para IA local: a GPU tem 6 GB de VRAM, e por isso o modelo é o gemma3:4b via Ollama.
+5. Os bugs reais encontrados na migração e corrigidos (data errada, conversão de moeda, citações fabricadas) — prova de maturidade de engenharia.
+6. O custo em escala: R$ 186 mil/ano (IA paga) contra R$ 781/ano de energia (IA local), a 100 jornais/dia.
+7. A ressalva central: a capacidade de 1 GPU (~46 jornais/dia) é o novo limite, não o dinheiro.
+8. Caminhos para escalar a GPU: eGPU via Thunderbolt ou servidor dedicado (ollama_host já configurável).
+9. Recomendação final e próximos passos.
+10. Encerramento — uma frase-síntese do projeto.
+
+INSTRUÇÕES DE DESIGN:
+- Os slides 1 (capa) e 9 ou 10 (recomendação/encerramento) vão receber manualmente, depois, uma imagem de fundo escura e ilustrada (já pronta, fora desta ferramenta) — deixe texto em branco ou cores claras nesses dois slides, com bastante espaço livre no topo e nas laterais, para não competir com a imagem de fundo.
+- Nos demais slides, use um fundo claro e neutro, com os números/KPIs em destaque (fonte grande, poucas palavras).
+- Gere o conteúdo (texto de cada slide) primeiro; a aplicação da imagem de fundo nos slides 1 e 9/10 é um passo manual seguinte, no próprio Google Slides.

@@ -1,27 +1,47 @@
-PROMPT PARA O GOOGLE NOTEBOOKLM
+PROMPT PARA O GOOGLE NOTEBOOKLM — ÁUDIO E VÍDEO OVERVIEW
 Fonte a carregar: solucao.md
-Uso: gerar um Resumo em Áudio (Audio Overview) de ~10 minutos e um Resumo em Vídeo (Video Overview) de ~10 minutos sobre a solução Speech AI.
+Uso: gerar um Resumo em Áudio (Audio Overview) e um Resumo em Vídeo (Video Overview) de ~10 minutos sobre a solução Speech AI.
 
 ---
 
-INSTRUÇÕES DE PERSONALIZAÇÃO (colar no campo "Customize" / "Personalizar" do NotebookLM antes de gerar o áudio e o vídeo):
+AVISO IMPORTANTE ANTES DE USAR ESTE PROMPT
 
-Você está preparando uma apresentação executiva sobre o projeto Speech AI para um público de liderança técnica e de negócios (CTO, gestores de produto e stakeholders que decidem investimento em infraestrutura de IA). O tom deve ser:
+O Vídeo Overview do NotebookLM NÃO aceita imagens enviadas pelo usuário como plano de fundo — ele gera os visuais sozinho, a partir de um estilo pronto que você escolhe no painel (ex.: "Whiteboard", "Retrô", "Papel"). As duas imagens de fundo que criamos (em Images/) são para uma APRESENTAÇÃO (Google Slides/Gemini), não para este vídeo — veja o arquivo prompt-apresentacao-slides.txt para isso.
+O motivo mais provável do vídeo ter saído com 2 minutos em vez de 10 é falta de instrução de duração explícita e segmentada — isso é o que este prompt corrige.
 
-- EXECUTIVO: direto ao ponto, sempre conectando cada decisão técnica a um resultado de negócio (tempo, custo, risco, capacidade). Evite se alongar em detalhes de implementação que não mudam a decisão.
-- FORMAL: linguagem profissional, em português do Brasil, sem gírias e sem informalidade excessiva — mas acessível, sem jargão desnecessário. Explique siglas e termos técnicos (GPU, VRAM, tokens, Ollama, JSON) na primeira vez que aparecerem.
-- COLABORATIVO: trate o ouvinte como um parceiro na decisão, não como uma plateia passiva. Apresente os trade-offs com honestidade (ex.: a IA local é gratuita, mas mais lenta e com limite real de capacidade) em vez de só vender os pontos positivos. Feche cada bloco com a pergunta ou decisão que fica em aberto para a equipe.
+---
 
-Cubra obrigatoriamente estes tópicos, nesta ordem lógica (não precisa ser a ordem exata do documento-fonte):
+PASSO A PASSO NO NOTEBOOKLM
 
-1. O que é o Speech AI e que problema ele resolve (jornais em PDF e roteiros de texto viram resumo executivo + áudio narrado).
-2. A evolução em três etapas: da skill manual (~20 min, IA paga) ao processo rápido com IA paga (~2-3 min) até a IA local atual (custo zero, ~25-43 min).
-3. Por que a troca para IA local foi feita, qual modelo foi escolhido (gemma3:4b via Ollama) e por quê (limite de 6 GB de VRAM da GPU disponível).
-4. Os problemas reais encontrados na migração (datas erradas, conversão de moeda quebrada, citações fabricadas) e como foram corrigidos — isso mostra maturidade de engenharia, não esconda as falhas.
-5. A análise de custo em escala: comparação de ~R$ 186 mil/ano (IA paga) contra ~R$ 781/ano de energia (IA local), e a ressalva central — a capacidade de uma GPU (~46 jornais/dia) é o novo limite, não o dinheiro.
-6. Recomendação final e próximos passos (investimento em GPU, revisão de qualidade, automação).
+1. Confirme que solucao.md é a ÚNICA fonte marcada como ativa no notebook (fontes extras "diluem" o foco e podem encurtar o resultado).
+2. Abra "Vídeo Overview" → "Personalizar" (ou o ícone de configurações ao lado de Gerar).
+3. Escolha um estilo visual sóbrio/corporativo entre as opções oferecidas (ex.: "Whiteboard" ou equivalente) — não há opção de upload de imagem própria.
+4. Cole o texto abaixo no campo de instruções.
+5. Repita o mesmo texto (sem a parte "No vídeo, prefira...") no "Audio Overview" → "Personalizar", trocando apenas a frase final de formato.
 
-Formato pedido:
-- Duração alvo: aproximadamente 10 minutos, tanto para o áudio quanto para o vídeo.
-- No vídeo, dê preferência a diagramas de fluxo e comparações numéricas (barras, antes/depois) sobre texto corrido na tela.
-- Termine com uma conclusão clara e objetiva, não uma lista aberta de possibilidades.
+---
+
+TEXTO A COLAR NO CAMPO "PERSONALIZAR"
+
+Você está preparando um resumo executivo sobre o projeto Speech AI para um público de liderança técnica e de negócios (CTO, gestores de produto e stakeholders que decidem investimento em infraestrutura de IA).
+
+DURAÇÃO — SIGA ESTA DIVISÃO À RISCA, NÃO RESUMA:
+Esta é uma peça de aproximadamente 10 minutos, não um resumo curto. Trate cada um dos 6 blocos abaixo como um capítulo completo, com no mínimo 90 segundos de conteúdo cada — explique, dê exemplos concretos do texto-fonte, cite os números exatos, e só então passe ao próximo bloco. Não comprima os blocos 4, 5 e 6: eles contêm os dados mais importantes (os bugs corrigidos e a conta de custo em escala) e merecem o mesmo tempo que os blocos iniciais. Se em algum momento perceber que vai terminar em menos de 8 minutos, aprofunde cada bloco com mais exemplos do texto-fonte em vez de seguir em frente.
+
+TOM:
+- EXECUTIVO: direto ao ponto, sempre conectando cada decisão técnica a um resultado de negócio (tempo, custo, risco, capacidade).
+- FORMAL: português do Brasil, profissional, sem gírias — mas acessível. Explique siglas técnicas (GPU, VRAM, tokens, Ollama, JSON) na primeira vez que aparecerem.
+- COLABORATIVO: trate quem assiste como parceiro na decisão, não plateia passiva. Apresente os trade-offs com honestidade (a IA local é gratuita, mas mais lenta e com limite real de capacidade) em vez de só vender os pontos positivos. Feche cada bloco com a pergunta ou decisão que fica em aberto para a equipe.
+
+OS 6 BLOCOS, NA ORDEM, ~90 SEGUNDOS CADA:
+
+1. O QUE É (0:00–1:30): o que é o Speech AI e que problema ele resolve — jornais em PDF e roteiros de texto viram resumo executivo em HTML + áudio narrado em português.
+2. A EVOLUÇÃO EM 3 ETAPAS (1:30–3:00): da skill manual (~20 min, IA paga) ao processo rápido com IA paga (~2-3 min, US$1,02/jornal) até a IA local atual (custo zero, ~25-43 min/jornal). Dê os três números de tempo e os três de custo.
+3. POR QUE IA LOCAL, E QUAL MODELO (3:00–4:30): a GPU disponível tem só 6 GB de VRAM; por isso o modelo escolhido foi o gemma3:4b via Ollama, e por que os modelos maiores testados não coube.
+4. OS BUGS REAIS CORRIGIDOS (4:30–6:30): cite pelo menos 3 dos 4 problemas encontrados (data errada copiada do exemplo do prompt, conversão de moeda quebrada, citações fabricadas/parafraseadas, resposta cortada por falta de contexto) e como cada um foi corrigido. Isso é prova de maturidade de engenharia — não pule rápido por aqui.
+5. O CUSTO EM ESCALA (6:30–8:30): a comparação de ~R$186 mil/ano (IA paga) contra ~R$781/ano de energia (IA local) a 100 jornais/dia — e a ressalva central: a capacidade de 1 GPU (~46 jornais/dia) é o novo limite, não o dinheiro. Dê os números exatos.
+6. RECOMENDAÇÃO E PRÓXIMOS PASSOS (8:30–10:00): investimento em GPU (eGPU ou servidor dedicado), revisão de qualidade, automação — termine com uma conclusão objetiva, não uma lista em aberto.
+
+FORMATO:
+- Vídeo: dê preferência a diagramas de fluxo e comparações numéricas (barras, antes/depois) sobre texto corrido na tela, mas sem cortar o tempo de narração de cada bloco.
+- Áudio: diálogo natural entre os dois apresentadores, com perguntas de um para o outro aprofundando cada bloco — não uma leitura corrida.

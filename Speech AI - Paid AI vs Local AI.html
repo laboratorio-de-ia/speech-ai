@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en" data-theme-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speech AI — Paid AI vs Local AI</title>
+<meta name="description" content="Executive analysis: cost of paid AI (Claude) vs local AI (Ollama) in Speech AI at scale (100 newspapers/day, 365 days/year), electricity cost in Contagem, Brazil, GPU used, and improvement path.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Visual engine reused from "Speech AI - Solution Documentation.html"
+   (single-file HTML deck, 1600x900 stage).
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --dk1:#282B34; --dk2:#002855; --lt2:#C3D7EE;
+  --accent1:#243782; --accent3:#C3D7EE; --accent5:#D35D00; --accent6:#43AAA0; --hlink:#0082FB;
+  --font-heading:'Encode Sans Expanded','Encode Sans',Arial,sans-serif;
+  --font-body:'Encode Sans',Arial,sans-serif;
+  --field:#00163C; --paper:#FFFFFF; --mist:#F3F6FB; --mist-2:#E8EEF8; --rule:#D8E1EF;
+  --ink:#010834; --ink-soft:#4E5A75; --ink-faint:#7D879B;
+  --c1:#2A54B5; --c2:#00968C; --c3:#D35D00; --c4:#8E5BC7; --c-mute:#AFBBD1;
+  --grid:#E4EAF4; --axis:#9AA6BC; --num1:#243782; --pos:#0A7F76; --bad:#B23A3A;
+}
+html[data-theme-mode="dark"]{
+  --paper:#061B3E; --mist:#0C2650; --mist-2:#123061; --rule:#1E3D70;
+  --ink:#EAF1FB; --ink-soft:#A9BEDD; --ink-faint:#7F96BA;
+  --c1:#5C82DC; --c2:#12A899; --c3:#D0762A; --c4:#9C6FD8; --c-mute:#3C5580;
+  --grid:#173359; --axis:#5A7399; --num1:#8FB0EE; --pos:#3ED0BF; --bad:#E07A7A;
+}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04102A}
+html[data-theme-mode="dark"] body{background:#030D22}
+body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+#shell{position:fixed;inset:0;overflow:hidden}
+.deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  background:var(--field);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:var(--field-a,1);transition:opacity .8s ease}
+.slide{position:absolute;inset:0;padding:70px 92px 70px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px);
+  transition:opacity .5s cubic-bezier(.22,.7,.2,1),transform .58s cubic-bezier(.22,.7,.2,1),filter .45s ease,visibility .58s;
+  will-change:transform,opacity;pointer-events:none}
+body.back .slide{transform:translate3d(-46px,0,0) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;z-index:10}
+.slide[data-theme="dark"]{color:#fff;background:transparent}
+.slide[data-theme="dark"]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,#00122F 0%,rgba(0,20,52,.94) 30%,rgba(0,26,64,.66) 54%,rgba(0,34,78,.28) 76%,rgba(0,40,88,.08) 100%)}
+.slide[data-theme="dark"]>*{position:relative;z-index:2}
+.slide[data-theme="light"]{background:var(--paper);color:var(--ink)}
+.slide[data-theme="light"]::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(58% 80% at 100% 0%,rgba(195,215,238,.34) 0%,rgba(195,215,238,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(195,215,238,.24) 0%,rgba(195,215,238,0) 60%)}
+html[data-theme-mode="dark"] .slide[data-theme="light"]::before{
+  background:radial-gradient(58% 80% at 100% 0%,rgba(92,130,220,.16) 0%,rgba(92,130,220,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(18,168,153,.10) 0%,rgba(18,168,153,0) 60%)}
+.slide[data-theme="light"]>*{position:relative;z-index:2}
+
+.slide.active .rv{animation:rvIn .5s cubic-bezier(.22,.7,.2,1) both}
+.slide.active .rv:nth-child(1){animation-delay:.05s}.slide.active .rv:nth-child(2){animation-delay:.12s}
+.slide.active .rv:nth-child(3){animation-delay:.19s}.slide.active .rv:nth-child(4){animation-delay:.26s}
+.slide.active .rv:nth-child(5){animation-delay:.33s}.slide.active .rv:nth-child(6){animation-delay:.40s}
+@keyframes rvIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .fan>*{animation:fanIn .42s cubic-bezier(.22,.7,.2,1) both}
+@keyframes fanIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.slide.active .fan>*:nth-child(1){animation-delay:.14s}.slide.active .fan>*:nth-child(2){animation-delay:.18s}
+.slide.active .fan>*:nth-child(3){animation-delay:.22s}.slide.active .fan>*:nth-child(4){animation-delay:.26s}
+.slide.active .fan>*:nth-child(5){animation-delay:.30s}.slide.active .fan>*:nth-child(6){animation-delay:.34s}
+.slide.active .fan>*:nth-child(7){animation-delay:.38s}.slide.active .fan>*:nth-child(8){animation-delay:.42s}
+.slide.active .fan>*:nth-child(n+9){animation-delay:.46s}
+body.no-motion .slide.active .rv,body.no-motion .slide.active .fan>*{animation:none}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+.brand{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
+  font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(195,215,238,.72);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent5);display:block}
+.brand.on-light{color:#46526E}
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:62;display:flex;align-items:center;gap:13px;
+  padding:7px 15px;border-radius:999px;background:rgba(4,16,42,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(195,215,238,.2);color:#DCE7F7;font-family:var(--font-body);font-size:11px;letter-spacing:.06em;
+  opacity:.55;transition:opacity .3s ease}
+.nav:hover,.nav:focus-within{opacity:1}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(195,215,238,.34);
+  transition:transform .25s ease,background .25s ease}
+.dot:hover{background:var(--accent3);transform:scale(1.35)}
+.dot.sec{background:rgba(67,170,160,.6)}
+.dot.on{background:var(--accent5);transform:scale(1.5)}
+.nbtn{background:transparent;border:1px solid rgba(195,215,238,.45);color:inherit;border-radius:999px;min-width:30px;height:24px;
+  padding:0 8px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font-body);opacity:.85;transition:opacity .2s,background .2s}
+.nbtn:hover{opacity:1;background:rgba(195,215,238,.16)}
+.nbtn:focus-visible,.dot:focus-visible{outline:2px solid var(--hlink);outline-offset:2px}
+.count{font-variant-numeric:tabular-nums;min-width:58px;text-align:center;opacity:.85;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(195,215,238,.24)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:64;background:rgba(195,215,238,.16)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent6),var(--accent5));transition:width .5s cubic-bezier(.22,.7,.2,1)}
+.sfoot{position:absolute;left:92px;right:92px;top:852px;height:16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);z-index:6;pointer-events:none}
+.slide[data-theme="dark"]>.sfoot,.slide[data-theme="light"]>.sfoot{position:absolute;z-index:6}
+.slide[data-theme="dark"] .sfoot{color:rgba(195,215,238,.52)}
+.sfoot b{font-weight:600;color:var(--accent5)}
+
+h1,h2,h3,h4{font-family:var(--font-heading);margin:0;font-weight:700;letter-spacing:-.012em}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent5);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent5);flex:0 0 auto}
+.slide[data-theme="dark"] .eyebrow{color:var(--accent6)}
+.slide[data-theme="dark"] .eyebrow::before{background:var(--accent6)}
+h2.sh{font-size:40px;line-height:1.12;margin:12px 0 0;max-width:1300px;text-wrap:balance}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:1240px;margin-top:10px}
+.slide[data-theme="dark"] .lede{color:rgba(219,231,247,.86)}
+.takeaway{margin-top:auto;padding-top:12px;border-top:1px solid var(--rule);font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.takeaway b{color:var(--accent5);font-weight:700}
+.slide[data-theme="dark"] .takeaway{border-top-color:rgba(195,215,238,.2);color:rgba(219,231,247,.84)}
+.num{font-family:var(--font-heading);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:.92}
+.unit{font-size:.52em;font-weight:700;letter-spacing:0;margin-left:2px;opacity:.72}
+.src{font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em}
+
+.t-cover{justify-content:flex-end;padding:74px 92px 100px}
+.t-cover .kicker{font-size:12.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--accent6);margin-bottom:26px}
+.t-cover h1{text-wrap:balance;font-size:60px;line-height:1.04;font-weight:800;letter-spacing:-.026em;max-width:900px;position:relative;width:fit-content}
+.t-cover h1 .l2{display:block;color:var(--accent3)}
+.t-cover .csub{font-size:18px;line-height:1.55;color:rgba(219,231,247,.9);max-width:880px;margin-top:26px}
+.t-cover .cmeta{margin-top:32px;display:flex;align-items:stretch;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(195,215,238,.78);flex-wrap:wrap}
+.t-cover .cmeta>span{padding:0 22px;border-left:1px solid rgba(195,215,238,.3)}
+.t-cover .cmeta>span:first-child{padding-left:0;border-left:0}
+.rule{width:88px;height:4px;background:var(--accent5);margin:28px 0 0}
+.slide.active .rule{animation:ruleGrow .8s cubic-bezier(.22,.7,.2,1) .55s both}
+@keyframes ruleGrow{from{width:0}to{width:88px}}
+.slide.t-cover>.cover-score{position:absolute;right:92px;top:110px;width:420px;z-index:3;display:flex;flex-direction:column;gap:12px}
+.cs-row{background:rgba(6,30,72,.66);border:1px solid rgba(195,215,238,.22);border-radius:12px;padding:16px 18px;backdrop-filter:blur(6px);border-left-width:4px!important}
+.cs-row.t1{border-left-color:#9C6FD8!important}.cs-row.t2{border-left-color:#5C82DC!important}.cs-row.t3{border-left-color:rgba(195,215,238,.5)!important}
+.cs-row .who{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.cs-row.t1 .who{color:#C9AEF2}.cs-row.t2 .who{color:#A9C2F2}.cs-row.t3 .who{color:rgba(195,215,238,.8)}
+.cs-row .ttl{font-family:var(--font-heading);font-size:18px;font-weight:700;line-height:1.28;margin-top:8px;color:#fff}
+.cs-row .note{font-size:12px;color:rgba(219,231,247,.72);margin-top:8px}
+.ord-h{font-size:11.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(195,215,238,.7);margin-bottom:2px}
+
+.t-div{justify-content:center;overflow:hidden}
+.t-div .dnum{font-family:var(--font-heading);font-size:132px;font-weight:800;line-height:.92;color:rgba(195,215,238,.16);letter-spacing:-.04em;margin-bottom:8px}
+.t-div.active .dnum{animation:dnumIn 1.1s cubic-bezier(.22,.7,.2,1) both}
+@keyframes dnumIn{from{opacity:0;transform:translateY(26px) scale(1.14);letter-spacing:.06em}to{opacity:1;transform:none;letter-spacing:-.04em}}
+.t-div .eyebrow{margin-bottom:16px}
+.t-div h1{font-size:64px;line-height:1.04;font-weight:800;letter-spacing:-.024em;max-width:1000px}
+.t-div .dsub{margin-top:22px;font-size:18px;line-height:1.6;color:rgba(219,231,247,.86);max-width:900px}
+.t-div.active::after{content:"";position:absolute;top:-30%;bottom:-30%;width:36%;left:-40%;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(126,160,235,.16) 42%,rgba(191,210,242,.24) 52%,rgba(126,160,235,.14) 62%,transparent);
+  filter:blur(14px);animation:beam 3.4s cubic-bezier(.3,.6,.25,1) .25s both}
+@keyframes beam{from{left:-45%;opacity:0}25%{opacity:1}to{left:118%;opacity:0}}
+.dchips{margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;padding:7px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.34);color:rgba(219,231,247,.9)}
+.chip.on{background:rgba(67,170,160,.18);border-color:rgba(67,170,160,.6);color:#BFF3EC}
+.chip.warn{background:rgba(211,93,0,.2);border-color:rgba(211,93,0,.6);color:#FFD9B8}
+
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kgrid.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 14px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:118px;position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent1)}
+html[data-theme-mode="dark"] .kcard::before{background:var(--c1)}
+.kcard.acc::before{background:var(--accent5)}
+.kcard.pos::before{background:var(--accent6)}
+.kcard.bad::before{background:var(--bad)}
+.kcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.kcard .num{font-size:52px;color:var(--num1);white-space:nowrap}
+.kcard.acc .num{color:var(--accent5)}
+.kcard.pos .num{color:var(--pos)}
+.kcard.bad .num{color:var(--bad)}
+.kcard .klab{font-size:15px;font-weight:600;line-height:1.3;margin-top:10px;color:var(--ink)}
+.kcard .ksub{font-size:13px;line-height:1.35;color:var(--ink-faint);margin-top:4px}
+.kgrid.tight .kcard{min-height:0;padding:12px 15px 11px}
+.kgrid.tight .kcard .num{font-size:38px}
+.kgrid.tight .kcard .klab{font-size:14px;margin-top:8px}
+
+.cards{display:grid;gap:14px;margin-top:20px}
+.cards.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 15px;display:flex;flex-direction:column;
+  transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.card .ctag{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.card .ctag em{font-style:normal;color:var(--ink-faint);letter-spacing:.08em}
+.card h3{font-size:20px;line-height:1.22;margin-bottom:9px}
+.card p,.card li{font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.card ul{margin:0;padding-left:19px}
+.card li+li{margin-top:6px}
+.card li b,.card p b{color:var(--ink);font-weight:600}
+.card.sig{background:linear-gradient(150deg,rgba(67,170,160,.14),rgba(67,170,160,.05));border-color:rgba(67,170,160,.42)}
+.card.sig .ctag{color:var(--pos)}
+.card.flag{background:linear-gradient(150deg,rgba(211,93,0,.11),rgba(211,93,0,.04));border-color:rgba(211,93,0,.4)}
+.card.alert{background:linear-gradient(150deg,rgba(178,58,58,.12),rgba(178,58,58,.04));border-color:rgba(178,58,58,.4)}
+.card.alert .ctag{color:var(--bad)}
+.card.dk{background:linear-gradient(150deg,#062A5C,#041B3F);border-color:rgba(195,215,238,.24);color:#fff}
+.card.dk h3{color:#fff}.card.dk p,.card.dk li{color:rgba(219,231,247,.86)}.card.dk li b,.card.dk p b{color:#fff}
+.card.dk .ctag{color:var(--accent6)}
+.card .cnum{font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1;color:var(--num1);letter-spacing:-.02em;margin:2px 0 7px;font-variant-numeric:tabular-nums}
+.lr{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;flex:1;min-height:0}
+.lr>*{min-height:0;display:flex;flex-direction:column}
+.lr.w58{grid-template-columns:1.32fr 1fr}
+.lr.n58{grid-template-columns:1fr 1.32fr}
+.colh{font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.colh.a{color:var(--accent5);border-bottom-color:rgba(211,93,0,.42)}
+.colh.b{color:var(--pos);border-bottom-color:rgba(67,170,160,.45)}
+.steps{display:grid;gap:9px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--mist);border:1px solid var(--rule);border-radius:9px;padding:15px 17px}
+.step .sn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent1);color:#fff;font-family:var(--font-heading);
+  font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+html[data-theme-mode="dark"] .step .sn{background:var(--c1)}
+.step.o .sn{background:var(--accent5)}
+.step.g .sn{background:var(--accent6)}
+.step.r .sn{background:var(--bad)}
+.step h4{font-size:17px;line-height:1.25;margin-bottom:4px}
+.step p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13.5px;padding:6px 11px;border-radius:8px;background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+.pill b{color:var(--ink)}
+
+.fill{flex:1;min-height:0;grid-auto-rows:1fr}
+.big .card{padding:20px 22px 18px}
+.big .card p,.big .card li{font-size:16.5px;line-height:1.5}
+.big .card h3{font-size:22px}
+.big .card .ctag{font-size:12px}
+.steps.fill .step{align-items:center}
+.big .step h4{font-size:18px}.big .step p{font-size:15.5px}
+.kgrid.tall .kcard{min-height:150px}
+.kgrid.tall .kcard .num{font-size:58px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:left;font-weight:700;padding:0 8px 7px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;color:var(--ink);font-family:var(--font-heading);font-size:13.5px;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl th.n{text-align:right}
+.tbl tr:hover td{background:rgba(42,84,181,.05)}
+.tbl td.bad{color:var(--bad);font-weight:700}
+.tbl td.good{color:var(--pos);font-weight:700}
+
+.chart{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px;position:relative;display:flex;flex-direction:column}
+.chart .hbars{flex:1;justify-content:space-evenly}
+.chart h4{font-size:17px;margin-bottom:4px}
+.chart .csub{font-size:13px;color:var(--ink-faint);margin-bottom:12px}
+.hbars{display:flex;flex-direction:column;gap:10px}
+.hbars.thin{gap:6px}
+.hb{display:grid;grid-template-columns:var(--lw,170px) 1fr 100px;align-items:center;gap:10px;cursor:default;border-radius:6px;padding:1px 0}
+.hb .hl{font-size:13.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:22px;position:relative}
+.hbars.thin .hb .ht{height:16px}
+.hb .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.hb .ht i.c2{background:var(--c2)}.hb .ht i.c3{background:var(--c3)}.hb .ht i.c4{background:var(--c4)}.hb .ht i.cm{background:var(--c-mute)}
+.slide.active .hb .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+@keyframes kvhIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hb b{font-size:13.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;font-weight:700}
+.hb:hover{background:rgba(42,84,181,.06)}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:10px;border-radius:2px;display:inline-block}
+#tip{position:fixed;z-index:300;pointer-events:none;background:#0A1C3F;color:#EAF1FB;font-size:12px;line-height:1.4;
+  padding:8px 11px;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.3);border:1px solid rgba(195,215,238,.25);
+  opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;max-width:280px}
+#tip.on{opacity:1;transform:none}
+#tip b{color:#fff}
+
+#ov{position:fixed;inset:0;z-index:180;background:rgba(2,8,22,.95);display:none;padding:52px 46px 40px;overflow:auto}
+#ov.on{display:block}
+#ov h3{color:#fff;font-size:19px;margin-bottom:5px}
+#ov .ovh{color:rgba(195,215,238,.6);font-size:12px;letter-spacing:.1em;margin-bottom:22px}
+#ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:13px}
+.ovc{background:rgba(195,215,238,.07);border:1px solid rgba(195,215,238,.2);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.ovc:hover{background:rgba(67,170,160,.16);border-color:rgba(67,170,160,.5);transform:translateY(-2px)}
+.ovc.on{border-color:var(--accent5);background:rgba(211,93,0,.16)}
+.ovc .on2{font-family:var(--font-heading);font-size:11px;font-weight:700;color:var(--accent6);letter-spacing:.1em;display:block;margin-bottom:5px}
+.ovc .ot{color:#EAF1FB;font-size:12.5px;line-height:1.35;font-weight:500;display:block}
+#hint{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:70;background:rgba(4,16,42,.86);color:#DCE7F7;font-size:12px;
+  padding:8px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.2);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap}
+#hint.on{opacity:1}
+
+html.mobile,html.mobile body{height:auto;overflow:auto;background:var(--paper)}
+html.mobile #shell{position:static}
+html.mobile .deck{position:relative;left:auto;top:auto;width:100%;height:auto;transform:none!important;box-shadow:none;background:var(--paper)}
+html.mobile #field,html.mobile .nav,html.mobile .brand,html.mobile .progress,html.mobile #hint{display:none}
+html.mobile .slide{position:relative;inset:auto;opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;padding:36px 16px 44px;min-height:0}
+html.mobile .slide[data-theme="dark"]{background:linear-gradient(160deg,#00122F,#062A5C)}
+html.mobile .slide .rv,html.mobile .slide .fan>*{animation:none!important}
+html.mobile .sfoot{position:static!important;margin-top:18px;letter-spacing:.08em;font-size:10px;flex-wrap:wrap;gap:6px}
+html.mobile h2.sh{font-size:26px}
+html.mobile .t-cover h1{font-size:34px}
+html.mobile .t-div h1{font-size:32px}
+html.mobile .t-div .dnum{font-size:72px}
+html.mobile .t-cover{padding-top:48px}
+html.mobile .slide.t-cover>.cover-score{position:static;width:100%;margin-top:26px}
+html.mobile .t-cover .cmeta{flex-wrap:wrap;gap:8px 0}
+html.mobile .kgrid,html.mobile .kgrid.k3,html.mobile .cards.c3,html.mobile .cards.c2,html.mobile .lr,html.mobile .lr.w58,html.mobile .lr.n58,html.mobile .steps.s2,html.mobile .trow,html.mobile .gb{grid-template-columns:1fr}
+html.mobile .kgrid{grid-template-columns:1fr 1fr}
+html.mobile .kcard .num,html.mobile .kgrid.tall .kcard .num,html.mobile .kgrid.tight .kcard .num{font-size:26px;white-space:normal}
+html.mobile .fill{grid-auto-rows:auto;flex:none}
+html.mobile .hb{--lw:108px!important;grid-template-columns:var(--lw) 1fr 70px}
+html.mobile .tbl{font-size:11.5px}
+html.mobile .tbl td:first-child{white-space:normal}
+html.mobile .takeaway{margin-top:18px}
+
+.tierpill{position:absolute;top:64px;right:92px;z-index:6;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;border:1px solid;display:flex;align-items:center;gap:8px}
+.slide>.tierpill{position:absolute}
+.tierpill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:block}
+.tierpill.t1{color:var(--c4);border-color:rgba(142,91,199,.45);background:rgba(142,91,199,.08)}
+.tierpill.t2{color:var(--c1);border-color:rgba(42,84,181,.4);background:rgba(42,84,181,.07)}
+.tierpill.t3{color:var(--ink-faint);border-color:var(--rule);background:var(--mist)}
+.tiers{display:flex;flex-direction:column;gap:14px;margin-top:20px;flex:1;min-height:0}
+.trow{display:grid;grid-template-columns:200px repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.tlab{display:flex;flex-direction:column;justify-content:center;padding-left:16px;border-left:4px solid var(--rule);
+  font-family:var(--font-heading);font-size:17px;font-weight:700;line-height:1.2;color:var(--ink)}
+.tlab b{display:block;font-family:var(--font-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.trow.t1 .tlab{border-color:var(--c4)}.trow.t1 .tlab b{color:var(--c4)}
+.trow.t2 .tlab{border-color:var(--c1)}.trow.t2 .tlab b{color:var(--c1)}
+.trow.t3 .tlab{border-color:var(--c-mute)}.trow.t3 .tlab b{color:var(--ink-faint)}
+.trow .kcard{min-height:0;padding:14px 16px 12px;justify-content:center}
+.trow .kcard .num{font-size:36px}
+.trow .kcard .klab{font-size:13.5px;margin-top:8px}
+.trow .kcard .ksub{font-size:12px}
+.trow.t1 .kcard{background:linear-gradient(150deg,rgba(142,91,199,.10),rgba(142,91,199,.03));border-color:rgba(142,91,199,.3)}
+.kcard.t1::before{background:var(--c4)!important}
+.kcard.t1 .num{color:var(--c4)}
+body.idle .nav{opacity:0;pointer-events:none}
+html.mobile .slide>.tierpill{position:static;align-self:flex-start;margin-bottom:12px}
+
+.gbars{display:flex;flex-direction:column;gap:9px;flex:1;justify-content:space-evenly;margin-top:4px}
+.gb{display:grid;grid-template-columns:70px 1fr;gap:6px 12px;align-items:center}
+.gb .gl{grid-row:span 2;font-size:13px;font-weight:600;color:var(--ink)}
+.gt{display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:center}
+.gt b{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.gt .ht{height:14px;position:relative;display:block}
+.gt .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c3);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.gt .ht i.c2{background:var(--c2)}
+.slide.active .gt .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+
+code.kv{font-family:ui-monospace,Consolas,monospace;background:var(--mist-2);border:1px solid var(--rule);border-radius:5px;padding:1px 6px;font-size:.92em;color:var(--ink)}
+pre.batbox{background:#0A1C3F;color:#DCE7F7;border-radius:10px;padding:16px 18px;font-size:13px;line-height:1.6;
+  font-family:ui-monospace,Consolas,monospace;overflow:auto;margin-top:10px;white-space:pre}
+pre.batbox b{color:#8FE3D6}
+
+.slide.dense .lede{font-size:16px;line-height:1.45}
+.slide.dense .card p,.slide.dense .card li{font-size:13.5px;line-height:1.42}
+.slide.dense .kcard .num{font-size:42px}
+.slide.dense .sh{font-size:36px}
+.slide.dense2 .lede{display:none}
+
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  #shell{position:static}.deck{position:relative;left:0;top:0;transform:none!important;box-shadow:none}
+  .nav,.progress,#hint,#field{display:none}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;filter:none;page-break-after:always;height:900px}
+  .slide .rv,.slide .fan>*{animation:none!important}
+  @page{size:1600px 900px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="progress"><i id="pbar"></i></div>
+<div id="shell">
+<main class="deck" id="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="brand" id="brand"><i></i>Paid AI vs Local AI · Speech AI</div>
+
+<!-- ============================ COVER ============================ -->
+<section class="slide t-cover active" data-theme="dark" data-title="Cover">
+  <div class="cover-score rv" aria-label="Reading order">
+    <p class="ord-h">Reading order</p>
+    <div class="cs-row t1"><p class="who">01 · Paid AI</p><p class="ttl">Claude: what it costs, why it's used</p><p class="note">Model, context, reliability</p></div>
+    <div class="cs-row t2"><p class="who">02 · Local AI</p><p class="ttl">Ollama: zero cost, the new limit is time</p><p class="note">Model, GPU, real capacity</p></div>
+    <div class="cs-row t3"><p class="who">03 · Energy, GPU and conclusion</p><p class="ttl">Power bill, hardware and the year-long chart</p><p class="note">Contagem, Brazil · 100 newspapers/day · 365 days</p></div>
+  </div>
+  <p class="kicker rv">Executive cost analysis · Speech AI</p>
+  <h1 class="rv">Paid AI vs local AI<span class="l2">the real cost at scale</span></h1>
+  <p class="csub rv">Scenario: 100 newspapers processed per day, 365 days a year — 36,500 newspapers/year. Comparison between paid AI (Claude) and local AI (Ollama) already in production in Speech AI, with the electricity cost calculated for Contagem, Brazil, and an honest assessment of the GPU in use.</p>
+  <div class="cmeta rv"><span>October 8, 2026</span><span>Based on real runs, not estimates</span><span>GPU: NVIDIA RTX A3000 Laptop · 6 GB</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Document: <b>Cover</b> · Speech AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ AT A GLANCE ============================ -->
+<section class="slide" data-theme="light" data-title="The cost at a glance">
+  <p class="eyebrow rv">At a glance</p>
+  <h2 class="sh rv">Twelve numbers to decide: paid, local, or both</h2>
+  <div class="tiers fan">
+    <div class="trow t1"><p class="tlab"><b>Paid AI</b>Claude</p>
+      <div class="kcard t1"><div class="num">US$1.02</div><p class="klab">Cost per newspaper (measured)</p><p class="ksub">≈ R$ 5.11 (BRL) · FX rate R$ 5.01</p></div>
+      <div class="kcard t1"><div class="num">1.9<span class="unit">min</span></div><p class="klab">Time per newspaper</p><p class="ksub">PDF → HTML + script</p></div>
+      <div class="kcard t1"><div class="num">6/6</div><p class="klab">Calls correct on the 1st try</p><p class="ksub">3 historical runs, 0 failures</p></div>
+      <div class="kcard t1"><div class="num">R$186.6<span class="unit">k</span></div><p class="klab">AI cost in 1 year, at this scale</p><p class="ksub">100 newspapers/day · 365 days</p></div>
+    </div>
+    <div class="trow t2"><p class="tlab"><b>Local AI</b>Ollama</p>
+      <div class="kcard pos"><div class="num">R$0.00</div><p class="klab">AI cost per newspaper</p><p class="ksub">gemma3:4b, runs on the local GPU</p></div>
+      <div class="kcard bad"><div class="num">31<span class="unit">min</span></div><p class="klab">Time per newspaper</p><p class="ksub">16.4× slower than paid AI</p></div>
+      <div class="kcard bad"><div class="num">46<span class="unit">/day</span></div><p class="klab">Maximum capacity of 1 GPU</p><p class="ksub">100/day requires 2.2 GPUs</p></div>
+      <div class="kcard pos"><div class="num">R$781<span class="unit">/yr</span></div><p class="klab">Energy in 1 year, at this scale</p><p class="ksub">100 newspapers/day · 365 days</p></div>
+    </div>
+    <div class="trow t3"><p class="tlab"><b>Conclusion</b>Real scale</p>
+      <div class="kcard"><div class="num">99.6<span class="unit">%</span></div><p class="klab">Possible annual savings (AI cost)</p><p class="ksub">R$ 185,808/year, before hardware</p></div>
+      <div class="kcard"><div class="num">36,500</div><p class="klab">Newspapers/year in the scenario</p><p class="ksub">100/day × 365 days</p></div>
+      <div class="kcard acc"><div class="num">2–3</div><p class="klab">Equivalent GPUs needed to cover 100/day</p><p class="ksub">or 1 much faster GPU</p></div>
+      <div class="kcard acc"><div class="num">6<span class="unit">GB</span></div><p class="klab">Current GPU's VRAM (the real limit)</p><p class="ksub">RTX A3000 Laptop, ~35 W</p></div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · real runs · CEMIG tariff · PTAX 10/08</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 01 · PAID AI ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="1" data-title="01 · Paid AI">
+  <p class="dnum rv">01</p>
+  <p class="eyebrow rv">Paid AI</p>
+  <h1 class="rv">Claude: today's engine</h1>
+  <p class="dsub rv">Which model, why it's used, what each call costs, and what that means across 100 newspapers a day, 365 days a year.</p>
+  <div class="dchips rv"><span class="chip on">Claude Opus 5.5 + Sonnet 5.5</span><span class="chip">Cached context</span><span class="chip">100% reliability</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Section 1 · Paid AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ PAID AI: WHAT & WHY ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Paid AI · model and rationale">
+  <p class="eyebrow rv">Paid AI · newsroom/editor.py</p>
+  <h2 class="sh rv">Claude Opus 5.5 writes the content; Sonnet 5.5 writes the cover</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Why this model is used</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Huge context, with caching</h4><p>Each call receives the entire newspaper (176k to 354k tokens) and still responds in under 90 seconds — Anthropic caches the newspaper once, and every following call reads from there, at a fraction of the cost.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Editorial quality</h4><p>Opus 5.5 follows the JSON schema precisely, keeps the topic hierarchy, and produces literal quotes with attribution. Fidelity test: 166 of 166 numbers verified against the newspaper's text.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>Reliability</h4><p>Across the 3 runs with saved reports, all 6 calls (3 topics + cover, 2 topics split into 2 parts) closed the JSON correctly on the 1st try, every time.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard"><div class="num">US$1.02</div><p class="klab">Real cost per newspaper (Valor, 10/06)</p><p class="ksub">6 AI calls</p></div>
+        <div class="kcard"><div class="num">96.6<span class="unit">s</span></div><p class="klab">AI time per newspaper</p><p class="ksub">Topics in parallel + cover</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Cost structure <em>cache</em></p><p>The 1st call writes the newspaper to cache (expensive); the rest read the cache (US$0.05 vs US$1.64 per call). This design is what makes US$1.02 per newspaper viable.</p></div>
+        <div class="card"><p class="ctag">Why it's not "free"</p><p>Cost is per token processed in Anthropic's cloud — it grows linearly with volume. At 100 newspapers/day there's no shared cache between different newspapers: the cost per newspaper stays the same.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Executive take:</b> paid AI is the quality and speed benchmark — the issue isn't what it delivers, it's the price of delivering it at volume.</p>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · Valor 10/06 · <b>newsroom/editor.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ PAID AI AT SCALE ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Paid AI · cost at scale">
+  <p class="eyebrow rv">Paid AI · Projection</p>
+  <h2 class="sh rv">US$ 1.02 per newspaper looks small — until you multiply by 36,500</h2>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>Period</th><th class="n">Newspapers</th><th class="n">Cost (US$)</th><th class="n">Cost (R$)</th></tr>
+    <tr><td>Per newspaper</td><td class="n">1</td><td class="n">US$ 1.02</td><td class="n">R$ 5.11</td></tr>
+    <tr><td>Per day (100 newspapers)</td><td class="n">100</td><td class="n">US$ 102.00</td><td class="n">R$ 511.20</td></tr>
+    <tr><td>Per month (30 days)</td><td class="n">3,000</td><td class="n">US$ 3,060.00</td><td class="n">R$ 15,336.11</td></tr>
+    <tr><td>Per year (365 days)</td><td class="n">36,500</td><td class="n bad">US$ 37,230.00</td><td class="n bad">R$ 186,589.31</td></tr>
+  </table>
+  <div class="cards c3 big fill fan" style="margin-top:16px">
+    <div class="card flag"><p class="ctag">The number that matters</p><p class="cnum">R$ 186.6k</p><p>is what paid AI would cost per year, just in AI calls, to process 100 newspapers a day — not counting infrastructure, editorial review, or any other cost.</p></div>
+    <div class="card"><p class="ctag">Frictionless scaling</p><p>Anthropic's cloud processes the day's 100 newspapers in parallel with no extra effort: 1.9 min per newspaper, whether you run 1 or 100 at once. The limit here is the credit card, not the hardware.</p></div>
+    <div class="card"><p class="ctag">Why the switch is being considered</p><p>At any real production scale (tens to hundreds of newspapers/day), paid-AI cost stops being marginal and becomes a meaningful budget line.</p></div>
+  </div>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · PTAX exchange rate R$ 5.0118 (10/08/2026, Brazil's Central Bank)</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 02 · LOCAL AI ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="2" data-title="02 · Local AI">
+  <p class="dnum rv">02</p>
+  <p class="eyebrow rv">Local AI</p>
+  <h1 class="rv">Ollama: zero cost, new limit</h1>
+  <p class="dsub rv">Which model, why it was chosen, what it costs (almost nothing), and why the real limit at 100 newspapers/day isn't money — it's GPU time.</p>
+  <div class="dchips rv"><span class="chip on">gemma3:4b via Ollama</span><span class="chip">6 GB GPU</span><span class="chip warn">46 newspapers/day per GPU</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Section 2 · Local AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ LOCAL AI: WHAT & WHY ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Local AI · model and rationale">
+  <p class="eyebrow rv">Local AI · newsroom/editor.py + ollama_client.py</p>
+  <h2 class="sh rv">gemma3:4b fits entirely on this machine's GPU — that's why it was chosen</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Why this model is used</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Fits the available GPU</h4><p>The machine has only 6 GB of VRAM. gemma3:4b (3.3 GB) is the only one of the already-installed models (alongside deepseek-r1:8b) that loads entirely on the GPU; qwen2.5:72b and deepseek-r1:32b don't fit and spill onto the CPU — tested: a simple call took nearly 3 minutes just to load.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Zero cost per token</h4><p>There's no charge per call: the only cost is electricity (next section), and it's negligible.</p></div></div>
+        <div class="step o"><span class="sn">3</span><div><h4>Trade-off accepted</h4><p>The whole newspaper (up to 354k tokens) doesn't fit in the GPU's practical context. Speech AI now trims the text in Python, down to only the pages relevant to each topic (up to 5,000 words) before sending it to the model — an adjustment needed only because the AI is local.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">R$0.00</div><p class="klab">AI cost per newspaper</p><p class="ksub">+ R$ 0.02 in energy</p></div>
+        <div class="kcard bad"><div class="num">31<span class="unit">min</span></div><p class="klab">Real time per newspaper</p><p class="ksub">Measured in a full run</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card alert"><p class="ctag">Reliability dropped</p><p>3 of the 5 topic calls only produced valid JSON on the 2nd attempt; before the context was raised from 16k to 32k tokens, 2 full runs failed outright.</p></div>
+        <div class="card"><p class="ctag">Observed quality</p><p>633-word script (target: 700–1,100) and 6 of 11 slides needing compact layout — content that's more verbose and less precise than Opus.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Executive take:</b> the model choice wasn't "the best available" — it was the best that fits this GPU without becoming impractical. A different GPU changes this equation (see GPU, next).</p>
+  <div class="sfoot"><span>Sources: <b>relatorio.json</b> · Valor 10/08 · <b>newsroom/ollama_client.py</b></span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ LOCAL AI: CAPACITY LIMIT ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Local AI · the real limit">
+  <p class="eyebrow rv">Local AI · Capacity</p>
+  <h2 class="sh rv">100 newspapers/day need 51.7 hours of GPU — a day only has 24</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">The math that caps the scale</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>31 minutes per newspaper, one at a time</h4><p>Ollama processes a newspaper's calls competing for the same GPU; there's no real parallelism gain on a single 6 GB card.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Maximum capacity: 46 newspapers/day</h4><p>24h × 60 ÷ 31 min = 46.4 — the ceiling for 1 GPU running non-stop, 24 hours a day, 7 days a week.</p></div></div>
+        <div class="step r"><span class="sn">3</span><div><h4>100/day requires 2.2 GPUs</h4><p>To avoid a growing backlog, at least 2 (comfortably, 3) GPUs like this one would need to run in parallel — or one much faster GPU (next section).</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard bad"><div class="num">51.7<span class="unit">h</span></div><p class="klab">GPU-hours needed for 100 newspapers</p><p class="ksub">in a 24h day</p></div>
+        <div class="kcard bad"><div class="num">2.16×</div><p class="klab">Equivalent GPUs required</p><p class="ksub">to avoid a backlog</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card alert"><p class="ctag">What happens if you ignore this</p><p>Running 100/day on just 1 GPU, the backlog grows by ~28h per day — within a week, the delay already exceeds 8 days. This isn't a tuning problem, it's a physical hardware limit.</p></div>
+        <div class="card"><p class="ctag">Practical path</p><p>Combine more GPUs, use one faster GPU, or run a hybrid model (local for the base volume, paid AI for the day's overflow) — detailed in the GPU section.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Source: <b>relatorio.json</b> · 1,862 s/newspaper measured · capacity calculation</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVIDER 03 · ENERGY & GPU ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="3" data-title="03 · Energy, GPU and conclusion">
+  <p class="dnum rv">03</p>
+  <p class="eyebrow rv">Energy · GPU · Conclusion</p>
+  <h1 class="rv">The power bill, the hardware, and the year-long chart</h1>
+  <p class="dsub rv">What energy costs in Contagem, Brazil, what the current GPU delivers and limits, how to improve it — and the month-by-month comparison that settles the decision.</p>
+  <div class="dchips rv"><span class="chip on">CEMIG tariff</span><span class="chip">RTX A3000 Laptop</span><span class="chip">12-month chart</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Section 3 · Energy, GPU and conclusion</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ENERGY ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Power bill · Contagem, Brazil">
+  <p class="eyebrow rv">Electricity · Contagem, Brazil</p>
+  <h2 class="sh rv">17.83 Wh per newspaper measured; the power bill is a footnote, not a deciding factor</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">How it was measured and calculated</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Real GPU power draw</h4><p><code class="kv">nvidia-smi</code> every 5 s during a full run (31.2 min, 375 samples): average 34.2 W, peak 35.0 W, 90.2% utilization.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Energy per newspaper</h4><p>34.2 W × 31.2 min ÷ 60 = <b>17.83 Wh</b> (0.01783 kWh), GPU only — doesn't include the CPU or the rest of the laptop's components.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>CEMIG tariff (Contagem, Brazil)</h4><p>R$ 0.90329/kWh before taxes, residential B1 tier, green flag (ANEEL/CEMIG, Brazil's energy regulator and Minas Gerais' utility). With Brazilian state and federal taxes, the final tariff lands close to <b>R$ 1.20/kWh</b>.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">R$0.02</div><p class="klab">Energy per newspaper (BRL)</p><p class="ksub">1.6 to 2.1 cents</p></div>
+        <div class="kcard pos"><div class="num">R$781</div><p class="klab">Energy per year (100/day · 365d)</p><p class="ksub">650.8 kWh/year</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card sig"><p class="ctag">Direct comparison</p><p>R$ 781/year in energy versus R$ 186,589/year in paid AI, at the same scale — energy is 0.4% of what paid AI would cost.</p></div>
+        <div class="card"><p class="ctag">But mind the real scale</p><p>To truly sustain 100 newspapers/day, you'd need 2–3 GPUs running continuously — the power bill grows in proportion to the GPUs added, but stays negligible (under R$ 2,500/year even with 3 GPUs running 24/7).</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Executive take:</b> energy will never be the reason to choose paid or local AI — time, reliability and GPU count are what decide it.</p>
+  <div class="sfoot"><span>Sources: <b>CEMIG — Current tariffs</b> · ANEEL resolution REH No. 3,589/2026 · nvidia-smi measurement</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ CURRENT GPU & HOW TO IMPROVE ============================ -->
+<section class="slide dense" data-theme="light" data-tier="3" data-title="Current GPU and how to improve it">
+  <p class="eyebrow rv">Hardware · GPU</p>
+  <h2 class="sh rv">The current GPU sets the 46-newspapers/day ceiling — three paths to raise it</h2>
+  <div class="cards c3 big fill fan rv" style="margin-top:10px">
+    <div class="card"><p class="ctag">GPU in use today</p><p><b>NVIDIA RTX A3000 Laptop</b>, 6 GB VRAM, ~35 W draw. A professional laptop GPU — not built to run large AI models; only gemma3:4b (4B parameters) fits comfortably.</p></div>
+    <div class="card flag"><p class="ctag">1 · Switch to a bigger GPU</p><p>A dedicated 24 GB GPU (e.g., RTX 4090) runs larger, faster models — time per newspaper could drop from 31 to 6–10 min, raising one card's capacity to 140–240 newspapers/day.</p></div>
+    <div class="card flag"><p class="ctag">2 · Multiple GPUs in parallel</p><p>2 to 3 GPUs like the current one (or fewer, larger GPUs) cover 100 newspapers/day with no backlog. The code already points to a configurable Ollama host — it just needs a simple dispatcher to split the queue across machines.</p></div>
+    <div class="card flag"><p class="ctag">3 · Hybrid model</p><p>Local for the base volume (up to the available GPU's capacity) and paid AI only for the day's overflow — controls cost without risking delay when volume exceeds what the local hardware supports.</p></div>
+    <div class="card"><p class="ctag">Tweaks that help without new hardware</p><p>Raise <code class="kv">ollama_num_ctx</code> only as much as needed (a larger context uses more VRAM and runs slower); use a slightly bigger but more accurate model (e.g., qwen2.5:7b) if the GPU can handle it; keep <code class="kv">keep_alive</code> high so the model isn't reloaded between calls.</p></div>
+    <div class="card"><p class="ctag">Running via .bat (automation, not capacity)</p><p>A .bat file with Windows Task Scheduler processes the queue unattended — useful for 24h operation, but doesn't solve 1 GPU's 46-newspapers/day ceiling: see example on the next slide →</p></div>
+  </div>
+  <div class="sfoot"><span>Sources: NVIDIA RTX A3000 Laptop specifications · config/settings.json</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ RUNNING VIA .BAT ============================ -->
+<section class="slide" data-theme="light" data-tier="3" data-title="Automation: running via .bat">
+  <p class="eyebrow rv">Operations · Automation</p>
+  <h2 class="sh rv">Unattended runs help operations; they don't increase GPU capacity</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">process_newspapers.bat</p>
+      <pre class="batbox rv">@echo off
+<b>cd /d "D:\CTO - Tecle\speech-ai"</b>
+:loop
+python main.py --jornais
+timeout /t 60
+goto loop</pre>
+      <p class="src" style="margin-top:10px">Runs the queue continuously; each cycle processes whatever is in <code class="kv">input\Jornais\</code> and waits 60 s before checking again. Stops with Ctrl+C.</p>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">Alternative: Task Scheduler</p><p>Create a Windows task that runs <code class="kv">python main.py --jornais</code> every N minutes — more robust than the loop above (restarts itself if the process crashes, logs run history).</p></div>
+        <div class="card alert"><p class="ctag">What the .bat does NOT solve</p><p>Even running 24 hours a day, 7 days a week, non-stop, 1 GPU like this one processes at most 46 newspapers — running longer doesn't create extra capacity, it just uses 100% of what already exists.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="takeaway rv"><b>Executive take:</b> automation (.bat or Task Scheduler) is about running without someone watching — processing capacity is still a question of how many GPUs (and how fast) are available.</p>
+  <div class="sfoot"><span>Source: <b>main.py</b> · Windows Task Scheduler</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ MONTHLY CHART ============================ -->
+<section class="slide dense2" data-theme="light" data-tier="3" data-title="Monthly chart · one-year horizon">
+  <p class="eyebrow rv">Conclusion · 12-month horizon</p>
+  <h2 class="sh rv">Month after month, the same result: local AI costs cents of what paid AI would</h2>
+  <div class="lr w58 rv" style="gap:34px">
+    <div>
+      <div class="chart" style="flex:1">
+        <h4>Monthly cost · 100 newspapers/day</h4>
+        <p class="csub">Orange bar = paid AI (Claude) · green bar = local AI's energy, at the same scale</p>
+        <div class="gbars">
+          <div class="gb"><span class="gl">Jan</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.05s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.1s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Feb</span>
+            <div class="gt"><div class="ht"><i style="--w:90.3%;--d:.07s"></i></div><b>R$ 14,314</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.38%;--d:.12s"></i></div><b>R$ 60</b></div></div>
+          <div class="gb"><span class="gl">Mar</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.09s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.14s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Apr</span>
+            <div class="gt"><div class="ht"><i style="--w:96.8%;--d:.11s"></i></div><b>R$ 15,336</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.41%;--d:.16s"></i></div><b>R$ 64</b></div></div>
+          <div class="gb"><span class="gl">May</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.13s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.18s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Jun</span>
+            <div class="gt"><div class="ht"><i style="--w:96.8%;--d:.15s"></i></div><b>R$ 15,336</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.41%;--d:.20s"></i></div><b>R$ 64</b></div></div>
+          <div class="gb"><span class="gl">Jul</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.17s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.22s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Aug</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.19s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.24s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Sep</span>
+            <div class="gt"><div class="ht"><i style="--w:96.8%;--d:.21s"></i></div><b>R$ 15,336</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.41%;--d:.26s"></i></div><b>R$ 64</b></div></div>
+          <div class="gb"><span class="gl">Oct</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.23s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.28s"></i></div><b>R$ 66</b></div></div>
+          <div class="gb"><span class="gl">Nov</span>
+            <div class="gt"><div class="ht"><i style="--w:96.8%;--d:.25s"></i></div><b>R$ 15,336</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.41%;--d:.30s"></i></div><b>R$ 64</b></div></div>
+          <div class="gb"><span class="gl">Dec</span>
+            <div class="gt"><div class="ht"><i style="--w:100%;--d:.27s"></i></div><b>R$ 15,847</b></div>
+            <div class="gt"><div class="ht"><i class="c2" style="--w:0.42%;--d:.32s"></i></div><b>R$ 66</b></div></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--c3)"></i>Paid AI (Claude)</span><span><i style="background:var(--c2)"></i>Local AI energy</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard bad"><div class="num">R$186.6<span class="unit">k</span></div><p class="klab">Paid AI, full-year total</p></div>
+        <div class="kcard pos"><div class="num">R$781</div><p class="klab">Local energy, full-year total</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card sig"><p class="ctag">Potential savings</p><p class="cnum">R$ 185,808/year</p><p>99.6% savings on AI cost — before accounting for the investment in additional GPUs to sustain the volume.</p></div>
+        <div class="card alert"><p class="ctag">The price of those savings</p><p>16.4× more time per newspaper, and a real need for 2–3 GPUs (or 1 much better GPU) to avoid a backlog at 100 newspapers/day.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Sources: calendar days per month · R$ 5.11/newspaper (paid) · R$ 0.0214/newspaper (energy)</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ CONCLUSION ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-title="Conclusion">
+  <p class="eyebrow rv">Conclusion · Direct recommendation</p>
+  <h1 class="rv" style="font-size:54px;max-width:1400px">Local by default, paid as a relief valve</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    <div class="card dk"><p class="ctag">Financial</p><p>Keep <b>local AI as the default</b>: saves ~R$ 185.8k/year at this scale, with energy under R$ 800/year. The gap is too large to ignore.</p></div>
+    <div class="card dk"><p class="ctag">Capacity</p><p>One 6 GB GPU sustains up to <b>~46 newspapers/day</b>. For 100/day, invest in 2–3 GPUs (or 1 GPU with 24 GB+) before promising that volume.</p></div>
+    <div class="card dk"><p class="ctag">Hybrid recommended</p><p>Process the base volume on the local GPU and <b>route the day's overflow to paid AI</b> — you only pay for what exceeds installed capacity.</p></div>
+    <div class="card dk"><p class="ctag">Quality</p><p>Review local AI's HTML and script before publishing, at least in the first few weeks — reliability and content density still trail Opus.</p></div>
+    <div class="card dk"><p class="ctag">Operations</p><p>Automate with <b>.bat + Task Scheduler</b> to run unattended — that solves operations, not capacity.</p></div>
+    <div class="card dk"><p class="ctag">Next decision</p><p>Set the additional-GPU budget before committing to a 100-newspapers/day volume with a fixed deadline.</p></div>
+  </div>
+  <div class="sfoot"><span>Speech AI · cost analysis · October 8, 2026</span><span class="pg"></span></div>
+</section>
+
+</main>
+</div>
+
+<nav class="nav" aria-label="Presentation controls">
+  <button class="nbtn" id="btnPrev" aria-label="Previous slide">&lsaquo;</button>
+  <span class="count" id="counter">1</span>
+  <button class="nbtn" id="btnNext" aria-label="Next slide">&rsaquo;</button>
+  <span class="sep"></span>
+  <div class="dots" id="dots"></div>
+  <span class="sep"></span>
+  <button class="nbtn" id="btnOv" aria-label="Slide overview" title="Overview (O)">&#9783;</button>
+  <button class="nbtn" id="btnTheme" aria-label="Toggle dark mode" title="Dark mode (D)">&#9788;</button>
+  <button class="nbtn" id="btnFs" aria-label="Fullscreen" title="Fullscreen (F)">&#9974;</button>
+</nav>
+<div id="ov" role="dialog" aria-modal="true" aria-label="All slides"><h3>All slides</h3><p class="ovh">Click to jump to a slide · O or Esc to close</p><div id="ovg"></div></div>
+<div id="hint">← → navigate · O overview · D dark mode · F fullscreen</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, deck=document.getElementById('deck');
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var TOTAL=slides.length, idx=0;
+var counter=document.getElementById('counter'), pbar=document.getElementById('pbar'), brand=document.getElementById('brand');
+
+function isMobile(){ return window.innerWidth < 820 || (window.innerWidth < 1000 && window.innerHeight > window.innerWidth); }
+function fitStage(){
+  if (isMobile()){ root.classList.add('mobile'); deck.style.transform='none'; return; }
+  root.classList.remove('mobile');
+  var pad = 22;
+  var k = Math.min((window.innerWidth-pad)/1600,(window.innerHeight-pad)/900);
+  deck.style.transform='translate(-50%,-50%) scale('+k+')';
+}
+window.addEventListener('resize',fitStage);
+
+var dotsBox=document.getElementById('dots'), ovg=document.getElementById('ovg');
+slides.forEach(function(s,i){
+  var d=document.createElement('button'); d.className='dot'+(s.dataset.divider?' sec':''); d.setAttribute('aria-label','Go to slide '+(i+1));
+  d.title=s.dataset.title||''; d.addEventListener('click',function(){goTo(i,i<idx);}); dotsBox.appendChild(d);
+  var c=document.createElement('button'); c.className='ovc';
+  c.innerHTML='<span class="on2">'+(i+1<10?'0':'')+(i+1)+'</span><span class="ot"></span>';
+  c.querySelector('.ot').textContent=s.dataset.title||'';
+  c.addEventListener('click',function(){toggleOv(false);goTo(i,i<idx);}); ovg.appendChild(c);
+});
+function update(){
+  counter.textContent=(idx+1)+' / '+TOTAL;
+  pbar.style.width=(idx/(TOTAL-1)*100)+'%';
+  [].forEach.call(dotsBox.children,function(d,i){d.classList.toggle('on',i===idx);});
+  [].forEach.call(ovg.children,function(c,i){c.classList.toggle('on',i===idx);});
+  var s=slides[idx];
+  var onLight=s.dataset.theme==='light' && root.dataset.themeMode!=='dark';
+  brand.classList.toggle('on-light',onLight);
+  if (FIELD) FIELD.setMode(s.dataset.theme==='dark' || root.dataset.themeMode==='dark', !!s.dataset.divider || s.classList.contains('t-cover'));
+  deck.style.setProperty('--field-a', s.dataset.divider ? .9 : 1);
+}
+function goTo(n,back){
+  n=Math.max(0,Math.min(TOTAL-1,n));
+  if (n===idx) return;
+  document.body.classList.toggle('back',!!back);
+  slides[idx].classList.remove('active'); idx=n; slides[idx].classList.add('active');
+  update(); hideTip();
+  setTimeout(function(){document.body.classList.remove('back');},620);
+}
+function next(){goTo(idx+1,false);} function prev(){goTo(idx-1,true);}
+document.getElementById('btnNext').addEventListener('click',next);
+document.getElementById('btnPrev').addEventListener('click',prev);
+var ov=document.getElementById('ov');
+function toggleOv(on){ ov.classList.toggle('on', on===undefined ? !ov.classList.contains('on') : on); }
+document.getElementById('btnOv').addEventListener('click',function(){toggleOv();});
+function toggleTheme(){ root.dataset.themeMode = root.dataset.themeMode==='dark' ? 'light' : 'dark'; update(); }
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+function toggleFs(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.getElementById('btnFs').addEventListener('click',toggleFs);
+document.addEventListener('keydown',function(e){
+  if (e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if (root.classList.contains('mobile')) return;
+  var k=e.key;
+  if (k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if (k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if (k==='Home'){goTo(0,true);} else if (k==='End'){goTo(TOTAL-1,false);}
+  else if (k==='o'||k==='O'){toggleOv();} else if (k==='Escape'){toggleOv(false);}
+  else if (k==='d'||k==='D'){toggleTheme();} else if (k==='f'||k==='F'){toggleFs();}
+});
+var tx=null;
+deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+deck.addEventListener('touchend',function(e){ if(tx===null||root.classList.contains('mobile'))return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?next():prev();} tx=null; });
+
+var tip=document.getElementById('tip');
+function showTip(html,x,y){ tip.innerHTML=html; tip.classList.add('on');
+  var w=tip.offsetWidth,h=tip.offsetHeight; var px=x+14, py=y-h-12;
+  if (px+w>window.innerWidth-8) px=x-w-14; if (py<8) py=y+16; tip.style.left=px+'px'; tip.style.top=py+'px'; }
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mousemove',function(e){
+  var t=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if (t) showTip(t.getAttribute('data-tip'),e.clientX,e.clientY); else if (!e.target.closest('svg.line')) hideTip();
+});
+
+var FIELD=(function(){
+  var cv=document.getElementById('field'); if(!cv||!cv.getContext) return null;
+  var ctx=cv.getContext('2d'), DPR=Math.min(window.devicePixelRatio||1,1.6), W=1600,H=900;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  var N=900, pts=[], running=false, show=true, ring=true, t0=0;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (var i=0;i<N;i++){
+    var z=Math.random()*.8+.2, a=Math.random()*Math.PI*2, rr=i%3===0?230:(i%3===1?150:320);
+    pts.push({x:Math.random()*W,y:Math.random()*H,z:z,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.22,
+      ring:i<N*.42, tx:1230+Math.cos(a)*rr*(0.96+Math.random()*.08), ty:440+Math.sin(a)*rr*(0.96+Math.random()*.08), ph:Math.random()*6.28});
+  }
+  function frame(ts){
+    if (!running) return;
+    var t=ts/1000; ctx.clearRect(0,0,W,H);
+    for (var i=0;i<N;i++){
+      var p=pts[i];
+      if (ring && p.ring){
+        var ang=t*.05*(p.z>.6?1:-1), cx=1230, cy=440, dx=p.tx-cx, dy=p.ty-cy;
+        var gx=cx+dx*Math.cos(ang)-dy*Math.sin(ang), gy=cy+dx*Math.sin(ang)+dy*Math.cos(ang);
+        p.x+=(gx-p.x)*.03; p.y+=(gy-p.y)*.03;
+      } else {
+        p.x+=p.vx*p.z*1.4; p.y+=p.vy*p.z*1.4;
+        if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10; if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+      }
+      var al=(.18+.55*p.z)*(.75+.25*Math.sin(t*1.3+p.ph));
+      ctx.fillStyle=p.ring&&ring ? 'rgba(143,180,236,'+al+')' : 'rgba(195,215,238,'+(al*.8)+')';
+      ctx.beginPath(); ctx.arc(p.x,p.y,.6+1.5*p.z,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(!running && show && !reduce && !document.hidden && !root.classList.contains('mobile')){ running=true; requestAnimationFrame(frame);} }
+  function stop(){ running=false; }
+  document.addEventListener('visibilitychange',function(){ document.hidden?stop():start(); });
+  if (reduce){ ctx.fillStyle='rgba(195,215,238,.4)'; pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1,0,6.283);ctx.fill();}); }
+  return { setMode:function(dark,r){ show=dark; ring=r; if(show) start(); else { stop(); ctx.clearRect(0,0,W,H);} } };
+})();
+
+var TIERN={'1':'Section 1 · Paid AI','2':'Section 2 · Local AI','3':'Section 3 · Energy, GPU and conclusion'};
+slides.forEach(function(s,i){
+  var t=s.dataset.tier; if(!t) return;
+  if (s.dataset.theme==='light'){ var p=document.createElement('div'); p.className='tierpill t'+t; p.innerHTML='<i></i>'+TIERN[t]; s.insertBefore(p,s.firstChild); }
+  if (dotsBox.children[i]) dotsBox.children[i].classList.add('t'+t);
+});
+var idleT=null;
+function wake(){ document.body.classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(function(){ if(!document.querySelector('.nav:hover')) document.body.classList.add('idle'); },2600); }
+['mousemove','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev,wake,{passive:true}); });
+wake();
+
+fitStage(); update();
+var hint=document.getElementById('hint');
+if (!root.classList.contains('mobile')){ setTimeout(function(){hint.classList.add('on');},900); setTimeout(function(){hint.classList.remove('on');},5200); }
+})();
+</script>
+</body>
+</html>

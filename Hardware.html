@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speech AI — Hardware e Limites de Escala</title>
+<meta name="description" content="Configuração completa da máquina (CPU, RAM, GPU, disco) e análise detalhada de até onde cada componente pode ser escalado para rodar IA local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --dk1:#282B34; --dk2:#002855; --lt2:#C3D7EE;
+  --accent1:#243782; --accent3:#C3D7EE; --accent5:#D35D00; --accent6:#43AAA0; --hlink:#0082FB;
+  --font-heading:'Encode Sans Expanded','Encode Sans',Arial,sans-serif;
+  --font-body:'Encode Sans',Arial,sans-serif;
+  --field:#00163C; --paper:#FFFFFF; --mist:#F3F6FB; --mist-2:#E8EEF8; --rule:#D8E1EF;
+  --ink:#010834; --ink-soft:#4E5A75; --ink-faint:#7D879B;
+  --c1:#2A54B5; --c2:#00968C; --c3:#D35D00; --c4:#8E5BC7; --c-mute:#AFBBD1;
+  --grid:#E4EAF4; --axis:#9AA6BC; --num1:#243782; --pos:#0A7F76; --bad:#B23A3A;
+}
+html[data-theme-mode="dark"]{
+  --paper:#061B3E; --mist:#0C2650; --mist-2:#123061; --rule:#1E3D70;
+  --ink:#EAF1FB; --ink-soft:#A9BEDD; --ink-faint:#7F96BA;
+  --c1:#5C82DC; --c2:#12A899; --c3:#D0762A; --c4:#9C6FD8; --c-mute:#3C5580;
+  --grid:#173359; --axis:#5A7399; --num1:#8FB0EE; --pos:#3ED0BF; --bad:#E07A7A;
+}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04102A}
+html[data-theme-mode="dark"] body{background:#030D22}
+body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+#shell{position:fixed;inset:0;overflow:hidden}
+.deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  background:var(--field);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
+#field{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:var(--field-a,1);transition:opacity .8s ease}
+.slide{position:absolute;inset:0;padding:70px 92px 70px;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;transform:translate3d(46px,0,0) scale(.985);filter:blur(3px);
+  transition:opacity .5s cubic-bezier(.22,.7,.2,1),transform .58s cubic-bezier(.22,.7,.2,1),filter .45s ease,visibility .58s;
+  will-change:transform,opacity;pointer-events:none}
+body.back .slide{transform:translate3d(-46px,0,0) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;pointer-events:auto;z-index:10}
+.slide[data-theme="dark"]{color:#fff;background:transparent}
+.slide[data-theme="dark"]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(100deg,#00122F 0%,rgba(0,20,52,.94) 30%,rgba(0,26,64,.66) 54%,rgba(0,34,78,.28) 76%,rgba(0,40,88,.08) 100%)}
+.slide[data-theme="dark"]>*{position:relative;z-index:2}
+.slide[data-theme="light"]{background:var(--paper);color:var(--ink)}
+.slide[data-theme="light"]::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(58% 80% at 100% 0%,rgba(195,215,238,.34) 0%,rgba(195,215,238,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(195,215,238,.24) 0%,rgba(195,215,238,0) 60%)}
+html[data-theme-mode="dark"] .slide[data-theme="light"]::before{
+  background:radial-gradient(58% 80% at 100% 0%,rgba(92,130,220,.16) 0%,rgba(92,130,220,0) 62%),
+             radial-gradient(46% 62% at 0% 100%,rgba(18,168,153,.10) 0%,rgba(18,168,153,0) 60%)}
+.slide[data-theme="light"]>*{position:relative;z-index:2}
+
+.slide.active .rv{animation:rvIn .5s cubic-bezier(.22,.7,.2,1) both}
+.slide.active .rv:nth-child(1){animation-delay:.05s}.slide.active .rv:nth-child(2){animation-delay:.12s}
+.slide.active .rv:nth-child(3){animation-delay:.19s}.slide.active .rv:nth-child(4){animation-delay:.26s}
+.slide.active .rv:nth-child(5){animation-delay:.33s}.slide.active .rv:nth-child(6){animation-delay:.40s}
+@keyframes rvIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.slide.active .fan>*{animation:fanIn .42s cubic-bezier(.22,.7,.2,1) both}
+@keyframes fanIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.slide.active .fan>*:nth-child(1){animation-delay:.14s}.slide.active .fan>*:nth-child(2){animation-delay:.18s}
+.slide.active .fan>*:nth-child(3){animation-delay:.22s}.slide.active .fan>*:nth-child(4){animation-delay:.26s}
+.slide.active .fan>*:nth-child(5){animation-delay:.30s}.slide.active .fan>*:nth-child(6){animation-delay:.34s}
+.slide.active .fan>*:nth-child(7){animation-delay:.38s}.slide.active .fan>*:nth-child(8){animation-delay:.42s}
+.slide.active .fan>*:nth-child(n+9){animation-delay:.46s}
+body.no-motion .slide.active .rv,body.no-motion .slide.active .fan>*{animation:none}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+.brand{position:absolute;top:22px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
+  font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(195,215,238,.72);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--accent5);display:block}
+.brand.on-light{color:#46526E}
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:62;display:flex;align-items:center;gap:13px;
+  padding:7px 15px;border-radius:999px;background:rgba(4,16,42,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(195,215,238,.2);color:#DCE7F7;font-family:var(--font-body);font-size:11px;letter-spacing:.06em;
+  opacity:.55;transition:opacity .3s ease}
+.nav:hover,.nav:focus-within{opacity:1}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;background:rgba(195,215,238,.34);
+  transition:transform .25s ease,background .25s ease}
+.dot:hover{background:var(--accent3);transform:scale(1.35)}
+.dot.sec{background:rgba(67,170,160,.6)}
+.dot.on{background:var(--accent5);transform:scale(1.5)}
+.nbtn{background:transparent;border:1px solid rgba(195,215,238,.45);color:inherit;border-radius:999px;min-width:30px;height:24px;
+  padding:0 8px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--font-body);opacity:.85;transition:opacity .2s,background .2s}
+.nbtn:hover{opacity:1;background:rgba(195,215,238,.16)}
+.nbtn:focus-visible,.dot:focus-visible{outline:2px solid var(--hlink);outline-offset:2px}
+.count{font-variant-numeric:tabular-nums;min-width:58px;text-align:center;opacity:.85;white-space:nowrap}
+.sep{width:1px;height:18px;background:rgba(195,215,238,.24)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:64;background:rgba(195,215,238,.16)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent6),var(--accent5));transition:width .5s cubic-bezier(.22,.7,.2,1)}
+.sfoot{position:absolute;left:92px;right:92px;top:852px;height:16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);z-index:6;pointer-events:none}
+.slide[data-theme="dark"]>.sfoot,.slide[data-theme="light"]>.sfoot{position:absolute;z-index:6}
+.slide[data-theme="dark"] .sfoot{color:rgba(195,215,238,.52)}
+.sfoot b{font-weight:600;color:var(--accent5)}
+
+h1,h2,h3,h4{font-family:var(--font-heading);margin:0;font-weight:700;letter-spacing:-.012em}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent5);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent5);flex:0 0 auto}
+.slide[data-theme="dark"] .eyebrow{color:var(--accent6)}
+.slide[data-theme="dark"] .eyebrow::before{background:var(--accent6)}
+h2.sh{font-size:40px;line-height:1.12;margin:12px 0 0;max-width:1300px;text-wrap:balance}
+.lede{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:1240px;margin-top:10px}
+.slide[data-theme="dark"] .lede{color:rgba(219,231,247,.86)}
+.takeaway{margin-top:auto;padding-top:12px;border-top:1px solid var(--rule);font-size:16px;line-height:1.5;color:var(--ink-soft)}
+.takeaway b{color:var(--accent5);font-weight:700}
+.slide[data-theme="dark"] .takeaway{border-top-color:rgba(195,215,238,.2);color:rgba(219,231,247,.84)}
+.num{font-family:var(--font-heading);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:.92}
+.unit{font-size:.52em;font-weight:700;letter-spacing:0;margin-left:2px;opacity:.72}
+.src{font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em}
+
+.t-cover{justify-content:flex-end;padding:74px 92px 100px}
+.t-cover .kicker{font-size:12.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--accent6);margin-bottom:26px}
+.t-cover h1{text-wrap:balance;font-size:62px;line-height:1.04;font-weight:800;letter-spacing:-.026em;max-width:920px;position:relative;width:fit-content}
+.t-cover h1 .l2{display:block;color:var(--accent3)}
+.t-cover .csub{font-size:18px;line-height:1.55;color:rgba(219,231,247,.9);max-width:880px;margin-top:26px}
+.t-cover .cmeta{margin-top:32px;display:flex;align-items:stretch;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(195,215,238,.78);flex-wrap:wrap}
+.t-cover .cmeta>span{padding:0 22px;border-left:1px solid rgba(195,215,238,.3)}
+.t-cover .cmeta>span:first-child{padding-left:0;border-left:0}
+.rule{width:88px;height:4px;background:var(--accent5);margin:28px 0 0}
+.slide.active .rule{animation:ruleGrow .8s cubic-bezier(.22,.7,.2,1) .55s both}
+@keyframes ruleGrow{from{width:0}to{width:88px}}
+.slide.t-cover>.cover-score{position:absolute;right:92px;top:110px;width:420px;z-index:3;display:flex;flex-direction:column;gap:12px}
+.cs-row{background:rgba(6,30,72,.66);border:1px solid rgba(195,215,238,.22);border-radius:12px;padding:16px 18px;backdrop-filter:blur(6px);border-left-width:4px!important}
+.cs-row.t1{border-left-color:#9C6FD8!important}.cs-row.t2{border-left-color:#5C82DC!important}.cs-row.t3{border-left-color:rgba(195,215,238,.5)!important}
+.cs-row .who{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.cs-row.t1 .who{color:#C9AEF2}.cs-row.t2 .who{color:#A9C2F2}.cs-row.t3 .who{color:rgba(195,215,238,.8)}
+.cs-row .ttl{font-family:var(--font-heading);font-size:18px;font-weight:700;line-height:1.28;margin-top:8px;color:#fff}
+.cs-row .note{font-size:12px;color:rgba(219,231,247,.72);margin-top:8px}
+.ord-h{font-size:11.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(195,215,238,.7);margin-bottom:2px}
+
+.t-div{justify-content:center;overflow:hidden}
+.t-div .dnum{font-family:var(--font-heading);font-size:132px;font-weight:800;line-height:.92;color:rgba(195,215,238,.16);letter-spacing:-.04em;margin-bottom:8px}
+.t-div.active .dnum{animation:dnumIn 1.1s cubic-bezier(.22,.7,.2,1) both}
+@keyframes dnumIn{from{opacity:0;transform:translateY(26px) scale(1.14);letter-spacing:.06em}to{opacity:1;transform:none;letter-spacing:-.04em}}
+.t-div .eyebrow{margin-bottom:16px}
+.t-div h1{font-size:64px;line-height:1.04;font-weight:800;letter-spacing:-.024em;max-width:1000px}
+.t-div .dsub{margin-top:22px;font-size:18px;line-height:1.6;color:rgba(219,231,247,.86);max-width:900px}
+.t-div.active::after{content:"";position:absolute;top:-30%;bottom:-30%;width:36%;left:-40%;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(126,160,235,.16) 42%,rgba(191,210,242,.24) 52%,rgba(126,160,235,.14) 62%,transparent);
+  filter:blur(14px);animation:beam 3.4s cubic-bezier(.3,.6,.25,1) .25s both}
+@keyframes beam{from{left:-45%;opacity:0}25%{opacity:1}to{left:118%;opacity:0}}
+.dchips{margin-top:32px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;padding:7px 14px;border-radius:999px;border:1px solid rgba(195,215,238,.34);color:rgba(219,231,247,.9)}
+.chip.on{background:rgba(67,170,160,.18);border-color:rgba(67,170,160,.6);color:#BFF3EC}
+.chip.warn{background:rgba(211,93,0,.2);border-color:rgba(211,93,0,.6);color:#FFD9B8}
+
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kgrid.k2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 14px;display:flex;flex-direction:column;
+  justify-content:space-between;min-height:118px;position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.kcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent1)}
+html[data-theme-mode="dark"] .kcard::before{background:var(--c1)}
+.kcard.acc::before{background:var(--accent5)}
+.kcard.pos::before{background:var(--accent6)}
+.kcard.bad::before{background:var(--bad)}
+.kcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.kcard .num{font-size:52px;color:var(--num1);white-space:nowrap}
+.kcard.acc .num{color:var(--accent5)}
+.kcard.pos .num{color:var(--pos)}
+.kcard.bad .num{color:var(--bad)}
+.kcard .klab{font-size:15px;font-weight:600;line-height:1.3;margin-top:10px;color:var(--ink)}
+.kcard .ksub{font-size:13px;line-height:1.35;color:var(--ink-faint);margin-top:4px}
+.kgrid.tight .kcard{min-height:0;padding:12px 15px 11px}
+.kgrid.tight .kcard .num{font-size:38px}
+.kgrid.tight .kcard .klab{font-size:14px;margin-top:8px}
+
+.cards{display:grid;gap:14px;margin-top:20px}
+.cards.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:16px 18px 15px;display:flex;flex-direction:column;
+  transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,20,60,.1)}
+.card .ctag{font-size:11.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent5);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.card .ctag em{font-style:normal;color:var(--ink-faint);letter-spacing:.08em}
+.card h3{font-size:20px;line-height:1.22;margin-bottom:9px}
+.card p,.card li{font-size:15px;line-height:1.5;color:var(--ink-soft)}
+.card ul{margin:0;padding-left:19px}
+.card li+li{margin-top:6px}
+.card li b,.card p b{color:var(--ink);font-weight:600}
+.card.sig{background:linear-gradient(150deg,rgba(67,170,160,.14),rgba(67,170,160,.05));border-color:rgba(67,170,160,.42)}
+.card.sig .ctag{color:var(--pos)}
+.card.flag{background:linear-gradient(150deg,rgba(211,93,0,.11),rgba(211,93,0,.04));border-color:rgba(211,93,0,.4)}
+.card.alert{background:linear-gradient(150deg,rgba(178,58,58,.12),rgba(178,58,58,.04));border-color:rgba(178,58,58,.4)}
+.card.alert .ctag{color:var(--bad)}
+.card.dk{background:linear-gradient(150deg,#062A5C,#041B3F);border-color:rgba(195,215,238,.24);color:#fff}
+.card.dk h3{color:#fff}.card.dk p,.card.dk li{color:rgba(219,231,247,.86)}.card.dk li b,.card.dk p b{color:#fff}
+.card.dk .ctag{color:var(--accent6)}
+.card .cnum{font-family:var(--font-heading);font-weight:800;font-size:28px;line-height:1;color:var(--num1);letter-spacing:-.02em;margin:2px 0 7px;font-variant-numeric:tabular-nums}
+.lr{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;flex:1;min-height:0}
+.lr>*{min-height:0;display:flex;flex-direction:column}
+.lr.w58{grid-template-columns:1.32fr 1fr}
+.lr.n58{grid-template-columns:1fr 1.32fr}
+.colh{font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.colh.a{color:var(--accent5);border-bottom-color:rgba(211,93,0,.42)}
+.colh.b{color:var(--pos);border-bottom-color:rgba(67,170,160,.45)}
+.steps{display:grid;gap:9px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--mist);border:1px solid var(--rule);border-radius:9px;padding:15px 17px}
+.step .sn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--accent1);color:#fff;font-family:var(--font-heading);
+  font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+html[data-theme-mode="dark"] .step .sn{background:var(--c1)}
+.step.o .sn{background:var(--accent5)}
+.step.g .sn{background:var(--accent6)}
+.step.r .sn{background:var(--bad)}
+.step h4{font-size:17px;line-height:1.25;margin-bottom:4px}
+.step p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13.5px;padding:6px 11px;border-radius:8px;background:var(--mist-2);border:1px solid var(--rule);color:var(--ink-soft)}
+.pill b{color:var(--ink)}
+
+.fill{flex:1;min-height:0;grid-auto-rows:1fr}
+.big .card{padding:20px 22px 18px}
+.big .card p,.big .card li{font-size:16.5px;line-height:1.5}
+.big .card h3{font-size:22px}
+.big .card .ctag{font-size:12px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:left;font-weight:700;padding:0 8px 7px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+.tbl td:first-child{font-weight:700;color:var(--ink);font-family:var(--font-heading);font-size:13.5px;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl th.n{text-align:right}
+.tbl tr:hover td{background:rgba(42,84,181,.05)}
+.tbl td.bad{color:var(--bad);font-weight:700}
+.tbl td.good{color:var(--pos);font-weight:700}
+
+.chart{background:var(--mist);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px;position:relative;display:flex;flex-direction:column}
+.chart h4{font-size:17px;margin-bottom:4px}
+.chart .csub{font-size:13px;color:var(--ink-faint);margin-bottom:12px}
+.hbars{display:flex;flex-direction:column;gap:11px}
+.hb{display:grid;grid-template-columns:var(--lw,170px) 1fr 100px;align-items:center;gap:10px;cursor:default;border-radius:6px;padding:1px 0}
+.hb .hl{font-size:14.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:24px;position:relative}
+.hb .ht i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--c1);border-radius:0 4px 4px 0;transform-origin:0 50%}
+.hb .ht i.c2{background:var(--c2)}.hb .ht i.c3{background:var(--c3)}.hb .ht i.c4{background:var(--c4)}.hb .ht i.cm{background:var(--c-mute)}
+.slide.active .hb .ht i{animation:kvhIn .8s cubic-bezier(.22,.7,.2,1) both;animation-delay:var(--d,.3s)}
+@keyframes kvhIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hb b{font-size:14.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;font-weight:700}
+.hb:hover{background:rgba(42,84,181,.06)}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--ink-soft);margin-top:10px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:10px;border-radius:2px;display:inline-block}
+
+.tierpill{position:absolute;top:64px;right:92px;z-index:6;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;border:1px solid;display:flex;align-items:center;gap:8px}
+.slide>.tierpill{position:absolute}
+.tierpill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:block}
+.tierpill.t1{color:var(--c4);border-color:rgba(142,91,199,.45);background:rgba(142,91,199,.08)}
+.tierpill.t2{color:var(--c1);border-color:rgba(42,84,181,.4);background:rgba(42,84,181,.07)}
+.tierpill.t3{color:var(--ink-faint);border-color:var(--rule);background:var(--mist)}
+.tiers{display:flex;flex-direction:column;gap:14px;margin-top:20px;flex:1;min-height:0}
+.trow{display:grid;grid-template-columns:200px repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.tlab{display:flex;flex-direction:column;justify-content:center;padding-left:16px;border-left:4px solid var(--rule);
+  font-family:var(--font-heading);font-size:17px;font-weight:700;line-height:1.2;color:var(--ink)}
+.tlab b{display:block;font-family:var(--font-body);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.trow.t1 .tlab{border-color:var(--c4)}.trow.t1 .tlab b{color:var(--c4)}
+.trow.t2 .tlab{border-color:var(--c1)}.trow.t2 .tlab b{color:var(--c1)}
+.trow.t3 .tlab{border-color:var(--c-mute)}.trow.t3 .tlab b{color:var(--ink-faint)}
+.trow .kcard{min-height:0;padding:14px 16px 12px;justify-content:center}
+.trow .kcard .num{font-size:36px}
+.trow .kcard .klab{font-size:13.5px;margin-top:8px}
+.trow .kcard .ksub{font-size:12px}
+.trow.t1 .kcard{background:linear-gradient(150deg,rgba(142,91,199,.10),rgba(142,91,199,.03));border-color:rgba(142,91,199,.3)}
+.kcard.t1::before{background:var(--c4)!important}
+.kcard.t1 .num{color:var(--c4)}
+body.idle .nav{opacity:0;pointer-events:none}
+
+code.kv{font-family:ui-monospace,Consolas,monospace;background:var(--mist-2);border:1px solid var(--rule);border-radius:5px;padding:1px 6px;font-size:.92em;color:var(--ink)}
+
+.gauge{display:flex;flex-direction:column;gap:6px}
+.gauge .gtrack{height:28px;border-radius:7px;background:var(--mist-2);position:relative;overflow:hidden;border:1px solid var(--rule)}
+.gauge .gfill{height:100%;border-radius:7px 0 0 7px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;
+  font-size:12.5px;font-weight:700;color:#fff;transform-origin:0 50%}
+.slide.active .gauge .gfill{animation:kvhIn .9s cubic-bezier(.22,.7,.2,1) both}
+.gauge .glabel{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft)}
+.gauge .glabel b{color:var(--ink)}
+
+.html.mobile{display:none}
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  #shell{position:static}.deck{position:relative;left:0;top:0;transform:none!important;box-shadow:none}
+  .nav,.progress,#hint,#field{display:none}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;filter:none;page-break-after:always;height:900px}
+  .slide .rv,.slide .fan>*{animation:none!important}
+  @page{size:1600px 900px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.slide,.slide *{animation:none!important;transition:none!important}}
+
+/* modos compactos */
+.slide.dense .lede{font-size:16px;line-height:1.45}
+.slide.dense .card p,.slide.dense .card li{font-size:13.5px;line-height:1.42}
+.slide.dense .kcard .num{font-size:44px}
+.slide.dense .sh{font-size:36px}
+</style>
+</head>
+<body>
+<div class="progress"><i id="pbar"></i></div>
+<div id="shell">
+<main class="deck" id="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="brand" id="brand"><i></i>Hardware e Limites de Escala · Speech AI</div>
+
+<!-- ============================ CAPA ============================ -->
+<section class="slide t-cover active" data-theme="dark" data-title="Capa">
+  <div class="cover-score rv" aria-label="Ordem de leitura">
+    <p class="ord-h">Ordem de leitura</p>
+    <div class="cs-row t1"><p class="who">01 · Configuração atual</p><p class="ttl">CPU, memória, GPU e disco da máquina, levantados direto do hardware</p><p class="note">Não é a ficha técnica de venda — é o que está instalado hoje</p></div>
+    <div class="cs-row t2"><p class="who">02 · Limites de escala</p><p class="ttl">O que dá para aumentar, o que está soldado e o que isso resolve (ou não)</p><p class="note">RAM · GPU · CPU · disco, um a um</p></div>
+    <div class="cs-row t3"><p class="who">03 · Veredito</p><p class="ttl">Onde investir primeiro para o Speech AI rodar mais rápido</p><p class="note">Caminho recomendado, com os trade-offs</p></div>
+  </div>
+  <p class="kicker rv">Hardware · Speech AI</p>
+  <h1 class="rv">A máquina por trás da IA local<span class="l2">e até onde ela pode crescer</span></h1>
+  <p class="csub rv">Levantamento completo do notebook que roda o Speech AI — CPU, memória, GPU e armazenamento — com uma análise honesta de quais componentes podem ser escalados, quais estão soldados na placa-mãe e o que cada upgrade realmente resolveria para a IA local.</p>
+  <div class="cmeta rv"><span>9 de outubro de 2026</span><span>HP ZBook Fury 15.6" G8 Mobile Workstation</span><span>Dados reais da máquina + ficha técnica HP</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Documento: <b>Capa</b> · Speech AI</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ EM UMA PÁGINA ============================ -->
+<section class="slide" data-theme="light" data-title="O hardware em uma página">
+  <p class="eyebrow rv">Em uma página</p>
+  <h2 class="sh rv">Quatro componentes, quatro veredittos diferentes de escala</h2>
+  <div class="tiers fan">
+    <div class="trow t1"><p class="tlab"><b>Hoje</b>Instalado</p>
+      <div class="kcard t1"><div class="num">i7-11850H</div><p class="klab">CPU · 8 núcleos / 16 threads</p><p class="ksub">2,5 a 4,8 GHz · soldada (BGA)</p></div>
+      <div class="kcard t1"><div class="num">64<span class="unit">GB</span></div><p class="klab">RAM · 4×16GB DDR4-3200</p><p class="ksub">4 de 4 slots ocupados</p></div>
+      <div class="kcard t1"><div class="num">6<span class="unit">GB</span></div><p class="klab">GPU · RTX A3000 Laptop (VRAM)</p><p class="ksub">Soldada, não é upgradável</p></div>
+      <div class="kcard t1"><div class="num">1<span class="unit">TB</span></div><p class="klab">Disco · 1 SSD NVMe instalado</p><p class="ksub">1 de 4 slots M.2 ocupado</p></div>
+    </div>
+    <div class="trow t2"><p class="tlab"><b>Teto do chassi</b>Segundo a HP</p>
+      <div class="kcard"><div class="num">0</div><p class="klab">Upgrade de CPU possível</p><p class="ksub">Processador é fixo nesta máquina</p></div>
+      <div class="kcard pos"><div class="num">128<span class="unit">GB</span></div><p class="klab">RAM máxima suportada</p><p class="ksub">4×32GB DDR4-3200 (troca as 4)</p></div>
+      <div class="kcard bad"><div class="num">0</div><p class="klab">Upgrade de GPU possível</p><p class="ksub">Só via eGPU externa (Thunderbolt)</p></div>
+      <div class="kcard pos"><div class="num">8<span class="unit">TB</span></div><p class="klab">Armazenamento máximo</p><p class="ksub">4 unidades M.2 · 3 slots livres</p></div>
+    </div>
+    <div class="trow t3"><p class="tlab"><b>Veredito</b>Para a IA</p>
+      <div class="kcard"><div class="num">Fácil</div><p class="klab">Escalar disco</p><p class="ksub">Só adicionar NVMe nos slots livres</p></div>
+      <div class="kcard"><div class="num">Médio</div><p class="klab">Escalar RAM</p><p class="ksub">Não resolve o gargalo de GPU</p></div>
+      <div class="kcard acc"><div class="num">Crítico</div><p class="klab">Escalar GPU</p><p class="ksub">É o que realmente trava o Speech AI</p></div>
+      <div class="kcard"><div class="num">Sem sentido</div><p class="klab">Escalar CPU</p><p class="ksub">Não é o gargalo, e é soldada</p></div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>WMI/nvidia-smi</b> (máquina real) · <b>HP QuickSpecs</b> ZBook Fury 15.6" G8</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVISÓRIA 01 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="1" data-title="01 · Configuração atual">
+  <p class="dnum rv">01</p>
+  <p class="eyebrow rv">Parte 1 · Configuração atual</p>
+  <h1 class="rv">O que está instalado, hoje</h1>
+  <p class="dsub rv">CPU, memória, GPU e disco, levantados diretamente do sistema operacional e do driver da NVIDIA — não é a ficha de venda, é o hardware real rodando o Speech AI.</p>
+  <div class="dchips rv"><span class="chip on">CPU</span><span class="chip">Memória</span><span class="chip">GPU</span><span class="chip">Armazenamento</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Parte 1 · Configuração atual</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ CPU ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="CPU">
+  <p class="eyebrow rv">Configuração atual · Processador</p>
+  <h2 class="sh rv">Intel Core i7-11850H — 8 núcleos, 16 threads, soldado à placa-mãe</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Especificações</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Núcleos e clock</h4><p>8 núcleos físicos / 16 threads (Hyper-Threading). Base de 2,5 GHz, turbo de até 4,8 GHz. Arquitetura Tiger Lake-H, 10nm SuperFin.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Cache e TDP</h4><p>24 MB de cache L3, 1,25 MB de L2 por núcleo. TDP configurável entre 35 e 45 W.</p></div></div>
+        <div class="step o"><span class="sn">3</span><div><h4>Encapsulamento: FCBGA1787</h4><p>Soldado (BGA) diretamente na placa-mãe — ao contrário de desktops, não existe soquete para trocar o processador.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard"><div class="num">8<span class="unit">/16</span></div><p class="klab">Núcleos / threads</p><p class="ksub">Hyper-Threading ativo</p></div>
+        <div class="kcard"><div class="num">4,8<span class="unit">GHz</span></div><p class="klab">Clock máximo (turbo)</p><p class="ksub">Base: 2,5 GHz</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Papel no Speech AI</p><p>A CPU faz a extração do PDF (<code class="kv">pdftotext</code>, ~2 segundos) e a orquestração em Python. A inferência de IA roda na GPU — a CPU praticamente não participa do gargalo de tempo.</p></div>
+        <div class="card"><p class="ctag">Por que isso importa para "escalar"</p><p>Como o processador é soldado, a única forma de ter uma CPU diferente é trocar a máquina inteira. E como a CPU não é o gargalo do projeto, essa troca não traria ganho relevante (ver Parte 2).</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>Win32_Processor (WMI)</b> · especificações públicas Intel</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ MEMORIA ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Memória RAM">
+  <p class="eyebrow rv">Configuração atual · Memória</p>
+  <h2 class="sh rv">64 GB instalados, em 4 módulos — os 4 slots do chassi já estão ocupados</h2>
+  <div class="lr rv">
+    <div>
+      <table class="tbl" style="margin-top:4px">
+        <tr><th>Slot</th><th class="n">Capacidade</th><th class="n">Velocidade</th><th>Fabricante</th></tr>
+        <tr><td>Controller0 / Dimm0</td><td class="n">16 GB</td><td class="n">3200 MT/s</td><td>Samsung DDR4</td></tr>
+        <tr><td>Controller0 / Dimm1</td><td class="n">16 GB</td><td class="n">3200 MT/s</td><td>Samsung DDR4</td></tr>
+        <tr><td>Controller1 / Dimm0</td><td class="n">16 GB</td><td class="n">3200 MT/s</td><td>Samsung DDR4</td></tr>
+        <tr><td>Controller1 / Dimm1</td><td class="n">16 GB</td><td class="n">3200 MT/s</td><td>Samsung DDR4</td></tr>
+      </table>
+      <p class="src" style="margin-top:10px">Módulos SODIMM, dual channel (2 controladores × 2 canais). Modelo: Samsung M471A2G43AB2-CWE.</p>
+      <div class="gauge" style="margin-top:18px">
+        <div class="glabel"><span>Instalado vs. máximo do chassi</span><b>64 GB / 128 GB</b></div>
+        <div class="gtrack"><div class="gfill" style="width:50%;background:linear-gradient(90deg,var(--c1),var(--c2))">50%</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">Teto oficial do chassi</p><p>Segundo a ficha técnica da HP, o ZBook Fury 15.6" G8 suporta até <b>128 GB</b> (4 × 32 GB DDR4-3200, non-ECC ou ECC) nos mesmos 4 slots SODIMM já usados hoje.</p></div>
+        <div class="card flag"><p class="ctag">O detalhe que importa</p><p>Como os 4 slots já estão ocupados, não dá para <b>adicionar</b> memória — só <b>substituir</b> os 4 módulos de 16 GB por 4 de 32 GB para chegar ao teto.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>Win32_PhysicalMemory (WMI)</b> · HP QuickSpecs ZBook Fury 15.6" G8</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ GPU ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="GPU">
+  <p class="eyebrow rv">Configuração atual · Placa de vídeo</p>
+  <h2 class="sh rv">NVIDIA RTX A3000 Laptop — a peça que define o que o Speech AI consegue rodar</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Especificações (RTX A3000 Laptop)</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Arquitetura e núcleos</h4><p>Ampere (GA104), 4.096 núcleos CUDA, 128 núcleos Tensor, 32 núcleos RT. Capacidade de computação 8.6.</p></div></div>
+        <div class="step o"><span class="sn">2</span><div><h4>Memória: 6 GB GDDR6</h4><p>Barramento de 192 bits, 264 GB/s de banda. É esse número — 6 GB de VRAM — que decide qual modelo de IA cabe na GPU.</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>Energia</h4><p>Limite de 90 W configurado nesta máquina (a família A3000 Laptop aceita de 60 a 130 W, conforme o notebook). Conectada via PCIe Gen4 x16 interno.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard acc"><div class="num">6<span class="unit">GB</span></div><p class="klab">VRAM — o limite real</p><p class="ksub">GDDR6 · 264 GB/s</p></div>
+        <div class="kcard"><div class="num">4.096</div><p class="klab">Núcleos CUDA</p><p class="ksub">+128 Tensor · +32 RT</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card alert"><p class="ctag">Soldada, sem soquete</p><p>Diferente de desktops, a GPU de notebook não tem slot PCIe removível: ela foi escolhida na hora da compra (este chassi aceitava T1200, A2000 4GB, A3000 6GB, A4000 8GB, A5000 16GB ou Radeon W6600M 8GB) e não pode ser trocada depois.</p></div>
+        <div class="card"><p class="ctag">Também presente: Intel UHD</p><p>GPU integrada do processador, usada só para vídeo do sistema — não participa da inferência de IA.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>nvidia-smi</b> · <b>Win32_VideoController (WMI)</b> · especificações NVIDIA Ampere</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DISCO ============================ -->
+<section class="slide" data-theme="light" data-tier="1" data-title="Armazenamento">
+  <p class="eyebrow rv">Configuração atual · Armazenamento</p>
+  <h2 class="sh rv">1 TB em uso, só 1 dos 4 slots M.2 do chassi está ocupado</h2>
+  <div class="lr rv">
+    <div>
+      <table class="tbl" style="margin-top:4px">
+        <tr><th>Unidade</th><th>Tipo</th><th class="n">Capacidade</th><th class="n">Livre</th></tr>
+        <tr><td>C:</td><td>NVMe (SO)</td><td class="n">366 GB</td><td class="n bad">17 GB (5%)</td></tr>
+        <tr><td>D:</td><td>NVMe (dados)</td><td class="n">586 GB</td><td class="n">202 GB (34%)</td></tr>
+        <tr><td>E:</td><td>Cartão SD</td><td class="n">116 GB</td><td class="n">101 GB</td></tr>
+      </table>
+      <p class="src" style="margin-top:10px">Unidade física: WD PC SN810, NVMe PCIe, 1 TB — particionada em C: (sistema) e D: (dados). Saúde reportada: boa.</p>
+      <div class="gauge" style="margin-top:18px">
+        <div class="glabel"><span>Slots M.2 em uso</span><b>1 de 4</b></div>
+        <div class="gtrack"><div class="gfill" style="width:25%;background:linear-gradient(90deg,var(--c2),var(--pos))">25%</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">Teto oficial do chassi</p><p>A HP especifica até <b>4 unidades M.2 NVMe</b> neste chassi, somando até <b>8 TB</b>, com suporte a RAID 0 e RAID 1. Hoje só 1 das 4 baias está ocupada.</p></div>
+        <div class="card alert"><p class="ctag">Atenção imediata, à parte da escala</p><p>O disco <b>C: está com só 5% livre</b> (17 GB de 366 GB) — vale liberar espaço ou mover dados para o D:, independente de qualquer decisão de upgrade.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: <b>Get-PhysicalDisk / Get-Volume (PowerShell)</b> · HP QuickSpecs ZBook Fury 15.6" G8</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ DIVISÓRIA 02 ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-tier="2" data-title="02 · Limites de escala">
+  <p class="dnum rv">02</p>
+  <p class="eyebrow rv">Parte 2 · Limites de escala</p>
+  <h1 class="rv">Até onde cada peça pode crescer</h1>
+  <p class="dsub rv">Memória, GPU, CPU e disco, um a um: o que o chassi permite, o que está fisicamente soldado, e — o mais importante — o que cada upgrade realmente mudaria para o desempenho do Speech AI.</p>
+  <div class="dchips rv"><span class="chip on">RAM: até 128 GB</span><span class="chip warn">GPU: soldada</span><span class="chip warn">CPU: soldada</span><span class="chip on">Disco: 3 slots livres</span></div>
+  <div class="rule"></div>
+  <div class="sfoot"><span>Parte 2 · Limites de escala</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ESCALAR RAM ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Escalar: Memória RAM">
+  <p class="eyebrow rv">Limite de escala · Memória</p>
+  <h2 class="sh rv">Dá para dobrar, para 128 GB — mas isso não resolve o gargalo de IA</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">Caminho de upgrade</p>
+      <div class="steps fill big">
+        <div class="step"><span class="sn">1</span><div><h4>Trocar os 4 módulos</h4><p>Substituir os 4×16GB atuais por 4×32GB SODIMM DDR4-3200 — não há slot vazio para só adicionar.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>128 GB é o teto físico</h4><p>Limite do controlador de memória e do chassi, segundo a HP — não dá para ir além disso nesta máquina.</p></div></div>
+        <div class="step r"><span class="sn">3</span><div><h4>Não aumenta a VRAM da GPU</h4><p>RAM do sistema e VRAM da GPU são memórias separadas. Mais RAM não dá mais espaço para o modelo rodar na GPU.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">2×</div><p class="klab">Capacidade possível</p><p class="ksub">64 GB → 128 GB</p></div>
+        <div class="kcard"><div class="num">25,6<span class="unit">GB/s</span></div><p class="klab">Banda por canal (DDR4-3200)</p><p class="ksub">~10× mais lenta que a VRAM da GPU</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card"><p class="ctag">Onde mais RAM ajudaria</p><p>Só no cenário em que um modelo de IA é grande demais para a GPU e roda parcialmente na CPU (como visto com o qwen2.5:72b nos testes) — mais RAM permite <b>carregar</b> um modelo assim sem travar, mas ele continua rodando devagar, porque a CPU é muito mais lenta que a GPU para esse tipo de cálculo.</p></div>
+        <div class="card"><p class="ctag">Veredito</p><p>Upgrade barato e sem risco, mas <b>não é prioridade</b>: não ataca o gargalo real do Speech AI, que é a VRAM da GPU.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fonte: HP QuickSpecs · cálculo de banda DDR4-3200 dual-channel</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ESCALAR GPU ============================ -->
+<section class="slide dense" data-theme="light" data-tier="2" data-title="Escalar: GPU">
+  <p class="eyebrow rv">Limite de escala · GPU · O ponto crítico</p>
+  <h2 class="sh rv">A GPU interna é fixa — escalar de verdade significa sair do notebook</h2>
+  <div class="chart rv" style="margin-top:10px">
+    <h4>VRAM: a atual contra as alternativas</h4>
+    <p class="csub">GB de memória de vídeo — quanto maior, mais o modelo de IA local pode crescer em qualidade e velocidade</p>
+    <div class="hbars" style="--lw:270px">
+      <div class="hb"><span class="hl">RTX A3000 Laptop (atual, soldada)</span><span class="ht"><i class="cm" style="--w:25%;--d:.15s"></i></span><b>6 GB</b></div>
+      <div class="hb"><span class="hl">RTX A5000 Laptop (opção de fábrica)</span><span class="ht"><i class="cm" style="--w:66.7%;--d:.2s"></i></span><b>16 GB</b></div>
+      <div class="hb"><span class="hl">RTX 4090 (eGPU via Thunderbolt)</span><span class="ht"><i style="--w:100%;--d:.3s"></i></span><b>24 GB</b></div>
+      <div class="hb"><span class="hl">GPU profissional (servidor dedicado)</span><span class="ht"><i style="--w:100%;--d:.4s"></i></span><b>24–80 GB</b></div>
+    </div>
+  </div>
+  <div class="cards c3 big fill fan" style="margin-top:14px">
+    <div class="card alert"><p class="ctag">1 · Upgrade interno</p><p><b>Não existe.</b> A GPU é soldada à placa-mãe; a RTX A5000 (16 GB) era uma opção de fábrica deste mesmo chassi, mas só na hora da compra — não dá para instalar depois.</p></div>
+    <div class="card flag"><p class="ctag">2 · eGPU via Thunderbolt</p><p>O notebook <b>tem Thunderbolt</b> (confirmado no hardware). Uma GPU externa (ex.: RTX 4090, 24 GB) ligada por um gabinete eGPU é tecnicamente viável — com uma perda de banda (Thunderbolt ≈ PCIe x4 contra o x16 interno), aceitável para inferência de IA.</p></div>
+    <div class="card sig"><p class="ctag">3 · Servidor remoto (recomendado)</p><p>Rodar o Ollama numa máquina separada (desktop ou servidor com GPU dedicada) e apontar <code class="kv">ollama_host</code> para ela — o Speech AI já foi construído com essa configuração pronta em <code class="kv">settings.json</code>.</p></div>
+  </div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> dos quatro componentes, a GPU é o único sem nenhum caminho de upgrade <i>dentro</i> do notebook — e é também o único que realmente limita o Speech AI hoje.</p>
+  <div class="sfoot"><span>Fontes: controlador Thunderbolt detectado · opções de fábrica HP · config/settings.json</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ 4 NOTEBOOKS À VENDA ============================ -->
+<section class="slide dense" data-theme="light" data-tier="2" data-title="4 notebooks que resolvem o gargalo hoje">
+  <p class="eyebrow rv">Limite de escala · GPU · Onde comprar, hoje</p>
+  <h2 class="sh rv">4 notebooks à venda nos EUA que tirariam o gargalo de GPU hoje</h2>
+  <p class="lede rv">Levantamento real de preço e disponibilidade em Nova York, Las Vegas e Miami — da opção mais barata com VRAM suficiente até a opção profissional topo de linha, na mesma família ZBook da máquina atual.</p>
+  <table class="tbl rv" style="margin-top:14px">
+    <tr><th>Notebook</th><th>GPU (VRAM)</th><th class="n">RAM</th><th class="n">Preço (US$)</th><th>Onde comprar</th></tr>
+    <tr><td>ASUS ROG Zephyrus G16</td><td>RTX 5080 Laptop · <b>16 GB</b> GDDR7</td><td class="n">32 GB</td><td class="n">US$ 2.950</td><td>Best Buy (NY · Las Vegas · Miami)</td></tr>
+    <tr><td>ASUS ROG Strix SCAR 18</td><td>RTX 5090 Laptop · <b>24 GB</b> GDDR7</td><td class="n">32 GB</td><td class="n">US$ 4.199</td><td>Best Buy</td></tr>
+    <tr><td>Lenovo ThinkPad P16 Gen 3</td><td>RTX PRO 4000 Blackwell (ECC) · <b>16 GB</b></td><td class="n">64 GB</td><td class="n">US$ 4.700–4.860</td><td>Best Buy · Amazon</td></tr>
+    <tr><td>HP ZBook Fury 16 G1i</td><td>RTX PRO 5000 Blackwell (ECC) · <b>24 GB</b></td><td class="n">64 GB</td><td class="n">US$ 9.899</td><td>B&amp;H Photo (Nova York)</td></tr>
+  </table>
+  <div class="cards c3 big fill fan" style="margin-top:14px">
+    <div class="card"><p class="ctag">Consumer × profissional</p><p>As duas ASUS são GPUs "GeForce" de jogo: mais baratas por GB de VRAM, sem ECC. As RTX PRO (Lenovo e HP) são certificadas para carga contínua longa — mais relevante para rodar IA por 20–40 min seguidos, várias vezes ao dia.</p></div>
+    <div class="card sig"><p class="ctag">Melhor custo-benefício para o projeto</p><p>A <b>ASUS ROG Strix SCAR 18</b> (24 GB, US$ 4.199) iguala a VRAM do ZBook de US$ 9.899 por menos da metade do preço — ideal se o uso for só inferência, sem exigir certificação profissional.</p></div>
+    <div class="card flag"><p class="ctag">Impostos e bagagem — não esquecer</p><p>Imposto de venda local varia: Miami (~7%) e Las Vegas (~8,4%) são mais baratas que Nova York (~8,9%). Trazer para o Brasil pode gerar imposto de importação se o valor passar da cota de viagem — confirme as regras da Receita Federal antes de decidir.</p></div>
+  </div>
+  <div class="sfoot"><span>Fontes: Best Buy · B&amp;H Photo · Amazon (preços de outubro/2026, sujeitos a variação)</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ESCALAR CPU ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Escalar: CPU">
+  <p class="eyebrow rv">Limite de escala · Processador</p>
+  <h2 class="sh rv">Também soldada — e, neste projeto, trocá-la não mudaria quase nada</h2>
+  <div class="lr rv">
+    <div>
+      <p class="colh a">Por que não é upgradável</p>
+      <div class="steps fill big">
+        <div class="step r"><span class="sn">1</span><div><h4>Encapsulamento BGA</h4><p>O i7-11850H usa o socket FCBGA1787 — soldado permanentemente à placa-mãe. Diferente de CPUs de desktop (LGA), não existe a opção de "trocar o processador".</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Único caminho: trocar a máquina</h4><p>Uma CPU diferente (ex.: um Core i9 ou Xeon móvel de geração mais nova) só viria com outro notebook inteiro.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cards big fill fan" style="margin-top:0;gap:12px">
+        <div class="card"><p class="ctag">Onde o tempo realmente vai, hoje</p><p>Na extração do PDF, a CPU responde em <b>~2 segundos</b>. Na etapa de IA (20 a 43 minutos), o trabalho pesado é da GPU — a CPU fica majoritariamente ociosa, só orquestrando chamadas.</p></div>
+        <div class="card sig"><p class="ctag">Veredito</p><p>Mesmo que fosse upgradável, uma CPU mais rápida não encurtaria o tempo de IA de forma perceptível. <b>Não é um investimento que resolve o problema deste projeto.</b></p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fontes: especificação do socket Intel FCBGA1787 · medições de tempo do pipeline</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ ESCALAR DISCO ============================ -->
+<section class="slide" data-theme="light" data-tier="2" data-title="Escalar: Disco">
+  <p class="eyebrow rv">Limite de escala · Armazenamento</p>
+  <h2 class="sh rv">O upgrade mais fácil da lista: só encaixar — 3 slots M.2 livres</h2>
+  <div class="lr n58 rv">
+    <div>
+      <p class="colh a">Caminho de upgrade</p>
+      <div class="steps fill big">
+        <div class="step g"><span class="sn">1</span><div><h4>Sem troca necessária</h4><p>Diferente de RAM, CPU e GPU, aqui não é preciso substituir nada: 3 das 4 baias M.2 do chassi estão fisicamente vazias.</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Até 8 TB no total</h4><p>A HP permite 4 unidades NVMe simultâneas, com suporte a RAID 0 (velocidade) ou RAID 1 (redundância).</p></div></div>
+        <div class="step"><span class="sn">3</span><div><h4>Para que serviria aqui</h4><p>Mais espaço para o histórico de jornais, áudios e logs — não acelera a IA, mas resolve o alerta do C: com quase 100% de uso.</p></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kgrid k2 tight fan" style="margin-top:0">
+        <div class="kcard pos"><div class="num">3</div><p class="klab">Slots M.2 livres</p><p class="ksub">De 4 no total</p></div>
+        <div class="kcard pos"><div class="num">8×</div><p class="klab">Capacidade possível</p><p class="ksub">1 TB → até 8 TB</p></div>
+      </div>
+      <div class="cards big fill fan" style="margin-top:12px;gap:12px">
+        <div class="card sig"><p class="ctag">Veredito</p><p>É o upgrade de <b>menor custo e menor risco</b> dos quatro — mas também o de <b>menor impacto</b> no desempenho do Speech AI, já que a IA não é limitada por disco.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span>Fonte: HP QuickSpecs ZBook Fury 15.6" G8 · Get-PhysicalDisk (PowerShell)</span><span class="pg"></span></div>
+</section>
+
+<!-- ============================ VEREDITO FINAL ============================ -->
+<section class="slide t-div" data-theme="dark" data-divider="1" data-title="Veredito">
+  <p class="eyebrow rv">Parte 3 · Veredito</p>
+  <h1 class="rv" style="font-size:54px;max-width:1400px">Um gargalo, três componentes irrelevantes para ele</h1>
+  <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
+    <div class="card dk"><p class="ctag">CPU</p><p>Soldada, sem upgrade possível — e também não é o problema. <b>Não investir aqui.</b></p></div>
+    <div class="card dk"><p class="ctag">RAM</p><p>Pode dobrar para 128 GB trocando os 4 módulos. Barato, mas <b>não resolve</b> o limite de VRAM da IA.</p></div>
+    <div class="card dk"><p class="ctag">Disco</p><p>3 slots M.2 livres, até 8 TB. Fácil e útil para dados — mas <b>não acelera</b> a IA.</p></div>
+    <div class="card dk" style="grid-column:span 3;background:linear-gradient(150deg,#3a1a06,#1f0d02);border-color:rgba(211,93,0,.5)"><p class="ctag" style="color:var(--accent5)">GPU — o único que importa</p><p>Soldada, sem upgrade interno. As únicas duas formas reais de ganhar VRAM e velocidade: <b>eGPU via Thunderbolt</b> (mais barato, perda de banda aceitável) ou <b>um servidor/desktop dedicado com GPU maior</b>, acessado pela rede — caminho que o Speech AI já suporta, trocando só <code class="kv">ollama_host</code> no <code class="kv">settings.json</code>. É aqui que um investimento realmente mudaria o tempo de 25–43 min por jornal.</p></div>
+  </div>
+  <div class="sfoot"><span>Speech AI · Hardware e limites de escala · 9 de outubro de 2026</span><span class="pg"></span></div>
+</section>
+
+</main>
+</div>
+
+<nav class="nav" aria-label="Controles da apresentação">
+  <button class="nbtn" id="btnPrev" aria-label="Slide anterior">&lsaquo;</button>
+  <span class="count" id="counter">1</span>
+  <button class="nbtn" id="btnNext" aria-label="Próximo slide">&rsaquo;</button>
+  <span class="sep"></span>
+  <div class="dots" id="dots"></div>
+  <span class="sep"></span>
+  <button class="nbtn" id="btnOv" aria-label="Visão geral dos slides" title="Visão geral (O)">&#9783;</button>
+  <button class="nbtn" id="btnTheme" aria-label="Alternar modo escuro" title="Modo escuro (D)">&#9788;</button>
+  <button class="nbtn" id="btnFs" aria-label="Tela cheia" title="Tela cheia (F)">&#9974;</button>
+</nav>
+<div id="ov" role="dialog" aria-modal="true" aria-label="Todos os slides"><h3>Todos os slides</h3><p class="ovh">Clique para ir ao slide · O ou Esc para fechar</p><div id="ovg"></div></div>
+<div id="hint">← → navegam · O visão geral · D modo escuro · F tela cheia</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, deck=document.getElementById('deck');
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var TOTAL=slides.length, idx=0;
+var counter=document.getElementById('counter'), pbar=document.getElementById('pbar'), brand=document.getElementById('brand');
+
+function isMobile(){ return window.innerWidth < 820 || (window.innerWidth < 1000 && window.innerHeight > window.innerWidth); }
+function fitStage(){
+  if (isMobile()){ root.classList.add('mobile'); deck.style.transform='none'; return; }
+  root.classList.remove('mobile');
+  var pad = 22;
+  var k = Math.min((window.innerWidth-pad)/1600,(window.innerHeight-pad)/900);
+  deck.style.transform='translate(-50%,-50%) scale('+k+')';
+}
+window.addEventListener('resize',fitStage);
+
+var dotsBox=document.getElementById('dots'), ovg=document.getElementById('ovg');
+slides.forEach(function(s,i){
+  var d=document.createElement('button'); d.className='dot'+(s.dataset.divider?' sec':''); d.setAttribute('aria-label','Ir ao slide '+(i+1));
+  d.title=s.dataset.title||''; d.addEventListener('click',function(){goTo(i,i<idx);}); dotsBox.appendChild(d);
+  var c=document.createElement('button'); c.className='ovc';
+  c.innerHTML='<span class="on2">'+(i+1<10?'0':'')+(i+1)+'</span><span class="ot"></span>';
+  c.querySelector('.ot').textContent=s.dataset.title||'';
+  c.addEventListener('click',function(){toggleOv(false);goTo(i,i<idx);}); ovg.appendChild(c);
+});
+function update(){
+  counter.textContent=(idx+1)+' / '+TOTAL;
+  pbar.style.width=(idx/(TOTAL-1)*100)+'%';
+  [].forEach.call(dotsBox.children,function(d,i){d.classList.toggle('on',i===idx);});
+  [].forEach.call(ovg.children,function(c,i){c.classList.toggle('on',i===idx);});
+  var s=slides[idx];
+  var onLight=s.dataset.theme==='light' && root.dataset.themeMode!=='dark';
+  brand.classList.toggle('on-light',onLight);
+  if (FIELD) FIELD.setMode(s.dataset.theme==='dark' || root.dataset.themeMode==='dark', !!s.dataset.divider || s.classList.contains('t-cover'));
+  deck.style.setProperty('--field-a', s.dataset.divider ? .9 : 1);
+}
+function goTo(n,back){
+  n=Math.max(0,Math.min(TOTAL-1,n));
+  if (n===idx) return;
+  document.body.classList.toggle('back',!!back);
+  slides[idx].classList.remove('active'); idx=n; slides[idx].classList.add('active');
+  update(); hideTip();
+  setTimeout(function(){document.body.classList.remove('back');},620);
+}
+function next(){goTo(idx+1,false);} function prev(){goTo(idx-1,true);}
+document.getElementById('btnNext').addEventListener('click',next);
+document.getElementById('btnPrev').addEventListener('click',prev);
+var ov=document.getElementById('ov');
+function toggleOv(on){ ov.classList.toggle('on', on===undefined ? !ov.classList.contains('on') : on); }
+document.getElementById('btnOv').addEventListener('click',function(){toggleOv();});
+function toggleTheme(){ root.dataset.themeMode = root.dataset.themeMode==='dark' ? 'light' : 'dark'; update(); }
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+function toggleFs(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }catch(e){} }
+document.getElementById('btnFs').addEventListener('click',toggleFs);
+document.addEventListener('keydown',function(e){
+  if (e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')) return;
+  if (root.classList.contains('mobile')) return;
+  var k=e.key;
+  if (k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if (k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if (k==='Home'){goTo(0,true);} else if (k==='End'){goTo(TOTAL-1,false);}
+  else if (k==='o'||k==='O'){toggleOv();} else if (k==='Escape'){toggleOv(false);}
+  else if (k==='d'||k==='D'){toggleTheme();} else if (k==='f'||k==='F'){toggleFs();}
+});
+var tx=null;
+deck.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+deck.addEventListener('touchend',function(e){ if(tx===null||root.classList.contains('mobile'))return; var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?next():prev();} tx=null; });
+
+var tip=document.getElementById('tip');
+function showTip(html,x,y){ tip.innerHTML=html; tip.classList.add('on');
+  var w=tip.offsetWidth,h=tip.offsetHeight; var px=x+14, py=y-h-12;
+  if (px+w>window.innerWidth-8) px=x-w-14; if (py<8) py=y+16; tip.style.left=px+'px'; tip.style.top=py+'px'; }
+function hideTip(){ tip.classList.remove('on'); }
+document.addEventListener('mousemove',function(e){
+  var t=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if (t) showTip(t.getAttribute('data-tip'),e.clientX,e.clientY); else if (!e.target.closest('svg.line')) hideTip();
+});
+
+var FIELD=(function(){
+  var cv=document.getElementById('field'); if(!cv||!cv.getContext) return null;
+  var ctx=cv.getContext('2d'), DPR=Math.min(window.devicePixelRatio||1,1.6), W=1600,H=900;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.scale(DPR,DPR);
+  var N=900, pts=[], running=false, show=true, ring=true, t0=0;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (var i=0;i<N;i++){
+    var z=Math.random()*.8+.2, a=Math.random()*Math.PI*2, rr=i%3===0?230:(i%3===1?150:320);
+    pts.push({x:Math.random()*W,y:Math.random()*H,z:z,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.22,
+      ring:i<N*.42, tx:1230+Math.cos(a)*rr*(0.96+Math.random()*.08), ty:440+Math.sin(a)*rr*(0.96+Math.random()*.08), ph:Math.random()*6.28});
+  }
+  function frame(ts){
+    if (!running) return;
+    var t=ts/1000; ctx.clearRect(0,0,W,H);
+    for (var i=0;i<N;i++){
+      var p=pts[i];
+      if (ring && p.ring){
+        var ang=t*.05*(p.z>.6?1:-1), cx=1230, cy=440, dx=p.tx-cx, dy=p.ty-cy;
+        var gx=cx+dx*Math.cos(ang)-dy*Math.sin(ang), gy=cy+dx*Math.sin(ang)+dy*Math.cos(ang);
+        p.x+=(gx-p.x)*.03; p.y+=(gy-p.y)*.03;
+      } else {
+        p.x+=p.vx*p.z*1.4; p.y+=p.vy*p.z*1.4;
+        if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10; if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+      }
+      var al=(.18+.55*p.z)*(.75+.25*Math.sin(t*1.3+p.ph));
+      ctx.fillStyle=p.ring&&ring ? 'rgba(143,180,236,'+al+')' : 'rgba(195,215,238,'+(al*.8)+')';
+      ctx.beginPath(); ctx.arc(p.x,p.y,.6+1.5*p.z,0,6.283); ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(!running && show && !reduce && !document.hidden && !root.classList.contains('mobile')){ running=true; requestAnimationFrame(frame);} }
+  function stop(){ running=false; }
+  document.addEventListener('visibilitychange',function(){ document.hidden?stop():start(); });
+  if (reduce){ ctx.fillStyle='rgba(195,215,238,.4)'; pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1,0,6.283);ctx.fill();}); }
+  return { setMode:function(dark,r){ show=dark; ring=r; if(show) start(); else { stop(); ctx.clearRect(0,0,W,H);} } };
+})();
+
+var TIERN={'1':'Parte 1 · Configuração atual','2':'Parte 2 · Limites de escala'};
+slides.forEach(function(s,i){
+  var t=s.dataset.tier; if(!t) return;
+  if (s.dataset.theme==='light'){ var p=document.createElement('div'); p.className='tierpill t'+t; p.innerHTML='<i></i>'+TIERN[t]; s.insertBefore(p,s.firstChild); }
+  if (dotsBox.children[i]) dotsBox.children[i].classList.add('t'+t);
+});
+var idleT=null;
+function wake(){ document.body.classList.remove('idle'); clearTimeout(idleT); idleT=setTimeout(function(){ if(!document.querySelector('.nav:hover')) document.body.classList.add('idle'); },2600); }
+['mousemove','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev,wake,{passive:true}); });
+wake();
+
+fitStage(); update();
+var hint=document.getElementById('hint');
+if (!root.classList.contains('mobile')){ setTimeout(function(){hint.classList.add('on');},900); setTimeout(function(){hint.classList.remove('on');},5200); }
+})();
+</script>
+</body>
+</html>
