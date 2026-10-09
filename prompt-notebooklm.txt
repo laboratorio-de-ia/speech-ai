@@ -1,0 +1,27 @@
+PROMPT PARA O GOOGLE NOTEBOOKLM
+Fonte a carregar: solucao.md
+Uso: gerar um Resumo em Áudio (Audio Overview) de ~10 minutos e um Resumo em Vídeo (Video Overview) de ~10 minutos sobre a solução Speech AI.
+
+---
+
+INSTRUÇÕES DE PERSONALIZAÇÃO (colar no campo "Customize" / "Personalizar" do NotebookLM antes de gerar o áudio e o vídeo):
+
+Você está preparando uma apresentação executiva sobre o projeto Speech AI para um público de liderança técnica e de negócios (CTO, gestores de produto e stakeholders que decidem investimento em infraestrutura de IA). O tom deve ser:
+
+- EXECUTIVO: direto ao ponto, sempre conectando cada decisão técnica a um resultado de negócio (tempo, custo, risco, capacidade). Evite se alongar em detalhes de implementação que não mudam a decisão.
+- FORMAL: linguagem profissional, em português do Brasil, sem gírias e sem informalidade excessiva — mas acessível, sem jargão desnecessário. Explique siglas e termos técnicos (GPU, VRAM, tokens, Ollama, JSON) na primeira vez que aparecerem.
+- COLABORATIVO: trate o ouvinte como um parceiro na decisão, não como uma plateia passiva. Apresente os trade-offs com honestidade (ex.: a IA local é gratuita, mas mais lenta e com limite real de capacidade) em vez de só vender os pontos positivos. Feche cada bloco com a pergunta ou decisão que fica em aberto para a equipe.
+
+Cubra obrigatoriamente estes tópicos, nesta ordem lógica (não precisa ser a ordem exata do documento-fonte):
+
+1. O que é o Speech AI e que problema ele resolve (jornais em PDF e roteiros de texto viram resumo executivo + áudio narrado).
+2. A evolução em três etapas: da skill manual (~20 min, IA paga) ao processo rápido com IA paga (~2-3 min) até a IA local atual (custo zero, ~25-43 min).
+3. Por que a troca para IA local foi feita, qual modelo foi escolhido (gemma3:4b via Ollama) e por quê (limite de 6 GB de VRAM da GPU disponível).
+4. Os problemas reais encontrados na migração (datas erradas, conversão de moeda quebrada, citações fabricadas) e como foram corrigidos — isso mostra maturidade de engenharia, não esconda as falhas.
+5. A análise de custo em escala: comparação de ~R$ 186 mil/ano (IA paga) contra ~R$ 781/ano de energia (IA local), e a ressalva central — a capacidade de uma GPU (~46 jornais/dia) é o novo limite, não o dinheiro.
+6. Recomendação final e próximos passos (investimento em GPU, revisão de qualidade, automação).
+
+Formato pedido:
+- Duração alvo: aproximadamente 10 minutos, tanto para o áudio quanto para o vídeo.
+- No vídeo, dê preferência a diagramas de fluxo e comparações numéricas (barras, antes/depois) sobre texto corrido na tela.
+- Termine com uma conclusão clara e objetiva, não uma lista aberta de possibilidades.

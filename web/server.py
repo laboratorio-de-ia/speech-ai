@@ -212,6 +212,8 @@ def list_files():
 
             script = folder / "script.txt"
 
+            audio = next(iter(sorted(folder.glob("*.mp3"))), None)
+
             resumos.append({
 
                 "folder": folder.name,
@@ -219,6 +221,8 @@ def list_files():
                 "html": html.name if html else None,
 
                 "script": script.is_file(),
+
+                "audio": audio.name if audio else None,
 
                 "modified": datetime.fromtimestamp(folder.stat().st_mtime).isoformat(timespec="seconds"),
 
@@ -389,14 +393,24 @@ def audio(name: str, download: bool = False):
 
 
 @app.get("/media/resumos/{folder}/{name}")
-def resumo(folder: str, name: str):
+def resumo(folder: str, name: str, download: bool = False):
 
     path = _inside(RESUMOS_DIR, Path(folder).name, Path(name).name)
 
-    if path.suffix.lower() not in (".html", ".txt"):
+    suffix = path.suffix.lower()
+
+    if suffix not in (".html", ".txt", ".mp3"):
 
         raise HTTPException(404, "Arquivo não encontrado.")
 
-    media = "text/html; charset=utf-8" if path.suffix.lower() == ".html" else "text/plain; charset=utf-8"
+    media = {
 
-    return FileResponse(path, media_type=media)
+        ".html": "text/html; charset=utf-8",
+
+        ".txt": "text/plain; charset=utf-8",
+
+        ".mp3": "audio/mpeg",
+
+    }[suffix]
+
+    return FileResponse(path, media_type=media, filename=path.name if download else None)

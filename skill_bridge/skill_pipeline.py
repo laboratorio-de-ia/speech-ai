@@ -189,14 +189,17 @@ class SkillPipeline:
 
         # O script fica na pasta do jornal (output/Jornais) e não é
         # copiado para input/, onde seria reprocessado pelo ScriptInbox.
-        # O mp3 leva o nome do PDF (ou da pasta do jornal, sem PDF).
+        # O mp3 leva o nome do PDF (ou da pasta do jornal, sem PDF) e fica
+        # na mesma pasta do jornal, junto do HTML e do script.txt.
         base_name = Path(pdf).stem if pdf is not None else script.parent.name
 
         audio = self.app.run(
 
             script_file=script,
 
-            output_filename=self.app.audio_filename(base_name)
+            output_filename=self.app.audio_filename(base_name),
+
+            output_dir=script.parent,
 
         )
 

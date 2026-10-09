@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speech AI — Documentação da solução</title>
-<meta name="description" content="Documentação do Speech AI: processo rápido de jornais (Valor Econômico e Estadão) e roteiros .txt, da entrada ao HTML, roteiro e MP3; frontend, configuração, resiliência e custos.">
+<meta name="description" content="Documentação do Speech AI: processo rápido de jornais (Valor Econômico e Estadão) e roteiros .txt com IA local (Ollama), da entrada ao HTML, roteiro e MP3; frontend, configuração, resiliência e custos.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@400;500;600;700;800&family=Encode+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -449,14 +449,14 @@ html.mobile .gb{grid-template-columns:90px 1fr}
 <section class="slide t-cover active" data-theme="dark" data-title="Capa">
   <div class="cover-score rv" aria-label="Ordem de leitura">
     <p class="ord-h">Ordem de leitura</p>
-    <div class="cs-row t1"><p class="who">01 · Parte 1 · Visão geral</p><p class="ttl">De uma skill de 20 minutos para um processo de até 5 minutos, com a IA só no trabalho editorial</p><p class="note">Arquitetura · componentes · antes e depois</p></div>
+    <div class="cs-row t1"><p class="who">01 · Parte 1 · Visão geral</p><p class="ttl">De uma skill de 20 minutos para um processo com IA local e custo de IA zero</p><p class="note">Arquitetura · componentes · a evolução em 3 etapas</p></div>
     <div class="cs-row t2"><p class="who">02 · Parte 2 · Entrada e saída</p><p class="ttl">Do PDF e do .txt até o HTML, o roteiro e o MP3: cada etapa, pasta e arquivo</p><p class="note">input\ → newsroom\ → output\</p></div>
     <div class="cs-row t3"><p class="who">03 · Parte 3 · Operação</p><p class="ttl">Frontend, comandos, configuração, resiliência, custos e próximos passos</p><p class="note">start.bat · main.py · settings.json</p></div>
   </div>
   <p class="kicker rv">Documentação da solução · Speech AI</p>
-  <h1 class="rv">Jornais e roteiros viram áudio<span class="l2">em minutos, com qualidade de editor</span></h1>
-  <p class="csub rv">O Speech AI recebe os PDFs do Valor Econômico e do Estadão e roteiros em texto, gera um resumo executivo em HTML, um roteiro para voz e o áudio narrado em português. Este documento descreve a solução, o caminho de cada arquivo de entrada até a saída e a operação do dia a dia.</p>
-  <div class="cmeta rv"><span>Versão de 6 de outubro de 2026</span><span>Python 3.12 · Claude Code · Edge TTS</span><span>Projeto speech-ai</span></div>
+  <h1 class="rv">Jornais e roteiros viram áudio<span class="l2">com IA local, sem custo por jornal</span></h1>
+  <p class="csub rv">O Speech AI recebe os PDFs do Valor Econômico e do Estadão e roteiros em texto, gera um resumo executivo em HTML, um roteiro para voz e o áudio narrado em português. Desde a Sprint 13, o conteúdo editorial é escrito por um modelo de IA local (Ollama, na GPU desta máquina) em vez da API paga da Anthropic — este documento descreve a solução, o caminho de cada arquivo de entrada até a saída e a operação do dia a dia.</p>
+  <div class="cmeta rv"><span>Versão de 8 de outubro de 2026</span><span>Python 3.12 · Ollama (gemma3:4b) · Edge TTS</span><span>Projeto speech-ai</span></div>
   <div class="rule"></div>
   <div class="sfoot"><span>Documento: <b>Capa</b> · Speech AI</span><span class="pg"></span></div>
 </section>
@@ -473,19 +473,19 @@ html.mobile .gb{grid-template-columns:90px 1fr}
       <div class="kcard t1"><div class="num">6</div><p class="klab">Módulos: app, newsroom, skill_bridge, web, pipeline e services</p><p class="ksub">Configuração em config/settings.json</p></div>
     </div>
     <div class="trow t2"><p class="tlab"><b>Parte 2</b>Entrada e saída</p>
-      <div class="kcard pos"><div class="num">2:21</div><p class="klab">Minutos do PDF ao MP3 no Valor de 06/10</p><p class="ksub">Antes: 15 a 20 minutos</p></div>
-      <div class="kcard pos"><div class="num">US$ 1,02</div><p class="klab">Custo de IA do Valor de 06/10</p><p class="ksub">Antes: US$ 5,60 a 6,50</p></div>
-      <div class="kcard"><div class="num">166<span class="unit word">/166</span></div><p class="klab">Números dos slides conferidos no texto do jornal</p><p class="ksub">Teste de fidelidade da versão final</p></div>
-      <div class="kcard"><div class="num">964</div><p class="klab">Palavras do roteiro de áudio</p><p class="ksub">Meta da skill: 700 a 1.100</p></div>
+      <div class="kcard pos"><div class="num">R$ 0</div><p class="klab">Custo de IA por jornal, com Ollama local</p><p class="ksub">Antes (Claude, motor fast): US$ 1,02</p></div>
+      <div class="kcard"><div class="num">25–43</div><p class="klab">Minutos do PDF ao MP3, IA local</p><p class="ksub">Antes (Claude, motor fast): ~2,3 min</p></div>
+      <div class="kcard"><div class="num">166<span class="unit word">/166</span></div><p class="klab">Números conferidos no teste de fidelidade (Claude)</p><p class="ksub">Referência de qualidade da IA paga</p></div>
+      <div class="kcard"><div class="num">6<span class="unit word">/6</span></div><p class="klab">Chamadas certas na 1ª tentativa (Ollama, após ajustes)</p><p class="ksub">Valor 08/10, execução de verificação</p></div>
     </div>
     <div class="trow t3"><p class="tlab"><b>Parte 3</b>Operação</p>
       <div class="kcard"><div class="num">1</div><p class="klab">Rotina por vez no frontend, com cancelamento</p><p class="ksub">Log ao vivo na página</p></div>
       <div class="kcard"><div class="num">0</div><p class="klab">Arquivos perdidos em falha: o item volta para a fila</p><p class="ksub">Processados são arquivados por data</p></div>
-      <div class="kcard"><div class="num">20<span class="unit word">/20</span></div><p class="klab">Verificações do teste automatizado do frontend</p><p class="ksub">Ambiente isolado, sem custo de IA</p></div>
-      <div class="kcard"><div class="num">~11</div><p class="klab">Segundos da chamada de capa (Sonnet 5.5)</p><p class="ksub">Título, data e abertura do áudio</p></div>
+      <div class="kcard"><div class="num">R$0,02</div><p class="klab">Energia da GPU por jornal (Contagem, MG)</p><p class="ksub">17,8 Wh medidos · tarifa CEMIG</p></div>
+      <div class="kcard"><div class="num">6<span class="unit word">GB</span></div><p class="klab">VRAM da GPU local (RTX A3000 Laptop)</p><p class="ksub">Define o modelo: gemma3:4b</p></div>
     </div>
   </div>
-  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · Valor 06/10 · <b>test_web</b> · Frontend</span><span class="pg"></span></div>
+  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · execuções reais 08/10 · medição de energia (nvidia-smi)</span><span class="pg"></span></div>
 </section>
 
 <!-- ============================ DIVISÓRIA 01 ============================ -->
@@ -493,43 +493,43 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <p class="dnum rv">01</p>
   <p class="eyebrow rv">Parte 1 · Visão geral</p>
   <h1 class="rv">Visão geral e arquitetura</h1>
-  <p class="dsub rv">O que a solução faz, o que mudou em relação à skill original e como as peças se encaixam: entrada, orquestração, o processo rápido de jornais, o pipeline de voz e a saída.</p>
-  <div class="dchips rv"><span class="chip on">Antes e depois</span><span class="chip">Arquitetura em camadas</span><span class="chip">Componentes do código</span></div>
+  <p class="dsub rv">O que a solução faz, as três etapas até chegar na IA local e como as peças se encaixam: entrada, orquestração, o processo rápido de jornais, o pipeline de voz e a saída.</p>
+  <div class="dchips rv"><span class="chip on">3 etapas até a IA local</span><span class="chip">Arquitetura em camadas</span><span class="chip">Componentes do código</span></div>
   <div class="rule"></div>
   <div class="sfoot"><span>Parte 1 · Visão geral</span><span class="pg"></span></div>
 </section>
 
 <!-- ============================ ANTES E DEPOIS ============================ -->
-<section class="slide" data-theme="light" data-tier="1" data-title="Antes e depois">
+<section class="slide dense" data-theme="light" data-tier="1" data-title="A evolução em 3 etapas">
   <p class="eyebrow rv">Visão geral · Desempenho</p>
-  <h2 class="sh rv">A IA deixou de operar o processo e passou a fazer só o trabalho editorial</h2>
-  <p class="lede rv">Na skill original, o Claude extraía o PDF, lia em pedaços, copiava o visual, escrevia e revisava o HTML em 100 a 126 rodadas. Hoje o Python faz extração, montagem e verificação, e a IA escreve o conteúdo em chamadas únicas e paralelas.</p>
+  <h2 class="sh rv">Da skill de 20 minutos à IA local: três arquiteturas, a mesma saída</h2>
+  <p class="lede rv">1) A skill original: o Claude fazia tudo — extração, leitura, escrita e revisão do HTML em 100 a 126 rodadas. 2) O processo rápido (Sprint 12): Python assume extração/montagem/verificação; a IA paga (Claude) só escreve o conteúdo, em chamadas únicas. 3) IA local (Sprint 13): a mesma arquitetura do processo rápido, mas a IA paga vira Ollama rodando na GPU desta máquina — custo de IA cai a zero, o tempo sobe.</p>
   <div class="lr rv">
     <div>
       <div class="chart">
         <h4>Tempo do PDF ao MP3, por jornal</h4>
-        <p class="csub">Minutos · medições reais de 05 e 06/10/2026</p>
+        <p class="csub">Minutos · medições reais</p>
         <div class="hbars" style="--lw:190px">
-          <div class="hb" data-tip="&lt;b&gt;Skill completa&lt;/b&gt;&lt;br&gt;Valor 05/10: 21,5 min de IA + áudio"><span class="hl">Antes · skill completa</span><span class="ht"><i class="cm" style="--w:100%;--d:.2s"></i></span><b>~20 min</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Estadão 05/10, estimado com o áudio"><span class="hl">Agora · Estadão</span><span class="ht"><i style="--w:17.5%;--d:.3s"></i></span><b>~3,5 min</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Valor 06/10, do PDF ao MP3"><span class="hl">Agora · Valor</span><span class="ht"><i style="--w:11.8%;--d:.4s"></i></span><b>2,35 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Skill completa&lt;/b&gt;&lt;br&gt;Valor 05/10: 21,5 min de IA + áudio"><span class="hl">1 · Skill completa (Claude)</span><span class="ht"><i class="cm" style="--w:46.5%;--d:.2s"></i></span><b>~20 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Valor 06/10, do PDF ao MP3"><span class="hl">2 · Fast + IA paga (Claude)</span><span class="ht"><i style="--w:5.5%;--d:.3s"></i></span><b>2,35 min</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Processo rápido&lt;/b&gt;&lt;br&gt;Valor 08/10, do PDF ao MP3, IA local"><span class="hl">3 · Fast + IA local (Ollama)</span><span class="ht"><i class="c3" style="--w:100%;--d:.4s"></i></span><b>~25–43 min</b></div>
         </div>
-        <p class="src">Meta definida: no máximo 5 minutos por jornal, sem perder qualidade.</p>
+        <p class="src">A etapa 3 é mais lenta que a 2, mas ainda mais rápida que a skill completa original — e com custo de IA zero.</p>
       </div>
     </div>
     <div>
       <div class="kgrid k2 tight fan" style="margin-top:0">
-        <div class="kcard pos"><div class="num">−84<span class="unit">%</span></div><p class="klab">Custo de IA do Valor: de US$ 6,55 para US$ 1,02</p><p class="ksub">Cache compartilhado entre chamadas</p></div>
-        <div class="kcard pos"><div class="num">−88<span class="unit">%</span></div><p class="klab">Tempo do Valor: de ~20 min para 2 min 21 s</p><p class="ksub">Do PDF ao MP3</p></div>
+        <div class="kcard pos"><div class="num">R$ 0</div><p class="klab">Custo de IA por jornal (etapa 3)</p><p class="ksub">Antes (etapa 2): US$ 1,02 · R$ 5,11</p></div>
+        <div class="kcard acc"><div class="num">11–18×</div><p class="klab">Mais lento que a IA paga (etapa 2)</p><p class="ksub">Ainda mais rápido que a skill completa</p></div>
       </div>
       <div class="cards big fill fan" style="margin-top:12px;gap:12px">
-        <div class="card"><p class="ctag">Onde ia o tempo antes <em>logs</em></p><p>39% verificação visual e ajustes, 19% leitura em pedaços, 15% escrita do HTML e 14% cópia da base visual. A extração do PDF pesava só 3%.</p></div>
-        <div class="card"><p class="ctag">Qualidade mantida <em>teste</em></p><p>Mesmo visual de deck, mesma hierarquia editorial e 166 de 166 números conferidos no texto do jornal, com citações literais.</p></div>
+        <div class="card"><p class="ctag">Por que ficou mais lento <em>GPU</em></p><p>A IA paga processa o jornal inteiro em cache compartilhado na nuvem; a GPU local (6 GB) não tem esse espaço, então o Speech AI recorta só as páginas relevantes por destaque — e mesmo assim cada chamada leva minutos, não segundos.</p></div>
+        <div class="card"><p class="ctag">Qualidade: ainda atrás do Claude <em>teste</em></p><p>O teste de 166/166 números é da versão com Claude. Com o modelo local, foram encontrados e corrigidos bugs reais (datas, conversão de moeda, citações não literais) — ver Resiliência e custos, Parte 3.</p></div>
       </div>
     </div>
   </div>
-  <p class="takeaway rv"><b>Leitura do editor:</b> o ganho veio de tirar da IA o que é mecânico. O raciocínio continua com o modelo; extração, layout e validação ficaram com o Python.</p>
-  <div class="sfoot"><span>Fontes: <b>logs/skills</b> · execuções antigas · <b>relatorio.json</b> · execução final</span><span class="pg"></span></div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> a etapa 2 tirou da IA o que é mecânico; a etapa 3 tira da IA o custo, ao preço de tempo e de alguma qualidade — uma troca deliberada, não uma limitação escondida.</p>
+  <div class="sfoot"><span>Fontes: <b>logs/skills</b> · <b>relatorio.json</b> · execuções 05, 06 e 08/10</span><span class="pg"></span></div>
 </section>
 
 <!-- ============================ ARQUITETURA ============================ -->
@@ -542,7 +542,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
       <div class="steps fill big">
         <div class="step"><span class="sn">1</span><div><h4>Entrada</h4><p>Frontend web ou cópia manual: .txt em input\ e PDFs em input\Jornais\.</p></div></div>
         <div class="step"><span class="sn">2</span><div><h4>Orquestração · main.py</h4><p>ScriptInbox (roteiros), NewspaperInbox (identifica o jornal) e SkillPipeline (jornais). Sem IA.</p></div></div>
-        <div class="step o"><span class="sn">3</span><div><h4>Processo rápido · newsroom</h4><p>Extração em Python, IA editorial em 5 chamadas paralelas, capa, roteiro e HTML no modelo fixo.</p></div></div>
+        <div class="step o"><span class="sn">3</span><div><h4>Processo rápido · newsroom</h4><p>Extração em Python, IA editorial local (Ollama) em 5 chamadas paralelas, capa, roteiro e HTML no modelo fixo.</p></div></div>
         <div class="step"><span class="sn">4</span><div><h4>Pipeline de voz</h4><p>Text Analyzer, Speech Intelligence (idioma e voz), Narration e TTS Edge. Roda em paralelo com o HTML.</p></div></div>
         <div class="step"><span class="sn">5</span><div><h4>Saída e arquivamento</h4><p>MP3 em output\, resumo em output\Jornais\ e entradas movidas para processados\.</p></div></div>
       </div>
@@ -553,7 +553,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
         <div class="kcard t1"><div class="num">6</div><p class="klab">Chamadas de IA por jornal</p><p class="ksub">5 conteúdos + 1 capa</p></div>
       </div>
       <div class="cards big fill fan" style="margin-top:12px;gap:12px">
-        <div class="card"><p class="ctag">Dois motores <em>engine</em></p><p><b>fast</b> (padrão): o processo rápido do newsroom. <b>agent</b>: a skill completa, em que o Claude Code executa o SKILL.md inteiro. A troca é feita em config/settings.json.</p></div>
+        <div class="card"><p class="ctag">Dois motores <em>engine</em></p><p><b>fast</b> (padrão): o processo rápido do newsroom, com IA local (Ollama) — custo zero. <b>agent</b>: a skill completa, em que o Claude Code executa o SKILL.md inteiro — ainda paga. A troca é feita em config/settings.json.</p></div>
         <div class="card"><p class="ctag">Ordem do processamento <em>main.py</em></p><p>Sem parâmetros, os .txt são processados antes dos jornais. Cada item é independente: uma falha não interrompe os demais.</p></div>
       </div>
     </div>
@@ -569,7 +569,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
     <div class="card"><p class="ctag">Entrada <em>raiz</em></p><p><b>main.py</b>: parâmetros --txt, --jornais, --skill, --pdf e --list-skills. <b>start.bat</b> e <b>start.sh</b>: sobem o frontend.</p></div>
     <div class="card"><p class="ctag">Aplicação <em>app/</em></p><p><b>SpeechAIApp</b>: pipeline de voz e nome do MP3 com data e hora. <b>ScriptInbox</b>: processa e arquiva os .txt de input\.</p></div>
     <div class="card"><p class="ctag">Ponte com as skills <em>skill_bridge/</em></p><p><b>NewspaperInbox</b> (identifica e arquiva PDFs), <b>SkillCatalog</b>, <b>SkillPipeline</b> (escolhe o motor) e <b>SkillRunner</b> (skill completa).</p></div>
-    <div class="card"><p class="ctag">Processo rápido <em>newsroom/</em></p><p><b>extractor</b>, <b>profiles</b> (regras de cada jornal), <b>editor</b> (IA), <b>renderer</b> (HTML), <b>script_writer</b> (roteiro) e <b>pipeline</b>. Modelos em templates/.</p></div>
+    <div class="card"><p class="ctag">Processo rápido <em>newsroom/</em></p><p><b>extractor</b>, <b>profiles</b> (regras e palavras-chave de cada destaque), <b>editor</b> (chama a IA e filtra o recorte do jornal), <b>ollama_client</b> (fala com o Ollama local), <b>renderer</b> (HTML), <b>script_writer</b> (roteiro) e <b>pipeline</b>.</p></div>
     <div class="card"><p class="ctag">Frontend <em>web/</em></p><p><b>server.py</b> (API FastAPI), <b>job_runner.py</b> (executa o main.py em segundo plano) e static/ (página, estilos e scripts).</p></div>
     <div class="card"><p class="ctag">Voz e configuração <em>pipeline/ · services/ · config/</em></p><p>Análise de texto, inteligência de fala e TTS existentes. <b>settings.json</b> e <b>voices.json</b> concentram pastas, vozes, motor e modelos.</p></div>
   </div>
@@ -631,49 +631,49 @@ html.mobile .gb{grid-template-columns:90px 1fr}
 
 <!-- ============================ IA EDITORIAL ============================ -->
 <section class="slide" data-theme="light" data-tier="2" data-title="Etapa 2 · IA editorial">
-  <p class="eyebrow rv">Etapa 2 · newsroom/editor.py</p>
-  <h2 class="sh rv">Cinco chamadas em paralelo escrevem o conteúdo; o jornal é lido do cache</h2>
+  <p class="eyebrow rv">Etapa 2 · newsroom/editor.py · ollama_client.py</p>
+  <h2 class="sh rv">Cinco chamadas em paralelo, numa única GPU: o gargalo virou a chamada mais longa</h2>
   <div class="lr rv">
     <div>
       <div class="chart">
-        <h4>Duração de cada chamada · Valor 06/10</h4>
-        <p class="csub">Segundos · Claude Opus 5.5, esforço low, saída em JSON</p>
+        <h4>Duração de cada chamada · Valor 08/10 (IA local)</h4>
+        <p class="csub">Segundos · gemma3:4b via Ollama, contexto de 32.768 tokens</p>
         <div class="hbars" style="--lw:200px">
-          <div class="hb" data-tip="&lt;b&gt;Política e eleições&lt;/b&gt;&lt;br&gt;75,5 s · 8.135 tokens"><span class="hl">3º · Política e eleições</span><span class="ht"><i style="--w:100%;--d:.2s"></i></span><b>75,5</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Empresas e setores&lt;/b&gt;&lt;br&gt;66,0 s · 7.913 tokens"><span class="hl">2º · Empresas e setores</span><span class="ht"><i class="cm" style="--w:87.4%;--d:.3s"></i></span><b>66,0</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Tecnologia e IA&lt;/b&gt;&lt;br&gt;53,2 s · 5.731 tokens"><span class="hl">1º · Tecnologia e IA</span><span class="ht"><i class="cm" style="--w:70.5%;--d:.4s"></i></span><b>53,2</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Mercados e macroeconomia&lt;/b&gt;&lt;br&gt;46,4 s · 4.590 tokens"><span class="hl">2º · Mercados e macro</span><span class="ht"><i class="cm" style="--w:61.5%;--d:.5s"></i></span><b>46,4</b></div>
-          <div class="hb" data-tip="&lt;b&gt;Demais temas&lt;/b&gt;&lt;br&gt;39,8 s · 3.952 tokens"><span class="hl">3º · Demais temas</span><span class="ht"><i class="cm" style="--w:52.7%;--d:.6s"></i></span><b>39,8</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Mercados e macroeconomia&lt;/b&gt;&lt;br&gt;1.440,3 s · 2ª tentativa"><span class="hl">2º · Mercados e macro</span><span class="ht"><i style="--w:100%;--d:.2s"></i></span><b>1.440</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Política e eleições&lt;/b&gt;&lt;br&gt;945,8 s · 1ª tentativa"><span class="hl">3º · Política e eleições</span><span class="ht"><i class="cm" style="--w:65.7%;--d:.3s"></i></span><b>946</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Empresas e setores&lt;/b&gt;&lt;br&gt;695,0 s · 1ª tentativa"><span class="hl">2º · Empresas e setores</span><span class="ht"><i class="cm" style="--w:48.3%;--d:.4s"></i></span><b>695</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Demais temas&lt;/b&gt;&lt;br&gt;475,5 s · 1ª tentativa"><span class="hl">3º · Demais temas</span><span class="ht"><i class="cm" style="--w:33.0%;--d:.5s"></i></span><b>476</b></div>
+          <div class="hb" data-tip="&lt;b&gt;Tecnologia e IA&lt;/b&gt;&lt;br&gt;210,6 s · 1ª tentativa"><span class="hl">1º · Tecnologia e IA</span><span class="ht"><i class="cm" style="--w:14.6%;--d:.6s"></i></span><b>211</b></div>
         </div>
-        <p class="src">Em paralelo, o tempo da etapa é o da chamada mais longa: 85,5 s com o disparo escalonado.</p>
+        <p class="src">Em paralelo, o tempo da etapa é o da chamada mais longa: 1.446,7 s nesta execução (24,1 min).</p>
       </div>
     </div>
     <div>
       <div class="cards big fill fan" style="margin-top:0;gap:12px">
-        <div class="card"><p class="ctag">Cache compartilhado</p><p>Regras e jornal vão num system prompt idêntico para todas as chamadas. Tecnologia parte primeiro e grava o cache; as outras partem cerca de 10 s depois e leem o texto a uma fração do custo (US$ 0,05 contra US$ 1,64).</p></div>
-        <div class="card"><p class="ctag">Saída garantida em JSON</p><p>Cada chamada usa claude -p sem ferramentas, com --json-schema: slides, layout, KPIs, cards, citações, fontes e o parágrafo do áudio de cada slide.</p></div>
-        <div class="card"><p class="ctag">Qualidade com esforço baixo</p><p>A regra de densidade (4 números por slide e citação literal com autor) deu mais números conferidos que o esforço médio: 166 contra 158, com 30% menos tempo.</p></div>
+        <div class="card"><p class="ctag">Sem cache, sem jornal inteiro</p><p>A IA local não tem o cache de contexto da nuvem da Anthropic. Em vez do jornal inteiro, cada chamada recebe só as páginas mais relevantes para aquele destaque (até 5.000 palavras), escolhidas em Python por palavra-chave — ver próximo slide.</p></div>
+        <div class="card"><p class="ctag">Saída garantida em JSON</p><p>Cada chamada usa a API local do Ollama com <code>format</code> = o schema JSON: slides, layout, KPIs, cards, citações, fontes e o parágrafo do áudio de cada slide — igual ao formato usado com o Claude.</p></div>
+        <div class="card flag"><p class="ctag">Confiabilidade menor</p><p>Com o modelo local, algumas chamadas só fecham o JSON certo na 2ª tentativa (até 2 tentativas configuradas). A IA paga sempre fechou na 1ª, nas execuções históricas.</p></div>
       </div>
     </div>
   </div>
-  <div class="sfoot"><span>Fontes: <b>newsroom/editor.py</b> · AIEditor · <b>relatorio.json</b> · Valor 06/10</span><span class="pg"></span></div>
+  <div class="sfoot"><span>Fontes: <b>newsroom/editor.py</b> · AIEditor · <b>relatorio.json</b> · Valor 08/10</span><span class="pg"></span></div>
 </section>
 
 <!-- ============================ HIERARQUIA E PARTES ============================ -->
 <section class="slide" data-theme="light" data-tier="2" data-title="Regras editoriais e partes">
   <p class="eyebrow rv">Etapa 2 · newsroom/profiles.py</p>
-  <h2 class="sh rv">As regras das skills viraram perfis: hierarquia, caça à tecnologia e divisão em partes</h2>
+  <h2 class="sh rv">As regras das skills viraram perfis: hierarquia, palavras-chave e divisão em partes</h2>
   <table class="tbl rv" style="margin-top:14px">
     <tr><th>Destaque</th><th>Chamada(s) de IA</th><th>O que entra</th><th class="n">Slides</th></tr>
-    <tr><td>1º Tecnologia e IA</td><td>Uma chamada; grava o cache</td><td>IA, chips, big techs, startups, regulação de IA, ciência, cibersegurança, IA aplicada. Caça o tema em todos os cadernos.</td><td class="n">2 a 4</td></tr>
+    <tr><td>1º Tecnologia e IA</td><td>Uma chamada</td><td>IA, chips, big techs, startups, regulação de IA, ciência, cibersegurança, IA aplicada. Recorte por ~40 palavras-chave de tecnologia.</td><td class="n">2 a 4</td></tr>
     <tr><td>2º Economia</td><td>Mercados e macroeconomia</td><td>Bolsa, câmbio, juros e BC, inflação, fiscal e dívida, bancos e crédito.</td><td class="n">2 a 3</td></tr>
     <tr><td></td><td>Empresas e setores</td><td>Empresas, varejo, indústria, petróleo e energia, agro, consumo, regulação setorial.</td><td class="n">2 a 3</td></tr>
     <tr><td>3º Demais temas</td><td>Política e eleições</td><td>Eleições, partidos, Congresso, governo, Estados, Judiciário e STF.</td><td class="n">2 a 4</td></tr>
     <tr><td></td><td>Demais temas</td><td>Internacional, editoriais e opinião, legislação, sociedade, saúde, esportes e cultura.</td><td class="n">2 a 3</td></tr>
   </table>
   <div class="cards c3 big fill fan" style="margin-top:14px">
-    <div class="card"><p class="ctag">Precisão</p><p>Só números, nomes e citações do texto; opinião atribuída ao autor ou ao jornal; "Leitura do editor" factual e sem viés partidário.</p></div>
-    <div class="card"><p class="ctag">Valor × Estadão</p><p>Cada perfil traz o mapa de cadernos e onde caçar tecnologia; no Estadão, "Notas e Informações" é sempre editorial do jornal.</p></div>
+    <div class="card"><p class="ctag">Precisão</p><p>Só números, nomes e citações do texto; opinião atribuída ao autor ou ao jornal; "Leitura do editor" factual e sem viés partidário. Citações são conferidas em Python contra o recorte enviado — a que não bate, não aparece.</p></div>
+    <div class="card"><p class="ctag">Recorte por palavra-chave <em>IA local</em></p><p>Cada destaque (e cada parte) tem sua própria lista de termos em <b>newsroom/profiles.py</b>; as páginas com mais termos entram primeiro, até o orçamento de 5.000 palavras. É assim que a GPU de 6 GB recebe só o essencial.</p></div>
     <div class="card"><p class="ctag">Junção</p><p>As partes de um destaque são unidas na ordem: slides, chips, números de "Em uma página" e itens da agenda.</p></div>
   </div>
   <div class="sfoot"><span>Fontes: <b>newsroom/profiles.py</b> · <b>Skill/*/SKILL.md</b></span><span class="pg"></span></div>
@@ -682,24 +682,24 @@ html.mobile .gb{grid-template-columns:90px 1fr}
 <!-- ============================ CAPA E ROTEIRO ============================ -->
 <section class="slide" data-theme="light" data-tier="2" data-title="Etapas 3 e 4 · Capa e roteiro">
   <p class="eyebrow rv">Etapas 3 e 4 · editor.py · script_writer.py</p>
-  <h2 class="sh rv">A capa sai de uma chamada curta; o roteiro é montado e validado em Python</h2>
+  <h2 class="sh rv">A data vem do PDF, não da IA; o roteiro é montado e validado em Python</h2>
   <div class="lr n58 rv">
     <div>
       <p class="colh a">Ordem do script.txt (mesma da skill)</p>
       <div class="steps fill big">
         <div class="step"><span class="sn">1</span><div><h4>Título falado e abertura</h4><p>"Resumo do jornal Valor Econômico. Edição de…" e o parágrafo de abertura escrito na chamada de capa.</p></div></div>
-        <div class="step"><span class="sn">2</span><div><h4>Três destaques, na ordem</h4><p>"Primeiro destaque: tecnologia…", seguido de um parágrafo por slide (35 a 55 palavras).</p></div></div>
+        <div class="step"><span class="sn">2</span><div><h4>Três destaques, na ordem</h4><p>"Primeiro destaque: tecnologia…", seguido de um parágrafo por slide (45 a 65 palavras).</p></div></div>
         <div class="step"><span class="sn">3</span><div><h4>O que acompanhar e encerramento</h4><p>Uma frase por destaque e "Este foi o resumo do… Até a próxima edição."</p></div></div>
       </div>
     </div>
     <div>
       <div class="kgrid k2 tight fan" style="margin-top:0">
-        <div class="kcard pos"><div class="num">11,1<span class="unit">s</span></div><p class="klab">Chamada de capa com Claude Sonnet 5.5</p><p class="ksub">Título, data, abertura e descrição</p></div>
-        <div class="kcard"><div class="num">964</div><p class="klab">Palavras do roteiro do Valor de 06/10</p><p class="ksub">Validação sem pendências</p></div>
+        <div class="kcard pos"><div class="num">35<span class="unit">s</span></div><p class="klab">Chamada de capa com gemma3:4b (IA local)</p><p class="ksub">Título, abertura e descrição — não a data</p></div>
+        <div class="kcard"><div class="num">956</div><p class="klab">Palavras do roteiro, Valor 03–05/10</p><p class="ksub">Validação sem pendências</p></div>
       </div>
       <div class="cards big fill fan" style="margin-top:12px;gap:12px">
-        <div class="card"><p class="ctag">Conversão para a fala</p><ul><li>"R$ 33 bi" → "33 bilhões de reais"</li><li>"US$ 1,4 tri" → "1,4 trilhão de dólares"</li><li>"9,95%" → "9,95 por cento"; "×" → "contra"</li></ul></div>
-        <div class="card"><p class="ctag">Validação</p><p>Confere 700 a 1.100 palavras, símbolos proibidos e a ordem dos destaques. Siglas como "PP" (partido) não são confundidas com "pp".</p></div>
+        <div class="card flag"><p class="ctag">Bug corrigido: data da edição</p><p>Com o modelo local, a IA às vezes escrevia a data errada (copiava o exemplo do schema, ex.: "3, 4 e 5 de outubro" num jornal de outro dia). Agora a data é <b>lida direto da capa do PDF</b> em Python — a IA não participa mais dessa etapa.</p></div>
+        <div class="card"><p class="ctag">Conversão para a fala</p><ul><li>"R$ 33 bi" ou "R$ 33 bilhões" → "33 bilhões de reais"</li><li>"US$ 1,4 tri" → "1,4 trilhão de dólares"</li><li>"9,95%" → "9,95 por cento"; "×" → "contra"</li></ul></div>
       </div>
     </div>
   </div>
@@ -711,8 +711,8 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <p class="eyebrow rv">Etapa 5 · newsroom/renderer.py</p>
   <h2 class="sh rv">O HTML é montado num modelo fixo e verificado no navegador, enquanto o áudio é gerado</h2>
   <div class="kgrid fan">
-    <div class="kcard pos"><div class="num">15,2<span class="unit">s</span></div><p class="klab">HTML e verificação de layout (Valor 06/10)</p><p class="ksub">Em paralelo com o áudio</p></div>
-    <div class="kcard"><div class="num">21</div><p class="klab">Slides do deck do Valor de 06/10</p><p class="ksub">15 de conteúdo e 6 de estrutura</p></div>
+    <div class="kcard pos"><div class="num">9,6<span class="unit">s</span></div><p class="klab">HTML e verificação de layout (Valor 08/10, IA local)</p><p class="ksub">Em paralelo com o áudio</p></div>
+    <div class="kcard"><div class="num">15</div><p class="klab">Slides do deck do Valor de 08/10</p><p class="ksub">9 de conteúdo e 6 de estrutura</p></div>
     <div class="kcard"><div class="num">4</div><p class="klab">Layouts de conteúdo que a IA escolhe</p><p class="ksub">KPIs e cards, linha do tempo, gráfico, mosaico</p></div>
     <div class="kcard acc"><div class="num">3</div><p class="klab">Níveis de ajuste automático de layout</p><p class="ksub">dense → dense2 → enxugar</p></div>
   </div>
@@ -730,7 +730,8 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <h2 class="sh rv">O que cada execução grava, onde e com qual nome</h2>
   <table class="tbl rv" style="margin-top:14px">
     <tr><th>Arquivo</th><th>Local</th><th>Conteúdo</th></tr>
-    <tr><td>Áudio MP3</td><td>output\&lt;nome do arquivo processado&gt;_AAAA-MM-DD_HH-MM-SS.mp3</td><td>Narração em pt-BR (voz Francisca). Nome do .txt ou do PDF, mais data e hora.</td></tr>
+    <tr><td>Áudio MP3 (roteiros .txt)</td><td>output\&lt;nome do .txt&gt;_AAAA-MM-DD_HH-MM-SS.mp3</td><td>Narração em pt-BR (voz Francisca). Fica na raiz de output\.</td></tr>
+    <tr><td>Áudio MP3 (jornais)</td><td>output\Jornais\&lt;Jornal&gt; - DD-MM-AAAA\&lt;nome do PDF&gt;_AAAA-MM-DD_HH-MM-SS.mp3</td><td>Mesma pasta do HTML e do script.txt — não fica mais na raiz de output\.</td></tr>
     <tr><td>Resumo HTML</td><td>output\Jornais\&lt;Jornal&gt; - DD-MM-AAAA\&lt;Jornal&gt; - DD-MM-AAAA.html</td><td>Deck navegável, arquivo único. Pasta repetida no dia ganha sufixo " (2)".</td></tr>
     <tr><td>script.txt</td><td>mesma pasta do HTML</td><td>Roteiro para voz, lido direto dali pelo pipeline de áudio.</td></tr>
     <tr><td>editorial.json</td><td>mesma pasta do HTML</td><td>Conteúdo escrito pela IA, para auditoria e reprocessamento.</td></tr>
@@ -775,7 +776,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <p class="dnum rv">03</p>
   <p class="eyebrow rv">Parte 3 · Operação</p>
   <h1 class="rv">Operação, configuração e custos</h1>
-  <p class="dsub rv">Como usar o frontend, quais comandos existem, o que pode ser ajustado em settings.json, como a solução se comporta em falhas e quanto custa por dia.</p>
+  <p class="dsub rv">Como usar o frontend, quais comandos existem, o que pode ser ajustado em settings.json, como a solução se comporta em falhas e o que custa hoje (quase nada: energia, não mais IA).</p>
   <div class="dchips rv"><span class="chip on">Frontend</span><span class="chip">Comandos</span><span class="chip">Configuração</span><span class="chip">Resiliência e custos</span></div>
   <div class="rule"></div>
   <div class="sfoot"><span>Parte 3 · Operação</span><span class="pg"></span></div>
@@ -788,7 +789,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <div class="lr rv">
     <div>
       <div class="cards big fill fan" style="margin-top:0;gap:12px">
-        <div class="card"><p class="ctag">O que a página faz <em>127.0.0.1:8000</em></p><ul><li>Upload de .txt e de PDFs, com o jornal identificado na hora.</li><li>Botões "Processar textos" (--txt) e "Processar jornais" (--jornais), com confirmação de custo.</li><li>Log ao vivo, etapas, tempo decorrido e cancelamento.</li><li>Áudios com player e download; resumos com link para o HTML e o roteiro.</li></ul></div>
+        <div class="card"><p class="ctag">O que a página faz <em>127.0.0.1:8000</em></p><ul><li>Upload de .txt e de PDFs, com o jornal identificado na hora.</li><li>Botões "Processar textos" (--txt) e "Processar jornais" (--jornais), com confirmação de tempo estimado (sem custo de IA).</li><li>Log ao vivo, etapas, tempo decorrido e cancelamento.</li><li>Áudios com player e download; resumos com link para o HTML e o roteiro.</li></ul></div>
         <div class="card"><p class="ctag">Como iniciar</p><p>Duplo clique em start.bat (Windows) ou ./start.sh (Git Bash). O navegador abre sozinho; Ctrl+C encerra.</p></div>
       </div>
     </div>
@@ -800,7 +801,7 @@ html.mobile .gb{grid-template-columns:90px 1fr}
         <tr><td>POST /api/run/txt</td><td>python main.py --txt</td></tr>
         <tr><td>POST /api/run/jornais</td><td>python main.py --jornais</td></tr>
         <tr><td>GET /api/job</td><td>Status e log da rotina</td></tr>
-        <tr><td>POST /api/job/cancel</td><td>Encerra a rotina e o Claude</td></tr>
+        <tr><td>POST /api/job/cancel</td><td>Encerra a rotina em andamento</td></tr>
         <tr><td>GET /api/files</td><td>Filas, áudios e resumos</td></tr>
       </table>
     </div>
@@ -828,12 +829,12 @@ html.mobile .gb{grid-template-columns:90px 1fr}
     <div>
       <table class="tbl">
         <tr><th>Chave (skills)</th><th>Valor atual</th></tr>
-        <tr><td>engine</td><td>fast (ou agent)</td></tr>
-        <tr><td>fast_model</td><td>claude-opus-5-5</td></tr>
-        <tr><td>fast_cover_model</td><td>claude-sonnet-5-5</td></tr>
-        <tr><td>fast_effort</td><td>low</td></tr>
-        <tr><td>fast_cache_warmup_seconds</td><td>10</td></tr>
-        <tr><td>fast_timeout_minutes · retries</td><td>8 · 1</td></tr>
+        <tr><td>engine</td><td>fast (ou agent, ainda pago)</td></tr>
+        <tr><td>ollama_host</td><td>http://localhost:11434</td></tr>
+        <tr><td>ollama_model · cover_model</td><td>gemma3:4b</td></tr>
+        <tr><td>ollama_num_ctx</td><td>32.768 tokens</td></tr>
+        <tr><td>ollama_timeout_minutes · retries</td><td>25 · 2</td></tr>
+        <tr><td>fast_max_input_words</td><td>5.000 (recorte por destaque)</td></tr>
       </table>
     </div>
   </div>
@@ -843,20 +844,21 @@ html.mobile .gb{grid-template-columns:90px 1fr}
 
 <!-- ============================ RESILIÊNCIA E CUSTOS ============================ -->
 <section class="slide" data-theme="light" data-tier="3" data-title="Resiliência e custos">
-  <p class="eyebrow rv">Operação · Falhas e custos</p>
-  <h2 class="sh rv">Falhas não perdem arquivos, e o custo diário caiu para cerca de US$ 3,60</h2>
+  <p class="eyebrow rv">Operação · Falhas, custo e energia</p>
+  <h2 class="sh rv">Custo de IA caiu a zero; o que sobra é energia — e é irrisório</h2>
   <div class="kgrid fan">
-    <div class="kcard pos"><div class="num">US$ 1,02</div><p class="klab">Valor de 06/10, do PDF ao MP3</p><p class="ksub">6 chamadas de IA</p></div>
-    <div class="kcard"><div class="num">US$ 2,57</div><p class="klab">Estadão de 05/10</p><p class="ksub">Tecnologia espalhada em mais cadernos</p></div>
-    <div class="kcard pos"><div class="num">~US$ 3,60</div><p class="klab">Por dia com os dois jornais</p><p class="ksub">Antes: cerca de US$ 11</p></div>
-    <div class="kcard acc"><div class="num">US$ 0</div><p class="klab">Roteiros .txt</p><p class="ksub">Sem uso de IA</p></div>
+    <div class="kcard pos"><div class="num">US$ 0</div><p class="klab">Custo de IA por jornal, desde a Sprint 13</p><p class="ksub">Antes (Claude, motor fast): US$ 1,02 a 2,51</p></div>
+    <div class="kcard pos"><div class="num">R$ 0,02</div><p class="klab">Energia da GPU por jornal</p><p class="ksub">17,8 Wh medidos · tarifa CEMIG, Contagem/MG</p></div>
+    <div class="kcard acc"><div class="num">6<span class="unit">GB</span></div><p class="klab">VRAM da GPU local (RTX A3000 Laptop)</p><p class="ksub">~46 jornais/dia é o teto de 1 GPU</p></div>
+    <div class="kcard"><div class="num">US$ 0</div><p class="klab">Roteiros .txt</p><p class="ksub">Sem uso de IA, como antes</p></div>
   </div>
   <div class="cards c3 big fill fan" style="margin-top:16px">
-    <div class="card"><p class="ctag">Falhas</p><ul><li>Um item com erro não interrompe os demais.</li><li>O arquivo com erro fica na entrada para a próxima execução.</li><li>Chamada de IA com falha é repetida uma vez.</li></ul></div>
-    <div class="card"><p class="ctag">Limite de uso da IA</p><p>Se o limite da conta acabar no meio, o jornal afetado volta para a fila e é refeito depois, sem perda de arquivos.</p></div>
-    <div class="card"><p class="ctag">Plano B</p><p>Com "engine": "agent", o processamento volta à skill completa (mais lenta, ~20 min); o log de cada execução fica em logs\skills\.</p></div>
+    <div class="card"><p class="ctag">Falhas</p><ul><li>Um item com erro não interrompe os demais.</li><li>O arquivo com erro fica na entrada para a próxima execução.</li><li>Chamada de IA com falha é repetida (até 2 vezes) — mais comum com o modelo local que com a IA paga.</li></ul></div>
+    <div class="card"><p class="ctag">Sem limite de conta</p><p>Sem cobrança por token, não há limite de uso para estourar: o fator que agora limita a escala é tempo de GPU, não orçamento de IA.</p></div>
+    <div class="card"><p class="ctag">Plano B</p><p>Com "engine": "agent", o processamento volta à skill completa — ainda via Claude Code, ainda paga (~20 min); o log de cada execução fica em logs\skills\.</p></div>
   </div>
-  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · execuções de 05 e 06/10 · <b>skill_bridge/skill_pipeline.py</b></span><span class="pg"></span></div>
+  <p class="takeaway rv"><b>Leitura do editor:</b> processando os dois jornais todo dia útil do ano, a IA paga custaria ~R$ 4,5 mil/ano; a energia da IA local fica abaixo de R$ 12/ano. Ver <i>IA Paga vs IA Local.html</i> para a análise completa, incluindo o cenário em escala (100 jornais/dia).</p>
+  <div class="sfoot"><span>Fontes: <b>relatorio.json</b> · execuções de 05, 06 e 08/10 · medição de energia (nvidia-smi) · tarifa CEMIG</span><span class="pg"></span></div>
 </section>
 
 <!-- ============================ PRÓXIMOS PASSOS ============================ -->
@@ -864,14 +866,14 @@ html.mobile .gb{grid-template-columns:90px 1fr}
   <p class="eyebrow rv">Agenda · na ordem de prioridade</p>
   <h1 class="rv" style="font-size:58px;max-width:1400px">Próximos passos</h1>
   <div class="cards c3 big fan" style="margin-top:28px;max-width:1416px">
-    <div class="card dk t1c"><p class="ctag">Parte 1 · Validação</p><p><b>Estadão de ponta a ponta:</b> rodar a próxima edição pelo fluxo diário, com o áudio, e conferir o tempo total.</p></div>
-    <div class="card dk t1c"><p class="ctag">Parte 1 · Qualidade</p><p><b>Revisão editorial:</b> ouvir os áudios e revisar os HTMLs das primeiras semanas antes de distribuir.</p></div>
-    <div class="card dk t2c"><p class="ctag">Parte 2 · Skill direta</p><p><b>Atualizar a skill:</b> a skill acionada direto no Claude/Cowork ainda usa o processo completo de ~20 minutos.</p></div>
+    <div class="card dk t1c"><p class="ctag">Parte 1 · Capacidade</p><p><b>Mais GPU:</b> 1 GPU de 6 GB sustenta ~46 jornais/dia. Definir orçamento de hardware antes de prometer volume maior (ver <i>IA Paga vs IA Local.html</i>).</p></div>
+    <div class="card dk t1c"><p class="ctag">Parte 1 · Qualidade</p><p><b>Revisão editorial:</b> ouvir os áudios e revisar os HTMLs das primeiras semanas — o modelo local ainda fica atrás do Claude em densidade e precisão.</p></div>
+    <div class="card dk t2c"><p class="ctag">Parte 2 · Modelo</p><p><b>Reavaliar o modelo local:</b> se a qualidade do gemma3:4b não bastar, testar qwen2.5:7b-instruct (meio-termo, ainda roda na GPU).</p></div>
     <div class="card dk t2c"><p class="ctag">Parte 2 · Entrada</p><p><b>Nomes dos PDFs:</b> manter "Valor" ou "Estadão" no nome, já que a capa do Valor não traz o nome em texto.</p></div>
-    <div class="card dk t3c"><p class="ctag">Parte 3 · Operação</p><p><b>Agendamento:</b> executar python main.py automaticamente todas as manhãs, depois da chegada dos PDFs.</p></div>
+    <div class="card dk t3c"><p class="ctag">Parte 3 · Operação</p><p><b>Agendamento:</b> executar python main.py automaticamente (ou via .bat + Agendador de Tarefas) todas as manhãs, após a chegada dos PDFs.</p></div>
     <div class="card dk t3c"><p class="ctag">Parte 3 · Versionamento</p><p><b>Commit no Git:</b> nenhuma das mudanças foi commitada; revisar e versionar newsroom\, web\ e a configuração.</p></div>
   </div>
-  <div class="sfoot"><span>Fonte: Speech AI · documentação de 6 de outubro de 2026</span><span class="pg"></span></div>
+  <div class="sfoot"><span>Fonte: Speech AI · documentação de 8 de outubro de 2026</span><span class="pg"></span></div>
 </section>
 
 </main>

@@ -126,8 +126,6 @@ class FastNewspaperPipeline:
 
         pages = extractor.extract(Path(pdf))
 
-        paper_text = extractor.to_prompt_text(pages)
-
         if len(pages) < 3:
 
             raise RuntimeError("Texto do PDF não pôde ser extraído (PDF escaneado ou protegido?).")
@@ -141,7 +139,7 @@ class FastNewspaperPipeline:
 
         print("  ...  IA escrevendo os 3 destaques em paralelo")
 
-        tiers = editor.write_tiers(paper_text)
+        tiers = editor.write_tiers(pages)
 
         step("IA: 3 destaques (paralelo)", t)
 

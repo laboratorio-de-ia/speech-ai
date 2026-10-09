@@ -88,11 +88,14 @@ async function loadFiles() {
 
   $("#list-resumos").innerHTML = data.resumos.length ? data.resumos.map(r => {
     const base = `/media/resumos/${encodeURIComponent(r.folder)}/`;
+    const audioUrl = r.audio ? `${base}${encodeURIComponent(r.audio)}` : null;
     return `<li><svg class="i"><use href="#i-html"/></svg>
       <div class="nm"><b title="${esc(r.folder)}">${esc(r.folder)}</b><small>${when(r.modified)}</small></div>
+      ${audioUrl ? `<audio controls preload="none" src="${audioUrl}"></audio>` : ""}
       <div class="links">
         ${r.html ? `<a href="${base}${encodeURIComponent(r.html)}" target="_blank" rel="noopener">Abrir resumo</a>` : ""}
         ${r.script ? `<a href="${base}script.txt" target="_blank" rel="noopener">Roteiro</a>` : ""}
+        ${audioUrl ? `<a href="${audioUrl}?download=true" title="Baixar áudio">⇩ Áudio</a>` : ""}
       </div>
     </li>`;
   }).join("") : `<li class="empty">Nenhum resumo gerado ainda.</li>`;
@@ -162,8 +165,8 @@ async function runJob(mode) {
   if (mode === "jornais") {
     const count = Number(btn.dataset.count), unknown = Number(btn.dataset.unknown);
     const ok = await confirmBox(
-      "Processar jornais com IA?",
-      `${count} PDF(s) na fila. Cada jornal leva cerca de 20 minutos e custa de US$ 5 a 7 no Claude.` +
+      "Processar jornais com IA local?",
+      `${count} PDF(s) na fila. Cada jornal leva cerca de 20 a 40 minutos, sem custo (Ollama, roda na GPU desta máquina).` +
       (unknown ? ` Atenção: ${unknown} arquivo(s) não identificado(s) serão ignorados.` : "")
     );
     if (!ok) return;

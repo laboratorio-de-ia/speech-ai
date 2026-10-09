@@ -105,11 +105,13 @@ class SpeechAIApp:
 
     # -------------------------------------------------
 
-    def run(self, script_file=None, output_filename=None):
+    def run(self, script_file=None, output_filename=None, output_dir=None):
 
         script_file = Path(script_file or self.project_root / self.cfg.script_file)
 
         output_filename = output_filename or self.audio_filename(script_file.stem)
+
+        audio_dir = Path(output_dir) if output_dir else (self.project_root / self.cfg.output_directory)
 
         print()
 
@@ -217,15 +219,9 @@ class SpeechAIApp:
 
         speech_service = SpeechService()
 
-        audio_file = (
+        audio_dir.mkdir(parents=True, exist_ok=True)
 
-            self.project_root
-
-            / self.cfg.output_directory
-
-            / output_filename
-
-        )
+        audio_file = audio_dir / output_filename
 
         speech_service.synthesize(
 

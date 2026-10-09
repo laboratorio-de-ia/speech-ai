@@ -28,9 +28,22 @@ from newsroom.profiles import NewspaperProfile
 # Abreviações só em minúsculas: "PP" (partido) não é "pp" (pontos percentuais).
 FORBIDDEN = re.compile(r"[%×→•*#$<>]|R\$|US\$|\spp\b|\sbi\b|\smi\b|https?://")
 
-MAGNITUDE = {"tri": "trilhões", "bi": "bilhões", "mi": "milhões", "mil": "mil"}
+MAGNITUDE = {
+
+    "tri": "trilhões", "trilhão": "trilhões", "trilhao": "trilhões", "trilhões": "trilhões", "trilhoes": "trilhões",
+    "bi": "bilhões", "bilhão": "bilhões", "bilhao": "bilhões", "bilhões": "bilhões", "bilhoes": "bilhões",
+    "mi": "milhões", "milhão": "milhões", "milhao": "milhões", "milhões": "milhões", "milhoes": "milhões",
+    "mil": "mil",
+
+}
 
 SINGULAR = {"trilhões": "trilhão", "bilhões": "bilhão", "milhões": "milhão", "mil": "mil"}
+
+# A IA às vezes escreve a magnitude por extenso ("bilhões", "bilhão") em vez da
+# abreviação ("bi"). As duas formas (com ou sem acento) precisam ser reconhecidas,
+# senão a palavra por extenso fica sem casar com a regex e sobra solta no texto
+# (ex.: "3,2 reaisbilhões").
+SCALE = r"(?:tri|trilh(?:[ãa]o|[õo]es)|bi|bilh(?:[ãa]o|[õo]es)|mi|milh(?:[ãa]o|[õo]es)|mil)"
 
 
 def magnitude(value: str, abbreviation: str) -> str:
@@ -69,9 +82,9 @@ def speak(text: str) -> str:
 
         return f"{value} {unit}"
 
-    text = re.sub(r"(R\$|US\$|€)\s?(\d[\d.,]*)\s?(tri|bi|mi|mil)?\b\.?", money, text)
+    text = re.sub(rf"(R\$|US\$|€)\s?(\d[\d.,]*)\s?({SCALE})?\b\.?", money, text)
 
-    text = re.sub(r"(\d[\d.,]*)\s?(tri|bi|mi)\b\.?", lambda m: f"{m.group(1)} {magnitude(m.group(1), m.group(2))}", text)
+    text = re.sub(rf"(\d[\d.,]*)\s?({SCALE})\b\.?", lambda m: f"{m.group(1)} {magnitude(m.group(1), m.group(2))}", text)
 
     text = re.sub(r"([+-−]?\d[\d.,]*)\s?%", lambda m: f"{m.group(1)} por cento", text)
 

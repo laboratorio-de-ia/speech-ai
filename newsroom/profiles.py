@@ -31,7 +31,9 @@ class Tier:
 
     slides: tuple        # (mínimo, máximo) de slides de conteúdo
 
-    parts: tuple = ()    # divisão do destaque em chamadas paralelas: (nome, escopo, (mín, máx))
+    parts: tuple = ()    # divisão do destaque em chamadas paralelas: (nome, escopo, (mín, máx), keywords)
+
+    keywords: tuple = () # termos usados para selecionar as páginas relevantes (IA local, sem parts)
 
 
 @dataclass(frozen=True)
@@ -67,6 +69,52 @@ TIER_SCOPES = {
 }
 
 
+# Termos usados para selecionar, em Python, só as páginas relevantes de cada destaque
+# antes de enviar à IA local. O modelo roda com contexto limitado (GPU de 6 GB): não é
+# possível mandar o jornal inteiro em cada chamada, como era feito com a IA paga.
+TIER1_KEYWORDS = (
+    "inteligência artificial", " ia ", "ia,", "ia.", "ia:", "ia e ", "chatgpt", "openai", "chip",
+    "chips", "semicondutor", "nvidia", "amd", "intel", "tsmc", "big tech", "startup", "startups",
+    "data center", "computação quântica", "quântica", "cibersegurança", "hacker", "ransomware",
+    "ia generativa", "aprendizado de máquina", "machine learning", "algoritmo", "robótica",
+    "nuvem", "cloud", "software", "aplicativo", "tecnologia", "digital", "llm",
+    "modelo de linguagem", "google", "microsoft", "meta", "amazon", "apple", "tesla", "gemini",
+    "claude", "copilot", "ia aplicada",
+)
+
+TIER2_PART_KEYWORDS = {
+
+    "Mercados e macroeconomia": (
+        "bolsa", "ibovespa", "câmbio", "dólar", "juros", "selic", "copom", "banco central",
+        "inflação", "ipca", "igp-m", "fiscal", "dívida pública", "indicadores", "pib",
+        "crédito", "taxa de juros", "b3", "ações", "renda fixa", "títulos públicos", "tesouro",
+    ),
+
+    "Empresas e setores": (
+        "empresa", "empresas", "resultado trimestral", "balanço", "varejo", "indústria",
+        "petróleo", "petrobras", "energia", "agro", "agronegócio", "commodities", "consumo",
+        "fusão", "aquisição", "ipo", "setor", "exportação", "importação", "banco", "bancos",
+    ),
+
+}
+
+TIER3_PART_KEYWORDS = {
+
+    "Política e eleições": (
+        "eleição", "eleições", "candidato", "candidata", "partido", "congresso", "senado",
+        "câmara dos deputados", "governo", "presidente", "ministro", "governador",
+        "judiciário", "stf", "supremo", "urna", "pesquisa eleitoral", "campanha",
+    ),
+
+    "Demais temas": (
+        "internacional", "editorial", "opinião", "legislação", "tributos", "imposto",
+        "reforma tributária", "sociedade", "saúde", "hospital", "sus", "cidade", "trânsito",
+        "segurança pública", "esporte", "futebol", "campeonato", "cultura", "cinema", "livro",
+    ),
+
+}
+
+
 # Economia e demais temas são divididos em duas partes, escritas em paralelo:
 # cada chamada escreve menos slides e o tempo total cai sem reduzir o raciocínio.
 TIER_PARTS = {
@@ -75,11 +123,11 @@ TIER_PARTS = {
 
         ("Mercados e macroeconomia",
          "bolsa, câmbio, juros e Banco Central, inflação, fiscal e dívida, indicadores, bancos e crédito",
-         (2, 3)),
+         (2, 3), TIER2_PART_KEYWORDS["Mercados e macroeconomia"]),
 
         ("Empresas e setores",
          "empresas e resultados, varejo, indústria, petróleo e energia, agro, consumo, regulação setorial",
-         (2, 3)),
+         (2, 3), TIER2_PART_KEYWORDS["Empresas e setores"]),
 
     ),
 
@@ -87,12 +135,12 @@ TIER_PARTS = {
 
         ("Política e eleições",
          "eleições, partidos, Congresso, governo, Estados, Judiciário e STF",
-         (2, 4)),
+         (2, 4), TIER3_PART_KEYWORDS["Política e eleições"]),
 
         ("Demais temas",
          "internacional, editoriais e opinião, legislação e tributos, sociedade, saúde, cidade, "
          "esportes e cultura; o último slide pode ser um mosaico de temas menores",
-         (2, 3)),
+         (2, 3), TIER3_PART_KEYWORDS["Demais temas"]),
 
     ),
 
@@ -104,7 +152,8 @@ def _tiers(t2_slides, t3_slides):
     return (
 
         Tier(1, "Tecnologia e IA", "Tecnologia e inteligência artificial",
-             "Primeiro destaque: tecnologia e inteligência artificial.", TIER_SCOPES[1], (2, 4)),
+             "Primeiro destaque: tecnologia e inteligência artificial.", TIER_SCOPES[1], (2, 4),
+             keywords=TIER1_KEYWORDS),
 
         Tier(2, "Economia e mercados", "Economia e mercados",
              "Segundo destaque: economia e mercados.", TIER_SCOPES[2], t2_slides, TIER_PARTS[2]),

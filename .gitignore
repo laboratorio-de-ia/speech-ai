@@ -1,0 +1,14 @@
+# Ambiente Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Filas de entrada e saída: dados de execução, não código.
+# Jornais em PDF são material protegido por direitos autorais e não
+# devem ser publicados no repositório; áudios/relatórios são regeneráveis.
+input/
+output/
+
+# Logs de execução
+logs/
